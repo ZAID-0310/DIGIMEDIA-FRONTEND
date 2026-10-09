@@ -36,10 +36,6 @@ export default function AuthGuard({ children, requiredRole = null }) {
           setCookie("empleado", JSON.stringify(userData.empleado), { maxAge: 5 * 60 * 60, path: "/" });
         }
         
-        if (!getCookie('rol')) {
-          setCookie("rol", userData.rol, { maxAge: 5 * 60 * 60, path: "/" });
-        }
-        
         // verificar uno o varios roles
         if (requiredRole) {
           // convierte a array si es un string con formato "rol1,rol2,rol3"

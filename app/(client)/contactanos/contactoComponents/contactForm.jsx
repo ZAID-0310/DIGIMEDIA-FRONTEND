@@ -52,6 +52,13 @@ const countriesWithMask = defaultCountries.map((data) => {
 const inputBaseClass =
   "w-full h-[54px] sm:h-[58px] md:h-[62px] bg-white/[0.86] rounded-[31.5px] px-6 text-base sm:text-lg text-[#100043] placeholder:text-[#5B5470] shadow-[0_4px_4px_rgba(0,0,0,0.25)] outline-none focus:ring-2 focus:ring-[#FFB800] focus:ring-offset-0 transition-shadow";
 
+// 4 constantes (NOMBRE_INVALIDOS, etc.)
+//const NOMBRE_INVALIDOS = /[^\p{L}\s]/gu;
+const NOMBRE_VALIDO = /^[\p{L}]+(?:\s[\p{L}]+)*$/u;
+//const MENSAJE_INVALIDOS = /[^\p{L}\p{N}\s.,;:!?¿¡()"'\-]/gu;
+const MENSAJE_VALIDO = /^[\p{L}\p{N}\s.,;:!?¿¡()"'\-]+$/u;
+const EMAIL_VALIDO = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
 const ContactForm = () => {
   const [formData, setFormData] = useState({
     nombre: "",
@@ -89,7 +96,10 @@ const ContactForm = () => {
             description: "Número de teléfono internacional",
           },
           mensaje: { type: "string", description: "Mensaje que desea enviar" },
-          servicio: { type: "string", description: "Servicio seleccionado del catálogo" },
+          servicio: {
+            type: "string",
+            description: "Servicio seleccionado del catálogo",
+          },
         },
         required: ["nombre", "email", "telefono", "mensaje"],
       },
@@ -113,13 +123,16 @@ const ContactForm = () => {
           return { success: false, message: error.message };
         }
       },
-      annotations: { readOnlyHint: false, openWorldHint: true, destructiveHint: false, idempotentHint: false },
+      annotations: {
+        readOnlyHint: false,
+        openWorldHint: true,
+        destructiveHint: false,
+        idempotentHint: false,
+      },
     });
 
     if (window.navigator.modelContextTesting?.listTools) {
-      window.navigator.modelContextTesting.listTools().then((tools) => {
-        
-      });
+      window.navigator.modelContextTesting.listTools().then((tools) => {});
     }
 
     return () => unregister && unregister();
@@ -134,10 +147,63 @@ const ContactForm = () => {
     e.preventDefault();
     setLoading(true);
 
+    const nombreLimpio = formData.nombre.trim();
+    if (nombreLimpio.length < 2 || !NOMBRE_VALIDO.test(nombreLimpio)) {
+      Swal.fire({
+        title: "Nombre inválido",
+        text: "El nombre solo puede contener letras y espacios.",
+        icon: "warning",
+        confirmButtonText: "OK",
+      });
+      setLoading(false);
+      return;
+    }
+
     if (!isValidPhoneNumber(phone, countryIso2.toUpperCase())) {
       Swal.fire({
         title: "Número inválido",
         text: "El número ingresado no es válido. Verifica la cantidad de dígitos.",
+        icon: "warning",
+        confirmButtonText: "OK",
+      });
+      setLoading(false);
+      return;
+    }
+
+    if (!formData.servicio) {
+      Swal.fire({
+        title: "Servicio requerido",
+        text: "Selecciona el servicio que te interesa.",
+        icon: "warning",
+        confirmButtonText: "OK",
+      });
+      setLoading(false);
+      return;
+    }
+    const mensajeLimpio = formData.mensaje.trim();
+    if (mensajeLimpio.length < 10) {
+      Swal.fire({
+        title: "Mensaje muy corto",
+        text: "El mensaje debe contener al menos 10 caracteres.",
+        icon: "warning",
+      });
+      setLoading(false);
+      return;
+    }
+    if (!MENSAJE_VALIDO.test(mensajeLimpio)) {
+      Swal.fire({
+        title: "Mensaje inválido",
+        text: "El mensaje contiene caracteres no permitidos.",
+        icon: "warning",
+      });
+      setLoading(false);
+      return;
+    }
+    const emailLimpio = formData.email.trim();
+    if (!EMAIL_VALIDO.test(emailLimpio)) {
+      Swal.fire({
+        title: "Correo inválido",
+        text: "Ingresa un correo válido, por ejemplo: ejemplo@gmail.com",
         icon: "warning",
         confirmButtonText: "OK",
       });
@@ -236,6 +302,7 @@ const ContactForm = () => {
 
               <form
                 onSubmit={handleSubmit}
+                noValidate
                 className="flex flex-col gap-4 sm:gap-5"
                 toolname="submit_contact_form"
                 tooldescription="Envía un mensaje de contacto con nombre, email, teléfono y contenido"

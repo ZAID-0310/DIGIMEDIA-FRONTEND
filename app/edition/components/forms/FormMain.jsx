@@ -650,7 +650,7 @@ useEffect(() => {
 
       {/* Vista Previa */}
       {viewMode === "preview" && (
-        <div className="bg-gray-50 rounded-lg p-6 min-h-screen">
+        <div className="bg-gray-50 rounded-lg p-3 sm:p-6 min-h-screen">
           <TemplateRenderer
             plantillaId={selectedPlantilla}
             blogData={getBlogDataForPreview()}

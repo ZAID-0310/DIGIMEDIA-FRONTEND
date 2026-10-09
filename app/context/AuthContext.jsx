@@ -40,12 +40,8 @@ export const AuthProvider = ({ children }) => {
             permisos: res.permisos || [],
           });
 
-          // Guardar en cookies por si se recarga
-          setCookie("permisos", JSON.stringify(res.permisos || []), {
-            maxAge: 300 * 60,
-            path: "/",
-          });
-          setCookie("rol", res.rol, { maxAge: 300 * 60, path: "/" });
+          // El rol y permisos ahora se manejan en memoria dentro de auth_service
+          // que fue llamado por auth_service.me() arriba.
 
           // Redirigir si está en login
           if (pathname === "/login/") {
@@ -97,11 +93,6 @@ export const AuthProvider = ({ children }) => {
         maxAge: 300 * 60,
         path: "/",
       });
-      setCookie("permisos", JSON.stringify(userData.permisos || []), {
-        maxAge: 300 * 60,
-        path: "/",
-      });
-      setCookie("rol", userData.rol, { maxAge: 300 * 60, path: "/" });
 
       setIsAuthenticated(true);
       router.replace("/dashboard/main");
@@ -142,7 +133,7 @@ export const AuthProvider = ({ children }) => {
       .replace(/\s+/g, "-");
 
   const hasRole = (roles) => {
-    const rol = user?.rol || getCookie("rol");
+    const rol = user?.rol || auth_service.getCurrentRole();
     if (!rol) return false;
 
     const rolesArray = roles.split(",").map((r) => r.trim().toLowerCase());
@@ -151,12 +142,11 @@ export const AuthProvider = ({ children }) => {
 
   // Función para verificar permisos
   const hasPermission = (permiso) => {
-    const rol = user?.rol || getCookie("rol");
+    const rol = user?.rol || auth_service.getCurrentRole();
 
     if (rol === "administrador") return true;
 
-    const permisos =
-      user?.permisos || JSON.parse(getCookie("permisos") || "[]");
+    const permisos = user?.permisos || auth_service.getCurrentPermissions();
 
     if (!Array.isArray(permisos)) return false;
 

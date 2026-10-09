@@ -6,6 +6,7 @@ import {
   ExternalLink,
   Image as ImageIcon,
   CheckCircle,
+  Eye,
 } from "lucide-react";
 
 // Configuración de plantillas
@@ -139,30 +140,30 @@ export default function TemplateRenderer({
   const imageUrl = headerData.public_image || "/blog/blog-4.webp";
 
   return (
-    <div className="relative h-[520px] overflow-hidden rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.25)]">
-      
+    <div className="relative h-[440px] sm:h-[480px] lg:h-[520px] overflow-hidden rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.25)]">
+
       <img
         src={imageUrl}
         alt={headerData.alt || "Imagen principal"}
         className="w-full h-full object-cover scale-[1.05] opacity-90"
       />
 
-      
+
       <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black/10"></div>
 
-     
-      <div className="absolute bottom-0 left-0 right-0 p-12">
-        <h1 className="text-5xl md:text-7xl font-extrabold text-white drop-shadow-xl leading-tight tracking-tight"
+
+      <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-8 lg:p-12">
+        <h1 className="text-3xl sm:text-5xl md:text-7xl font-extrabold text-white drop-shadow-xl leading-tight tracking-tight break-words"
         style={{ color: headerData.titulo_color || "#FFFFFF" }}>
           {headerData.titulo || "Título Principal Elegante"}
         </h1>
 
-        <p className="text-xl md:text-2xl text-white/80 max-w-3xl mt-6 leading-relaxed"
+        <p className="text-base sm:text-xl md:text-2xl text-white/80 max-w-3xl mt-3 sm:mt-6 leading-relaxed"
           style={{ color: headerData.texto_frase_color || "rgba(255,255,255,0.8)" }}>
           {headerData.texto_frase || "Una frase impactante y memorable"}
         </p>
 
-        <p className="text-lg text-gray-200 max-w-4xl mt-4 leading-relaxed"
+        <p className="text-sm sm:text-base lg:text-lg text-gray-200 max-w-4xl mt-4 leading-relaxed"
           style={{ color: headerData.texto_descripcion_color || "#E5E7EB" }}>
           {renderDescripcion(
             headerData.texto_descripcion ||
@@ -200,14 +201,14 @@ export default function TemplateRenderer({
               src={bodyHeader.public_image1 || "/blog/blog-4.webp"}
               alt={bodyHeader.alt_image1 || bodyHeader.titulo || "Imagen del cuerpo"}
               title={bodyHeader.title_image1}
-              className="w-full h-[280px] rounded-[20px] object-cover"
+              className="w-full h-[220px] sm:h-[280px] rounded-[20px] object-cover"
             />
           </div>
-          <div className="flex-1 flex flex-col justify-center">
+          <div className="flex-1 min-w-0 flex flex-col justify-center">
             <p className="text-[#FFB800] font-semibold text-sm mb-2">
               {bodyHeader.fecha || "Fecha de publicación"}
             </p>
-            <h2 className="font-extrabold text-2xl leading-tight tracking-tight mb-3"
+            <h2 className="font-extrabold text-2xl leading-tight tracking-tight mb-3 break-words"
               style={{ color: bodyHeader.titulo_color || "#FFB800" }}>
               {bodyHeader.titulo || (showPlaceholders ? "Título del Artículo" : "")}
             </h2>
@@ -271,7 +272,7 @@ export default function TemplateRenderer({
         <div className="flex flex-col lg:flex-row gap-6 items-start">
           <div className="w-full lg:w-[40%] flex-shrink-0">
             <p className="text-[#FFB800] font-semibold text-base mb-1">Consejos importantes</p>
-            <h3 className="font-extrabold text-2xl leading-tight tracking-tight"
+            <h3 className="font-extrabold text-2xl leading-tight tracking-tight break-words"
               style={{ color: bodyHeader.titulo_consejos_color || "#FFB800" }}>
               {bodyHeader.titulo_consejos || (showPlaceholders ? "Título de la sección" : "")}
             </h3>
@@ -317,7 +318,7 @@ export default function TemplateRenderer({
     if (imagenes.length === 0) return null;
 
     return (
-      <div className="mb-16">
+      <div className="mb-10 sm:mb-16">
         {layoutType === "tabs" ? (
           // Plantilla 2: Cards modernas
           <div className="max-w-5xl mx-auto px-4">
@@ -339,14 +340,14 @@ export default function TemplateRenderer({
           </div>
         ) : (
           // Plantilla 1 y 3: Dos imágenes lado a lado
-          <div className="flex gap-4 mb-8">
+          <div className="flex flex-col sm:flex-row gap-4 mb-8">
             {imagenes.map((imagen) => (
               <div key={imagen.id} className="flex-1 overflow-hidden rounded-[20px]">
                 <img
                   src={imagen.url}
                   alt={imagen.alt}
                   title={imagen.title}
-                  className="w-full h-[240px] object-cover"
+                  className="w-full h-[200px] sm:h-[240px] object-cover"
                 />
               </div>
             ))}
@@ -375,7 +376,7 @@ export default function TemplateRenderer({
     ];
 
     return (
-      <div className="mb-16">
+      <div className="mb-10 sm:mb-16">
         {layoutType === "tabs" ? (
           // Plantilla 2: Cards con gradientes
           <div className="space-y-6 max-w-4xl mx-auto">
@@ -416,11 +417,11 @@ export default function TemplateRenderer({
             {/* Banner amarillo */}
             <div className="flex justify-center mb-6">
               <div
-                className="flex items-center justify-center rounded-[38px] px-8 h-[52px] w-full max-w-[600px]"
+                className="flex items-center justify-center rounded-[38px] px-4 sm:px-6 lg:px-8 min-h-[52px] py-2 w-full max-w-[600px]"
                 style={{ background: "linear-gradient(90deg, #FFCA3A 0%, #FFAC00 100%)" }}
               >
                 <span
-                  className="font-bold text-base text-center"
+                  className="font-bold text-sm sm:text-base text-center break-words"
                   style={{ color: bodyHeader.titulo_tarjeta_color || "#1E40AF", letterSpacing: "-0.48px"
                      }}
                 >
@@ -442,7 +443,7 @@ export default function TemplateRenderer({
                   >
                     <ImageIcon className="w-5 h-5 text-[#100043]" />
                   </div>
-                  <h4 className="font-bold text-base mb-2"
+                  <h4 className="font-bold text-base mb-2 break-words"
                     style={{ color: item.titulo_color || "#FFB800" }}>
                     {item.titulo || `Información ${index + 1}`}
                   </h4>
@@ -474,14 +475,14 @@ export default function TemplateRenderer({
         style={footerBgStyle}
       >
         {/* Título izquierda + descripción derecha */}
-        <div className="flex flex-col lg:flex-row gap-6 p-8 items-start">
+        <div className="flex flex-col lg:flex-row gap-6 p-5 sm:p-6 lg:p-8 items-start">
           <div className="w-full lg:w-[45%] flex-shrink-0">
-            <h3 className="font-extrabold  text-2xl leading-tight tracking-tight"
+            <h3 className="font-extrabold  text-2xl leading-tight tracking-tight break-words"
               style={{ color: footer.titulo_color || "#FFB800" }}>
               {footer.titulo || "Contáctanos para más información"}
             </h3>
           </div>
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <p className=" text-sm leading-relaxed"
               style={{ color: footer.descripcion_color || "#CCC3D4" }}>
               {footer.descripcion || "Descripción del pie de página"}
@@ -490,7 +491,7 @@ export default function TemplateRenderer({
         </div>
 
         {/* 3 imágenes */}
-        <div className="flex gap-3 px-8 pb-8">
+        <div className="flex flex-col sm:flex-row gap-3 px-5 sm:px-6 lg:px-8 pb-5 sm:pb-6 lg:pb-8">
           {[1, 2, 3].map((i) => {
             const imageUrl = footer[`public_image${i}`];
             if (!imageUrl && !showPlaceholders) return null;
@@ -498,7 +499,7 @@ export default function TemplateRenderer({
               <div key={i} className="flex-1 overflow-hidden rounded-[17px]">
                 <img
                   src={imageUrl || "/blog/blog-4.webp"}
-                  className="w-full h-[140px] object-cover"
+                  className="w-full h-[110px] sm:h-[140px] object-cover"
                 />
               </div>
             );
@@ -517,21 +518,21 @@ export default function TemplateRenderer({
     const headerData = header || {};
     const imageUrl = headerData.public_image || "/blog/blog-4.webp";
     return (
-      <div className="relative w-full h-[360px] overflow-hidden">
+      <div className="relative w-full h-[300px] sm:h-[330px] lg:h-[360px] overflow-hidden">
         <img
           src={imageUrl}
           alt={headerData.alt || "Imagen principal"}
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(0,1,24,0.75), rgba(65,12,137,0.4), rgba(0,1,24,0.2))" }} />
-        <div className="absolute bottom-0 left-0 right-0 px-10 pb-10">
+        <div className="absolute bottom-0 left-0 right-0 px-5 sm:px-8 lg:px-10 pb-6 sm:pb-8 lg:pb-10">
           <h1
-            className="text-3xl lg:text-5xl font-extrabold leading-tight tracking-tight mb-3 uppercase"
+            className="text-2xl sm:text-3xl lg:text-5xl font-extrabold leading-tight tracking-tight mb-3 uppercase break-words"
             style={{ fontFamily: "'Hanken Grotesk', sans-serif", color: "#FFFFFF" }}
           >
             {headerData.titulo || "Título Principal del Blog"}
           </h1>
-          <p className="text-base lg:text-lg max-w-2xl" style={{ color: "#FFFFFF" }}>
+          <p className="text-sm sm:text-base lg:text-lg max-w-2xl" style={{ color: "#FFFFFF" }}>
             {headerData.texto_frase || "Una frase impactante y memorable"}
           </p>
         </div>
@@ -554,7 +555,7 @@ export default function TemplateRenderer({
     ] : [];
 
     return (
-      <div className="px-6 lg:px-[60px] py-10">
+      <div className="px-4 sm:px-6 lg:px-[60px] py-8 sm:py-10">
         {/* Hero: título izquierda + imagen derecha */}
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 pb-8 items-center">
           <div className="flex-1 min-w-0 flex flex-col justify-center">
@@ -562,7 +563,7 @@ export default function TemplateRenderer({
               <p className="text-[#FFB800] font-semibold text-sm mb-3">{bodyHeader.fecha}</p>
             )}
             <h2
-              className="font-extrabold text-[#FFB800] text-2xl lg:text-[36px] leading-tight lg:leading-[44px] tracking-[-0.48px] mb-4 uppercase"
+              className="font-extrabold text-[#FFB800] text-xl sm:text-2xl lg:text-[36px] leading-tight lg:leading-[44px] tracking-[-0.48px] mb-4 uppercase break-words"
               style={{ color: bodyHeader.titulo_color || "#FFB800", fontFamily: "'Hanken Grotesk', sans-serif" }}
             >
               {bodyHeader.titulo || (showPlaceholders ? "TÍTULO DEL ARTÍCULO DEL BLOG" : "")}
@@ -586,7 +587,7 @@ export default function TemplateRenderer({
 
         {/* Tabs */}
         {tabs2.length > 0 && (
-          <div className="flex gap-8 lg:gap-14 pt-5 pb-3">
+          <div className="flex flex-wrap gap-4 sm:gap-8 lg:gap-14 pt-5 pb-3">
             {tabs2.map(tab => (
               <button
                 key={tab.key}
@@ -610,7 +611,7 @@ export default function TemplateRenderer({
               <div key={`p2-card-${index}`} className="overflow-hidden">
                 <div className="w-full h-[12px] rounded-t-[18px]" style={{ background: "linear-gradient(90deg, #FFCA3A 0%, #FFAC00 100%)" }} />
                 <div className="px-6 lg:px-[40px] py-5 border border-white/5 rounded-b-[18px]" style={{ background: "linear-gradient(180deg, #000118 0%, #100043 100%)" }}>
-                  <h3 className="font-extrabold text-base lg:text-[22px] leading-[1.4] tracking-[-0.48px] mb-2" style={{ fontFamily: "'Hanken Grotesk', sans-serif", color: card.titulo_color || "#FFB800" }}>
+                  <h3 className="font-extrabold text-base lg:text-[22px] leading-[1.4] tracking-[-0.48px] mb-2 break-words" style={{ fontFamily: "'Hanken Grotesk', sans-serif", color: card.titulo_color || "#FFB800" }}>
                     {card.titulo || `Información ${index + 1}`}
                   </h3>
                   <p className="text-sm lg:text-[17px] leading-[26px]" style={{ color: card.descripcion_color || "#CCC3D4" }}>
@@ -642,7 +643,7 @@ export default function TemplateRenderer({
             <div className="rounded-[30px] overflow-hidden" style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(16,0,67,0.3) 62.02%)" }}>
               <div className="h-[8px]" style={{ background: "linear-gradient(90deg, rgba(65,12,137,0) 0%, #410C89 50%, rgba(65,12,137,0) 100%)" }} />
               <div className="mx-4 my-5 rounded-[22px] px-6 py-7" style={{ background: "linear-gradient(180deg, rgba(19,0,73,0.69) 0%, rgba(16,0,67,0.69) 100%)" }}>
-                <h3 className="text-center font-bold text-base lg:text-[22px] leading-[32px] mb-6" style={{ fontFamily: "'Hanken Grotesk', sans-serif", color: bodyHeader.titulo_consejos_color || "#FFB800" }}>
+                <h3 className="text-center font-bold text-base lg:text-[22px] leading-[32px] mb-6 break-words" style={{ fontFamily: "'Hanken Grotesk', sans-serif", color: bodyHeader.titulo_consejos_color || "#FFB800" }}>
                   {bodyHeader.titulo_consejos || (showPlaceholders ? "Consejos Importantes Para Elegir Correctamente" : "")}
                 </h3>
                 <div className="flex flex-col gap-3">
@@ -717,13 +718,17 @@ export default function TemplateRenderer({
         : { background: "linear-gradient(143.3deg, #000118 0%, #410C89 50%, #000118 100%)" };
     return (
     <div
-      className={`min-h-screen rounded-[20px] overflow-hidden ${className}`}
+      className={`min-h-screen w-full max-w-full rounded-[20px] overflow-hidden ${className}`}
       style={p2BgStyle}
     >
       {mode === "preview" && (
-        <div className="fixed mr-36 mt-1 top-4 right-4 z-50">
-          <span className="bg-yellow-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg">
-            Vista Previa
+        <div className="fixed top-0 h-16 right-16 sm:right-36 z-50 flex items-center">
+          <span
+            title="Vista Previa"
+            className="flex items-center justify-center gap-1.5 h-8 w-8 sm:w-auto sm:px-4 bg-yellow-500 text-white rounded-full text-sm font-semibold shadow-lg"
+          >
+            <Eye className="h-4 w-4 sm:hidden" />
+            <span className="hidden sm:inline">Vista Previa</span>
           </span>
         </div>
       )}
@@ -741,16 +746,16 @@ export default function TemplateRenderer({
     const headerData = header || {};
     const imageUrl = headerData.public_image || "/blog/blog-4.webp";
     return (
-      <div className="relative w-full h-[520px] overflow-hidden">
+      <div className="relative w-full h-[420px] sm:h-[480px] lg:h-[520px] overflow-hidden">
         <img
           src={imageUrl}
           alt={headerData.alt || "Imagen principal"}
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/50 to-black/25" />
-        <div className="absolute bottom-0 left-0 right-0 px-16 pb-14">
+        <div className="absolute bottom-0 left-0 right-0 px-5 sm:px-8 md:px-12 lg:px-16 pb-6 sm:pb-8 lg:pb-14">
           <h1
-            className="text-5xl md:text-7xl font-extrabold leading-tight tracking-tight mb-4"
+            className="text-3xl sm:text-5xl md:text-7xl font-extrabold leading-tight tracking-tight mb-3 sm:mb-4 break-words"
             style={{
               color: headerData.titulo_color || "#FFFFFF",
               textShadow:
@@ -760,7 +765,7 @@ export default function TemplateRenderer({
             {headerData.titulo || "Título Principal del Blog"}
           </h1>
           <p
-            className="text-xl md:text-2xl font-semibold max-w-3xl mb-3"
+            className="text-base sm:text-xl md:text-2xl font-semibold max-w-3xl mb-2 sm:mb-3"
             style={{
               color: headerData.texto_frase_color || "#FFFFFF",
               textShadow: "0 2px 12px rgba(0,0,0,0.9), 0 4px 24px rgba(0,0,0,0.6)",
@@ -770,7 +775,7 @@ export default function TemplateRenderer({
               "Frase descriptiva que captura la esencia del contenido del blog"}
           </p>
           <p
-            className="text-lg max-w-4xl leading-relaxed"
+            className="text-sm sm:text-base lg:text-lg max-w-4xl leading-relaxed"
             style={{
               color: headerData.texto_descripcion_color || "#CCC3D4",
               textShadow: "0 2px 10px rgba(0,0,0,0.9)",
@@ -797,18 +802,18 @@ export default function TemplateRenderer({
   const renderPlantilla3BodyHeader = () => {
     if (!bodyHeader.titulo && !showPlaceholders) return null;
     return (
-      <div className="flex flex-col lg:flex-row gap-10 mb-16 items-center">
-        <div className="flex-1 flex flex-col justify-center">
+      <div className="flex flex-col lg:flex-row gap-6 sm:gap-10 mb-10 sm:mb-16 items-center">
+        <div className="flex-1 min-w-0 flex flex-col justify-center">
           <p className="text-sm font-semibold mb-3" style={{ color: "#FFB800" }}>
             {bodyHeader.fecha || "Fecha de publicación"}
           </p>
           <h2
-            className="font-extrabold text-4xl lg:text-5xl leading-tight tracking-tight mb-6"
+            className="font-extrabold text-2xl sm:text-4xl lg:text-5xl leading-tight tracking-tight mb-4 sm:mb-6 break-words"
             style={{ color: bodyHeader.titulo_color || "#FFB800", letterSpacing: "-0.48px" }}
           >
             {bodyHeader.titulo || (showPlaceholders ? "Título del Artículo" : "")}
           </h2>
-          <p className="text-xl leading-relaxed" style={{ color: bodyHeader.descripcion_color || "#CCC3D4" }}>
+          <p className="text-sm sm:text-base lg:text-xl leading-relaxed" style={{ color: bodyHeader.descripcion_color || "#CCC3D4" }}>
             {bodyHeader.descripcion ||
               (showPlaceholders
                 ? "Descripción del contenido principal del blog"
@@ -820,7 +825,7 @@ export default function TemplateRenderer({
             src={bodyHeader.public_image1 || "/blog/blog-4.webp"}
             alt={bodyHeader.alt_image1 || bodyHeader.titulo || "Imagen del cuerpo"}
             title={bodyHeader.title_image1}
-            className="w-full h-[320px] object-cover rounded-[30px]"
+            className="w-full h-[220px] sm:h-[280px] lg:h-[320px] object-cover rounded-[30px]"
           />
         </div>
       </div>
@@ -844,19 +849,19 @@ export default function TemplateRenderer({
     if (imagenes.length === 0) return null;
     return (
       <div
-        className="rounded-[40px] px-10 py-12 mb-16"
+        className="rounded-[40px] px-4 sm:px-6 lg:px-10 py-8 sm:py-10 lg:py-12 mb-10 sm:mb-16"
         style={{
           background:
             "conic-gradient(from 180deg at 50% 50%, #100043 -0.38deg, #2F086A 173.33deg, #100043 359.62deg, #2F086A 533.33deg)",
         }}
       >
         <h2
-          className="text-center font-extrabold text-5xl mb-10 tracking-tight"
+          className="text-center font-extrabold text-3xl sm:text-4xl lg:text-5xl mb-6 sm:mb-10 tracking-tight"
           style={{ color: "#FFB800", letterSpacing: "-0.48px" }}
         >
           Galería
         </h2>
-        <div className="flex gap-6">
+        <div className="flex flex-col sm:flex-row gap-6">
           {imagenes.map((imagen) => (
             <div
               key={imagen.id}
@@ -866,7 +871,7 @@ export default function TemplateRenderer({
                 src={imagen.url}
                 alt={imagen.alt}
                 title={imagen.title}
-                className="w-full h-[320px] object-cover"
+                className="w-full h-[220px] sm:h-[280px] lg:h-[320px] object-cover"
               />
             </div>
           ))}
@@ -891,9 +896,9 @@ export default function TemplateRenderer({
 
     if (displayData.length === 0) return null;
     return (
-      <div className="mb-16">
+      <div className="mb-10 sm:mb-16">
         <h2
-          className="text-center font-extrabold text-5xl mb-12 tracking-tight leading-tight"
+          className="text-center font-extrabold text-3xl sm:text-4xl lg:text-5xl mb-8 sm:mb-12 tracking-tight leading-tight break-words"
           style={{ color: "#FFB800", letterSpacing: "-0.48px" }}
         >
           {bodyHeader.titulo_consejos || (showPlaceholders ? "Consejos Importantes" : "")}
@@ -902,7 +907,7 @@ export default function TemplateRenderer({
           {displayData.map((consejo, index) => (
             <div
               key={consejo.id || index}
-              className="relative rounded-[30px] overflow-hidden pt-14 pb-10 px-8"
+              className="relative rounded-[30px] overflow-hidden pt-10 sm:pt-12 lg:pt-14 pb-8 sm:pb-10 px-5 sm:px-6 lg:px-8"
               style={{
                 background: "linear-gradient(180deg, #000000 0%, #100043 62.02%)",
               }}
@@ -918,7 +923,7 @@ export default function TemplateRenderer({
                 <CheckCircle className="w-14 h-14 text-white" />
               </div>
               <p
-                className="text-lg text-center leading-relaxed"
+                className="text-sm sm:text-base lg:text-lg text-center leading-relaxed break-words"
                 style={{ color: "#CCC3D4" }}
               >
                 {renderDescripcion(consejo.texto, consejo.palabra, consejo.enlace)}
@@ -950,16 +955,16 @@ export default function TemplateRenderer({
 
     const WideCard = ({ item, index }) => (
       <div
-        className="rounded-[30px] p-8 mb-6"
+        className="rounded-[30px] p-5 sm:p-6 lg:p-8 mb-6"
         style={{ background: cardBg, border: "1px solid rgba(95,0,223,0.2)" }}
       >
         <h4
-          className="font-bold text-2xl mb-3"
+          className="font-bold text-xl sm:text-2xl mb-3 break-words"
           style={{  color: item.titulo_color || "#FFB800" }}
         >
           {item.titulo || `Información ${index + 1}`}
         </h4>
-        <p className="text-lg leading-relaxed" style={{ color: item.descripcion_color || "#CCC3D4" }}>
+        <p className="text-sm sm:text-base lg:text-lg leading-relaxed break-words" style={{ color: item.descripcion_color || "#CCC3D4" }}>
           {renderDescripcion(
             item.descripcion || "Descripción del contenido",
             item.palabra,
@@ -972,16 +977,16 @@ export default function TemplateRenderer({
 
     const NarrowCard = ({ item, index }) => (
       <div
-        className="rounded-[30px] p-8 flex flex-col items-center text-center"
+        className="rounded-[30px] p-5 sm:p-6 lg:p-8 flex flex-col items-center text-center"
         style={{ background: cardBg, border: "1px solid rgba(95,0,223,0.2)" }}
       >
         <h4
-          className="font-bold text-xl mb-3"
+          className="font-bold text-lg sm:text-xl mb-3 break-words"
           style={{ color: item.titulo_color || "#FFB800" }}
         >
           {item.titulo || `Información ${index + 1}`}
         </h4>
-        <p className="text-base leading-relaxed" style={{ color: item.descripcion_color || "#CCC3D4" }}>
+        <p className="text-sm sm:text-base leading-relaxed break-words" style={{ color: item.descripcion_color || "#CCC3D4" }}>
           {renderDescripcion(
             item.descripcion || "Descripción del contenido",
             item.palabra,
@@ -993,16 +998,16 @@ export default function TemplateRenderer({
     );
 
     return (
-      <div className="mb-16">
+      <div className="mb-10 sm:mb-16">
         <h2
-          className="text-center font-extrabold text-5xl mb-12 tracking-tight"
+          className="text-center font-extrabold text-3xl sm:text-4xl lg:text-5xl mb-8 sm:mb-12 tracking-tight"
           style={{ color: bodyHeader.titulo_tarjeta_color || "#FFB800", letterSpacing: "-0.48px" }}
         >
           {bodyHeader.titulo_tarjeta || "Información Detallada"}
         </h2>
         {displayData[0] && <WideCard item={displayData[0]} index={0} />}
         {(displayData[1] || displayData[2]) && (
-          <div className="grid grid-cols-2 gap-6 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
             {displayData[1] && <NarrowCard item={displayData[1]} index={1} />}
             {displayData[2] && <NarrowCard item={displayData[2]} index={2} />}
           </div>
@@ -1014,18 +1019,22 @@ export default function TemplateRenderer({
 
   const renderPlantilla3 = () => (
     <div
-      className={`min-h-screen rounded-[20px] overflow-hidden ${className}`}
+      className={`min-h-screen w-full max-w-full rounded-[20px] overflow-hidden ${className}`}
       style={bodyBgStyle}
     >
       {mode === "preview" && (
-        <div className="fixed mr-36 mt-1 top-4 right-4 z-50">
-          <span className="bg-yellow-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg">
-            Vista Previa
+        <div className="fixed top-0 h-16 right-16 sm:right-36 z-50 flex items-center">
+          <span
+            title="Vista Previa"
+            className="flex items-center justify-center gap-1.5 h-8 w-8 sm:w-auto sm:px-4 bg-yellow-500 text-white rounded-full text-sm font-semibold shadow-lg"
+          >
+            <Eye className="h-4 w-4 sm:hidden" />
+            <span className="hidden sm:inline">Vista Previa</span>
           </span>
         </div>
       )}
       {renderPlantilla3Header()}
-      <div className="px-10 lg:px-16 py-16">
+      <div className="px-4 sm:px-6 lg:px-16 py-8 sm:py-12 lg:py-16">
         {renderPlantilla3BodyHeader()}
         {renderPlantilla3Galeria()}
         {renderPlantilla3Consejos()}
@@ -1054,7 +1063,7 @@ export default function TemplateRenderer({
     } else {
       // Plantilla 1: Layout lineal
       return (
-        <div className="space-y-16">
+        <div className="space-y-10 sm:space-y-16">
           {renderBodyHeaderSection()}
           {renderConsejosSection()}
           {renderGaleriaSection()}
@@ -1073,33 +1082,37 @@ export default function TemplateRenderer({
   }
 
   return (
-    <div className={`min-h-screen bg-gray-50 ${className}`}>
+    <div className={`min-h-screen w-full max-w-full overflow-x-hidden bg-gray-50 ${className}`}>
       {/* Header con color de fondo */}
       <div style={headerBgStyle}>
 
         {/* Preview Badge */}
         {mode === "preview" && (
-          <div className="fixed mr-36 mt-1 top-4 right-4 z-50">
-            <span className="bg-yellow-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg">
-              Vista Previa
+          <div className="fixed top-0 h-16 right-16 sm:right-36 z-50 flex items-center">
+            <span
+              title="Vista Previa"
+              className="flex items-center justify-center gap-1.5 h-8 w-8 sm:w-auto sm:px-4 bg-yellow-500 text-white rounded-full text-sm font-semibold shadow-lg"
+            >
+              <Eye className="h-4 w-4 sm:hidden" />
+              <span className="hidden sm:inline">Vista Previa</span>
             </span>
           </div>
         )}
 
         {/* Header Principal */}
-        <div className="mb-16">
+        <div className="mb-10 sm:mb-16">
           {renderHeaderSection()}
         </div>
       </div>
 
       {/* Body con color de fondo */}
-      <div 
-        className="container mx-auto px-6 py-12"
+      <div
+        className="container mx-auto px-4 sm:px-6 py-8 sm:py-12"
         style={bodyBgStyle}
       >
 
         {/* Contenido Principal */}
-        <div className="mb-16">
+        <div className="mb-10 sm:mb-16">
           {renderMainContent()}
         </div>
 

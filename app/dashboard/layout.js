@@ -21,7 +21,7 @@ export default function RootLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Info usuario y rol
-  const userRole = getCookie("rol") || "Usuario";
+  const userRole = auth_service.getCurrentRole() || "Usuario";
   const userData = getCookie("user")
     ? JSON.parse(getCookie("user"))
     : { name: "Usuario" };

@@ -151,7 +151,7 @@ export default function Page() {
 
   function confirmarCambiarEstado(id, nuevoEstado) {
     Swal.fire({
-      title: `¿Cambiar estado de contacto a ${nuevoEstado == 0 ? "Inactivo" : "Activo"}?`,
+      title: `¿Cambiar estado de mensajes de constacto a ${nuevoEstado == 0 ? "Pendiente" : "Atendido"}?`,
       text: "¡Puedes cambiarlo después nuevamente!",
       icon: "info",
       showCancelButton: true,
@@ -182,7 +182,7 @@ export default function Page() {
       if (response.status === 200) {
         Swal.fire({
           title: "Estado Cambiado",
-          text: `El estado del contacto se cambio a ${nuevoEstado == 0 ? "Inactivo" : "Activo"}`,
+          text: `El estado de mensaje de contacto se cambio a ${nuevoEstado == 0 ? "Pendiente" : "Atendido"}`,
           icon: "success",
           confirmButtonText: "OK",
         });
@@ -335,7 +335,7 @@ export default function Page() {
       <div className="bg-white rounded-xl shadow-sm p-6 mb-6 dark:bg-gray-800 dark:text-white">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
-            Gestión de Contactos
+            Gestión de Mensajes de Contactanos
           </h1>
 
           <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
@@ -399,19 +399,19 @@ export default function Page() {
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider"
                     >
+                      Fecha
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider"
+                    >
                       Nombres
                     </th>
                     <th
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider"
                     >
-                      Correo
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider"
-                    >
-                      Telefono
+                      Mensaje
                     </th>
                     {/* ── COLUMNA SERVICIO ── */}
                     <th
@@ -450,13 +450,17 @@ export default function Page() {
                           {contacto.id_contactanos}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-white">
+                          {contacto.fecha}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-white">
                           {contacto.nombre}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-white">
-                          {contacto.email}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-white">
-                          {contacto.numero}
+                        <td className="px-6 py-4 text-sm text-gray-700 dark:text-white">
+                          {contacto.mensaje
+                            ? contacto.mensaje.length > 40
+                              ? `${contacto.mensaje.substring(0, 40)}...`
+                              : contacto.mensaje
+                            : "—"}
                         </td>
                         {/* ── CELDA SERVICIO ── */}
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-white">
@@ -476,7 +480,7 @@ export default function Page() {
                                 : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
                             }`}
                           >
-                            {contacto.estado ? "Activo" : "Inactivo"}
+                            {contacto.estado ? "Atendido" : "Pendiente"}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

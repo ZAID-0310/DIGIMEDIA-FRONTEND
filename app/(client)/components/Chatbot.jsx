@@ -3,7 +3,6 @@ import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { sendToMaya } from "@/api/mayaWebhook"; // o donde lo guardes
 import { ArrowRight } from "lucide-react";
-import welcomeMessagesChatBot from "@/data/welcomeMessagesChatBot.json";
 const CHATBOT_IMG = "/img_chatbot/xiomara_chatbot.webp";
 
 function getSessionId() {
@@ -19,10 +18,16 @@ function getSessionId() {
   }
 }
 
+// Primer mensaje fijo con opciones rápidas
 const WELCOME = {
   role: "bot",
-  mensaje:
-    welcomeMessagesChatBot[Math.floor(Math.random() * welcomeMessagesChatBot.length)],
+  mensaje: "¡Hola! Soy Xiomara 👋 ¿Qué servicio te interesa?",
+  opciones: [
+    "Diseño y desarrollo web",
+    "Gestión de redes sociales",
+    "Marketing y gestión digital",
+    "Branding y diseño",
+  ],
 };
 
 const BUBBLE_MSGS = [
@@ -162,6 +167,8 @@ export default function MayaChatbot() {
   const hoverTimer = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
   const [kbOffset, setKbOffset] = useState(0);
+  const lastMsg = messages[messages.length - 1];
+  const waitingForOption = lastMsg?.role === "bot" && lastMsg?.opciones?.length > 0;
 
   // Detecta viewport mobile
   useEffect(() => {
@@ -263,8 +270,11 @@ export default function MayaChatbot() {
     return () => timers.forEach(clearTimeout);
   }, [open]);
 
-  async function sendMessage() {
-    const text = input.trim();
+  // Acepta un texto opcional (para las opciones rápidas)
+  async function sendMessage(textOverride) {
+    const text = (
+      typeof textOverride === "string" ? textOverride : input
+    ).trim();
     if (!text || loading) return;
 
     setMessages((prev) => [...prev, { role: "user", mensaje: text }]);
@@ -410,6 +420,27 @@ overflow-hidden"
                     {msg.mensaje}
                   </p>
 
+                  {/* Opciones rápidas (solo mientras sea el último mensaje) */}
+                  {msg.opciones?.length > 0 && i === messages.length - 1 && (
+                    <div className="mt-3 flex flex-col gap-2">
+                      {msg.opciones.map((op) => (
+                        <button
+                    key={op}
+                    onClick={() => sendMessage(`Quisiera información del servicio ${op}`)}
+                    disabled={loading}
+                    className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-200 hover:brightness-110 hover:shadow-lg active:scale-95 disabled:opacity-50"
+                    style={{
+                      background: "linear-gradient(135deg, #ffb800 0%, #f4d534 100%)",
+                      color: "#000118",
+                      boxShadow: "0 8px 20px rgba(255, 184, 0, 0.25)",
+                    }}
+                  >
+                    {op}
+                  </button>
+                      ))}
+                    </div>
+                  )}
+
                   {msg.servicios?.length > 0 && (
                     <ul className="mt-2 space-y-1 border-t border-[rgba(255,184,0,0.1)] pt-2">
                       {msg.servicios.map((s, si) => (
@@ -485,14 +516,18 @@ overflow-hidden"
             }}
           >
             <input
-              ref={inputRef}
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKey}
-              placeholder="Escribe tu mensaje..."
-              disabled={loading}
-              className="
+  ref={inputRef}
+  type="text"
+  value={input}
+  onChange={(e) => setInput(e.target.value)}
+  onKeyDown={handleKey}
+  placeholder={
+    waitingForOption
+      ? "Elige una opción para continuar..."
+      : "Escribe tu mensaje..."
+  }
+  disabled={loading || waitingForOption}
+  className="
     flex-1
     h-11
     rounded-xl
@@ -505,28 +540,30 @@ overflow-hidden"
     duration-200
     outline-none
     focus:border-[#ffb800]
-focus:ring-2
-focus:ring-[#ffb800b8]
+    focus:ring-2
+    focus:ring-[#ffb800b8]
+    disabled:opacity-60
+    disabled:cursor-not-allowed
   "
-              style={{
-                background: "#130049",
-                borderColor: "#ffb8005e",
-              }}
-            />
-            <button
-              onClick={sendMessage}
-              disabled={loading || !input.trim()}
-              className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-all hover:opacity-80 disabled:opacity-40"
-              style={{
-                background: "linear-gradient(135deg, #ffb800 0%, #f4d534 100%)",
-                color: "#000118",
-              }}
-              aria-label="Enviar mensaje"
-            >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="white">
-                <polygon points="22 2 15 22 11 13 2 9 22 2" />
-              </svg>
-            </button>
+  style={{
+    background: "#130049",
+    borderColor: "#ffb8005e",
+  }}
+/>
+<button
+  onClick={() => sendMessage()}
+  disabled={loading || waitingForOption || !input.trim()}
+  className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-all hover:opacity-80 disabled:opacity-40"
+  style={{
+    background: "linear-gradient(135deg, #ffb800 0%, #f4d534 100%)",
+    color: "#000118",
+  }}
+  aria-label="Enviar mensaje"
+>
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="white">
+    <polygon points="22 2 15 22 11 13 2 9 22 2" />
+  </svg>
+</button>
           </div>
         </div>
       )}

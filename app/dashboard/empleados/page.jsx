@@ -63,7 +63,6 @@ export default function Page() {
   const [selectedRole, setSelectedRole] = useState("all");
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [error, setError] = useState(null);
-
   const handleShow = async (id) => {
     try {
       router.push(`/dashboard/main?id_empleado=${id}`);

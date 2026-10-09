@@ -49,7 +49,7 @@ export default function Page() {
             <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mt-20 -mr-20"></div>
             <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center">
               <div>
-                <h1 className="text-2xl md:text-3xl font-bold mb-1">Contacto #{contacto.id_contactanos}</h1>
+                <h1 className="text-2xl md:text-3xl font-bold mb-1">Mensaje #{contacto.id_contactanos}</h1>
                 <p className="text-white/80 flex items-center">
                   <Calendar className="w-4 h-4 mr-2" />
                   {contacto.fecha || "Sin fecha registrada"}
@@ -60,12 +60,12 @@ export default function Page() {
                 {contacto.estado == 1 ? (
                   <span className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-green-100 text-green-800 border border-green-200">
                     <CheckCircle className="w-4 h-4 mr-1.5" />
-                    Activo
+                    Atendido
                   </span>
                 ) : (
                   <span className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-red-100 text-red-800 border border-red-200">
                     <XCircle className="w-4 h-4 mr-1.5" />
-                    Inactivo
+                    Pendiente
                   </span>
                 )}
               </div>

@@ -4,6 +4,11 @@ import { deleteCookie, getCookie, setCookie } from "cookies-next";
 
 const api_url = `${url}/api`;
 
+// Estado en memoria para autorización (no editable por DevTools persistente)
+let memoryRole = null;
+let memoryPermissions = [];
+let memorySubtipoAdmin = null;
+
 /**
  * Parsea la respuesta JSON de forma segura.
  * Si el servidor devuelve HTML en vez de JSON (ej. página 404/500 de Apache/Nginx),
@@ -122,17 +127,10 @@ const auth_service = {
         setAuthCookie("empleado", data.empleado);
       }
 
-      if (data.rol) {
-        setAuthCookie("rol", data.rol);
-      }
-
-      if (data.permisos) {
-        setAuthCookie("permisos", data.permisos);
-      }
-
-      if (data.empleado.subtipo_admin) {
-        setAuthCookie("subtipoAdmin", data.empleado.subtipo_admin);
-      }
+      // Guardar en memoria en vez de cookies
+      if (data.rol) memoryRole = data.rol;
+      if (data.permisos) memoryPermissions = data.permisos;
+      if (data.empleado?.subtipo_admin) memorySubtipoAdmin = data.empleado.subtipo_admin;
 
       return data;
     } catch (error) {
@@ -209,13 +207,9 @@ const auth_service = {
         setAuthCookie("empleado", data.empleado);
       }
 
-      if (data.rol) {
-        setAuthCookie("rol", data.rol);
-      }
-
-      if (data.permisos) {
-        setAuthCookie("permisos", data.permisos);
-      }
+      // Guardar en memoria
+      if (data.rol) memoryRole = data.rol;
+      if (data.permisos) memoryPermissions = data.permisos;
 
       return data;
     } catch (error) {
@@ -235,9 +229,11 @@ const auth_service = {
     deleteCookie("token");
     deleteCookie("user");
     deleteCookie("empleado");
-    deleteCookie("rol");
-    deleteCookie("permisos");
-    deleteCookie("subtipoAdmin");
+    
+    // Limpiar memoria
+    memoryRole = null;
+    memoryPermissions = [];
+    memorySubtipoAdmin = null;
   },
 
   getCurrentUser: () => {
@@ -269,38 +265,21 @@ const auth_service = {
   },
 
   getCurrentSubtipoAdmin: () => {
-    const subtipoAdmin = getCookie("subtipoAdmin");
-    try {
-      if (subtipoAdmin) {
-        return typeof subtipoAdmin === "string"
-          ? JSON.parse(subtipoAdmin)
-          : subtipoAdmin;
-      }
-      return null;
-    } catch (e) {
-      console.error("Error parsing empleado cookie:", e);
-      return null;
-    }
+    return memorySubtipoAdmin;
   },
 
   getCurrentRole: () => {
-    const rol = getCookie("rol");
-    if (!rol) return null;
+    if (!memoryRole) return null;
     try {
-      const parsed = typeof rol === "string" ? JSON.parse(rol) : rol;
+      const parsed = typeof memoryRole === "string" ? JSON.parse(memoryRole) : memoryRole;
       return parsed?.nombre || parsed || null;
     } catch {
-      return rol;
+      return memoryRole;
     }
   },
 
   getCurrentPermissions: () => {
-    const permisos = getCookie("permisos");
-    try {
-      return permisos ? JSON.parse(permisos) : [];
-    } catch (e) {
-      return [];
-    }
+    return memoryPermissions || [];
   },
 
   getToken: () => {
