@@ -18,12 +18,15 @@ export default function Page() {
       <div className="bg-gradient-to-r from-[#140048] to-[#2A0668] flex justify-center items-center relative p-4">
         <Link
           href="/"
-          className="flex items-center justify-center bg-pink-500 hover:bg-pink-400 text-white rounded-lg transition-all duration-300 absolute top-4 left-4 lg:top-1/2 lg:-translate-y-1/2 lg:left-10 p-2.5 lg:py-2 lg:px-4 shadow-md z-10"
-          aria-label="Regresar"
-          title="Regresar"
+          className="group absolute left-4 top-4 z-10 inline-flex min-h-11 items-center gap-2 rounded-md px-2 py-2 text-sm font-medium text-[#F472B6] transition-colors duration-200 hover:text-[#F9A8D4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F472B6] focus-visible:ring-offset-2 focus-visible:ring-offset-[#140048] motion-reduce:transition-none lg:left-10 lg:top-1/2 lg:-translate-y-1/2"
+          aria-label="Volver al inicio"
+          title="Volver al inicio"
         >
-          <img className="lg:mr-2 w-4 h-4" src="/headerFooter/arrow_left.svg" alt="Regresar" />
-          <span className="hidden lg:inline text-sm font-semibold">REGRESAR</span>
+          <span
+            aria-hidden="true"
+            className="h-4 w-4 shrink-0 bg-current transition-transform duration-200 group-hover:-translate-x-0.5 motion-reduce:transition-none [mask-image:url('/headerFooter/arrow_left.svg')] [mask-repeat:no-repeat] [mask-position:center] [mask-size:contain]"
+          />
+          <span>Volver al inicio</span>
         </Link>
 
         <Image
