@@ -4,11 +4,18 @@ import { useMemo, useState } from "react";
 import Swal from "sweetalert2";
 import { apiRequest } from "@/api/fetchApiWhatsApp";
 import { Card, CardTitle } from "./TabButton";
-import { UploadCloud, CheckCheck, User, Image as ImageIcon } from 'lucide-react';
+import {
+  UploadCloud,
+  CheckCheck,
+  User,
+  Image as ImageIcon,
+} from "lucide-react";
 
 export function TestSendTab({ services, isConnected, connectedNumber }) {
   const [service, setService] = useState("");
-  const [paragraph, setParagraph] = useState("Hola 👋 Esta es una campaña de prueba con payload común.");
+  const [paragraph, setParagraph] = useState(
+    "Hola 👋 Esta es una campaña de prueba con payload común.",
+  );
   const [imageFile, setImageFile] = useState(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -20,14 +27,22 @@ export function TestSendTab({ services, isConnected, connectedNumber }) {
     return Number.isFinite(n) ? n : null;
   }, [service]);
 
-  const canSend = Boolean(isConnected && service && paragraph.trim().length >= 10 && imageFile && !loading);
+  const canSend = Boolean(
+    isConnected &&
+    service &&
+    paragraph.trim().length >= 10 &&
+    imageFile &&
+    !loading,
+  );
 
   const payloadPreview = useMemo(() => {
     return {
       service,
       id_servicio_preview: serviceIdAsNumber,
       paragraph,
-      image: imageFile ? { name: imageFile.name, size: imageFile.size, type: imageFile.type } : null,
+      image: imageFile
+        ? { name: imageFile.name, size: imageFile.size, type: imageFile.type }
+        : null,
       meta: {
         connected_as: connectedNumber || null,
         step_1_endpoint: "/api/whatsapp/campaign/create",
@@ -70,15 +85,27 @@ export function TestSendTab({ services, isConnected, connectedNumber }) {
       return;
     }
     if (!service) {
-      Swal.fire("Falta servicio", "Selecciona un servicio (p1..p4).", "warning");
+      Swal.fire(
+        "Falta servicio",
+        "Selecciona un servicio (p1..p4).",
+        "warning",
+      );
       return;
     }
     if (paragraph.trim().length < 10) {
-      Swal.fire("Texto corto", "El párrafo debe tener al menos 10 caracteres.", "warning");
+      Swal.fire(
+        "Texto corto",
+        "El párrafo debe tener al menos 10 caracteres.",
+        "warning",
+      );
       return;
     }
     if (!imageFile) {
-      Swal.fire("Falta imagen", "Sube una imagen para la campaña (<=2MB).", "warning");
+      Swal.fire(
+        "Falta imagen",
+        "Sube una imagen para la campaña (<=2MB).",
+        "warning",
+      );
       return;
     }
 
@@ -86,11 +113,14 @@ export function TestSendTab({ services, isConnected, connectedNumber }) {
     setLastResponse(null);
 
     try {
-      const previewRes = await apiRequest(`/api/whatsapp/campaign/preview/${service}`);
+      const previewRes = await apiRequest(
+        `/api/whatsapp/campaign/preview/${service}`,
+      );
       const totalDestinatarios = Number(previewRes?.data?.total_destinatarios);
-      const estimatedDays = Number.isFinite(totalDestinatarios) && totalDestinatarios > 0
-        ? Math.max(1, Math.ceil(totalDestinatarios / 50))
-        : null;
+      const estimatedDays =
+        Number.isFinite(totalDestinatarios) && totalDestinatarios > 0
+          ? Math.max(1, Math.ceil(totalDestinatarios / 50))
+          : null;
 
       // Mostrar confirmación (aún no se envia nada al backend)
       const confirmStart = await Swal.fire({
@@ -123,18 +153,29 @@ export function TestSendTab({ services, isConnected, connectedNumber }) {
 
       if (!createRes?.success) {
         setLastResponse(createRes);
-        Swal.fire("Error al crear", createRes?.message || "No se pudo crear la campaña en borrador.", "error");
+        Swal.fire(
+          "Error al crear",
+          createRes?.message || "No se pudo crear la campaña en borrador.",
+          "error",
+        );
         return;
       }
 
       const campaniaId = createRes.data?.campania_id;
 
-      // PASO 3: iniciar la campaña (FIFO) 
-      const startRes = await apiRequest(`/api/whatsapp/campaign/${campaniaId}/start`, {
-        method: "POST",
-      });
+      // PASO 3: iniciar la campaña (FIFO)
+      const startRes = await apiRequest(
+        `/api/whatsapp/campaign/${campaniaId}/start`,
+        {
+          method: "POST",
+        },
+      );
 
-      setLastResponse({ preview: previewRes, create: createRes, start: startRes });
+      setLastResponse({
+        preview: previewRes,
+        create: createRes,
+        start: startRes,
+      });
 
       if (startRes?.success) {
         Swal.fire({
@@ -161,12 +202,20 @@ export function TestSendTab({ services, isConnected, connectedNumber }) {
             confirmButtonColor: "rgba(140,82,255,1)",
           });
         } else {
-          Swal.fire("Error al iniciar", startRes?.message || "La campaña se creó pero no se pudo iniciar.", "error");
+          Swal.fire(
+            "Error al iniciar",
+            startRes?.message || "La campaña se creó pero no se pudo iniciar.",
+            "error",
+          );
         }
       }
     } catch (error) {
       console.error(error);
-      Swal.fire("Error", "No se pudo crear/iniciar la campaña. Revisa Network/Console.", "error");
+      Swal.fire(
+        "Error",
+        "No se pudo crear/iniciar la campaña. Revisa Network/Console.",
+        "error",
+      );
     } finally {
       setLoading(false);
     }
@@ -178,19 +227,22 @@ export function TestSendTab({ services, isConnected, connectedNumber }) {
         <CardTitle>Prueba</CardTitle>
 
         <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4 sm:p-6 dark:border-slate-700 dark:bg-slate-800/60">
-          
           {/* ---- PARTE SUPERIOR: TEXTOS DE CABECERA ---- */}
           <div className="w-full xl:w-[50%] flex flex-col mb-6 xl:pr-6">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">Crear e Iniciar Campaña</p>
+                <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                  Crear e Iniciar Campaña
+                </p>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
                   Crea campaña en borrador y luego la inicia (sistema FIFO).
                 </p>
               </div>
 
               <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                <span className={`h-2.5 w-2.5 rounded-full ${isConnected ? "bg-emerald-500" : "bg-rose-500"}`} />
+                <span
+                  className={`h-2.5 w-2.5 rounded-full ${isConnected ? "bg-emerald-500" : "bg-rose-500"}`}
+                />
                 {isConnected
                   ? `Conectado${connectedNumber ? ` (${connectedNumber})` : ""}`
                   : "Desconectado"}
@@ -215,17 +267,16 @@ export function TestSendTab({ services, isConnected, connectedNumber }) {
                 ))}
               </select>
               <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
-                El backend valida: service ∈ (p1,p2,p3,p4) y lo mapea a id_servicio.
+                El backend valida: service ∈ (p1,p2,p3,p4) y lo mapea a
+                id_servicio.
               </p>
             </div>
           </div>
 
           {/* ---- CONTENEDOR PRINCIPAL: PÁRRAFO + IMAGEN (IZQ) | VISTA PREVIA (DER) ---- */}
           <div className="flex flex-col xl:flex-row gap-10 w-full items-start">
-            
             {/* COLUMNA IZQUIERDA: FORMULARIO */}
             <div className="w-full xl:w-[50%] flex flex-col gap-6 xl:pr-6">
-              
               {/* Párrafo */}
               <div className="border-2 border-slate-200 rounded-lg p-4 bg-white dark:bg-slate-800 flex flex-col shadow-sm">
                 <label className="block text-[15px] font-bold text-gray-800 dark:text-white mb-2">
@@ -238,8 +289,16 @@ export function TestSendTab({ services, isConnected, connectedNumber }) {
                   placeholder="Escribe el mensaje común para la campaña..."
                 />
                 <div className="flex justify-between items-center mt-2 border-t border-gray-100 dark:border-gray-700 pt-2">
-                  <span className="text-[13px] text-gray-500">Se enviará como “paragraph”.</span>
-                  <span className={paragraph.trim().length >= 10 ? "text-[13px] font-medium text-[#00a884]" : "text-[13px] font-medium text-rose-600"}>
+                  <span className="text-[13px] text-gray-500">
+                    Se enviará como “paragraph”.
+                  </span>
+                  <span
+                    className={
+                      paragraph.trim().length >= 10
+                        ? "text-[13px] font-medium text-[#00a884]"
+                        : "text-[13px] font-medium text-rose-600"
+                    }
+                  >
                     {paragraph.trim().length}/10
                   </span>
                 </div>
@@ -252,19 +311,32 @@ export function TestSendTab({ services, isConnected, connectedNumber }) {
                     <h4 className="font-bold text-gray-800 dark:text-white text-[15px]">
                       Imagen <span className="text-red-500">*</span>
                     </h4>
-                    <p className="text-[12px] text-gray-400 mt-0.5">JPG/PNG/WEBP - máximo 2MB.</p>
+                    <p className="text-[12px] text-gray-400 mt-0.5">
+                      JPG/PNG/WEBP - máximo 2MB.
+                    </p>
                   </div>
                   {imageFile ? (
-                    <button onClick={() => { setImageFile(null); setImagePreviewUrl(null); }} className="text-[12px] text-rose-500 font-semibold hover:underline">
+                    <button
+                      onClick={() => {
+                        setImageFile(null);
+                        setImagePreviewUrl(null);
+                      }}
+                      className="text-[12px] text-rose-500 font-semibold hover:underline"
+                    >
                       Quitar imagen
                     </button>
                   ) : (
-                    <span className="text-[13px] text-gray-400">Sin imagen</span>
+                    <span className="text-[13px] text-gray-400">
+                      Sin imagen
+                    </span>
                   )}
                 </div>
-                
-                <div 
-                  onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+
+                <div
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
                   onDrop={handleDrop}
                   className="border-[1.5px] border-dashed border-gray-200 dark:border-gray-600 rounded-xl p-6 flex flex-col items-center justify-center text-center relative hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors mt-1 overflow-hidden"
                 >
@@ -277,14 +349,17 @@ export function TestSendTab({ services, isConnected, connectedNumber }) {
                       e.target.value = "";
                     }}
                   />
-                  
+
                   {!imageFile ? (
                     <>
                       <div className="bg-[#f4f6f8] dark:bg-slate-600 p-3 rounded-full mb-3 text-[#637381] dark:text-gray-300">
                         <UploadCloud size={24} strokeWidth={1.5} />
                       </div>
                       <p className="text-[14px] text-gray-600 dark:text-gray-300 mb-2">
-                        Arrastra tu imagen aquí o <span className="text-[rgba(140,82,255,1)] font-semibold cursor-pointer">haz click para subir</span>
+                        Arrastra tu imagen aquí o{" "}
+                        <span className="text-[rgba(140,82,255,1)] font-semibold cursor-pointer">
+                          haz click para subir
+                        </span>
                       </p>
                       <p className="text-[12px] text-gray-400">
                         El backend valida: image|required|mimes:jpg...
@@ -298,7 +373,9 @@ export function TestSendTab({ services, isConnected, connectedNumber }) {
                       <p className="text-[14px] font-semibold text-emerald-600 dark:text-emerald-400 break-all px-4">
                         {imageFile.name}
                       </p>
-                      <p className="text-[12px] text-gray-400 mt-1">Haz clic o arrastra para reemplazar</p>
+                      <p className="text-[12px] text-gray-400 mt-1">
+                        Haz clic o arrastra para reemplazar
+                      </p>
                     </div>
                   )}
                 </div>
@@ -341,60 +418,69 @@ export function TestSendTab({ services, isConnected, connectedNumber }) {
               )}
             </div>
 
-            {/* COLUMNA DERECHA: VISTA PREVIA (FIJA EN PC, RESPONSIVA EN MÓVIL) */}
+            {/* COLUMNA DERECHA: VISTA PREVIA */}
             <div className="w-full xl:w-[50%] flex justify-center xl:justify-start">
-              <div className="w-full max-w-[360px] bg-[#f8fafc] dark:bg-slate-800/80 rounded-[2rem] p-4 sm:p-6 flex flex-col items-center border border-slate-200 dark:border-slate-700 relative shrink-0">
-                <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 mb-4 tracking-widest uppercase z-10">
+              <div className="w-full max-w-[360px] bg-[#f8fafc] dark:bg-slate-800/80 rounded-[2rem] p-4 sm:p-6 flex flex-col items-center border border-slate-200 dark:border-slate-700 relative z-0 shrink-0">
+                <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 mb-4 tracking-widest uppercase">
                   Vista Previa Final
                 </span>
 
                 {/* EL ANCHO DEL CELULAR: w-full max-w-[310px] para que sea responsivo */}
                 <div className="w-full max-w-[310px] h-[540px] rounded-2xl shadow-xl border border-slate-200 dark:border-slate-600 overflow-hidden flex flex-col bg-[#e5ddd5] relative shrink-0">
                   <div className="absolute inset-0 opacity-[0.4] z-0 bg-[url('https://w0.peakpx.com/wallpaper/818/148/HD-wallpaper-whatsapp-background-cool-dark-green-new-theme-whatsapp.jpg')] bg-cover"></div>
-                  
-                  <div className="bg-[#075E54] text-white px-4 py-3 flex items-center gap-3 z-10 shadow-sm">
-                    <div className="bg-slate-200 rounded-full p-1.5"><User size={20} className="text-slate-500" /></div>
+
+                  {/* CABECERA FIJA ARRIBA */}
+                  <div className="bg-[#075E54] text-white px-4 py-3 flex items-center gap-3 sticky top-0 z-20 shadow-md">
+                    <div className="bg-slate-200 rounded-full p-1.5">
+                      <User size={20} className="text-slate-500" />
+                    </div>
                     <span className="text-sm font-bold">Cliente</span>
                   </div>
 
-                  <div className="flex-1 p-3 overflow-y-auto z-10 flex flex-col custom-scrollbar">
-                    
+                  {/* CONTENEDOR DE MENSAJES CON SCROLL */}
+                  <div className="flex-1 p-3 overflow-y-auto z-10 flex flex-col custom-scrollbar relative">
                     {/* BURBUJA: A LA DERECHA, ANCHO MAX LIMITADO Y EL TEXTO SE CORTA */}
                     <div className="bg-[#dcf8c6] rounded-lg rounded-tr-none p-2 shadow-sm self-end max-w-[85%] relative mt-1 border border-black/5 shrink-0 overflow-hidden">
                       <div className="absolute top-0 -right-[6px] w-0 h-0 border-t-[8px] border-t-[#dcf8c6] border-r-[8px] border-r-transparent transform -scale-x-100"></div>
-                      
+
                       {imagePreviewUrl && (
                         <div className="mb-1.5 rounded overflow-hidden bg-black/5 flex justify-center">
-                          <img src={imagePreviewUrl} className="w-full max-w-full h-auto object-contain max-h-[200px]" alt="Preview" />
+                          <img
+                            src={imagePreviewUrl}
+                            className="w-full max-w-full h-auto object-contain max-h-[200px]"
+                            alt="Preview"
+                          />
                         </div>
                       )}
-                      
+
                       <p className="text-[13.5px] text-[#111b21] leading-tight whitespace-pre-wrap break-all pr-1">
                         {paragraph || "Escribe un mensaje..."}
                       </p>
-                      
+
                       <div className="flex justify-end items-center gap-1 mt-1 -mb-0.5">
-                        <span className="text-[10px] text-slate-500 font-medium">12:00</span>
+                        <span className="text-[10px] text-slate-500 font-medium">
+                          12:00
+                        </span>
                         <CheckCheck size={14} className="text-sky-500" />
                       </div>
                     </div>
-
                   </div>
 
-                  <style dangerouslySetInnerHTML={{__html: `
+                  <style
+                    dangerouslySetInnerHTML={{
+                      __html: `
                     .custom-scrollbar::-webkit-scrollbar { width: 4px; }
                     .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
                     .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 4px; }
                     .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.2); }
-                  `}} />
+                    `,
+                    }}
+                  />
                 </div>
               </div>
             </div>
-
           </div>
         </div>
-
-        
       </Card>
     </section>
   );
