@@ -13,51 +13,99 @@ export const metadata = {
 
 export default function Page() {
   return (
-    <div>
-      {/* Section with logo */}
-      <div className='bg-gradient-to-r from-[#140048] to-[#2A0668] flex justify-center items-center relative p-4'>
+    <div className="min-h-screen bg-gradient-to-r from-[#270564] to-[#320874]">
+      {/* Encabezado con logo */}
+      <header className="relative flex items-center justify-center bg-gradient-to-r from-[#140048] to-[#2A0668] p-4">
+        {/* Botón Volver al inicio: diseño inspirado en NLP */}
         <Link
           href="/"
-          className="flex items-center justify-center bg-pink-500 hover:bg-pink-400 text-white rounded-lg transition-all duration-300 absolute top-4 left-4 lg:top-1/2 lg:-translate-y-1/2 lg:left-10 p-2.5 lg:py-2 lg:px-4 shadow-md z-10"
-          aria-label="Regresar"
-          title="Regresar"
+          className="group absolute left-4 top-4 z-10 inline-flex min-h-11 items-center gap-2 rounded-md px-2 py-2 text-sm font-medium text-[#F472B6] transition-colors duration-200 hover:text-[#F9A8D4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F472B6] focus-visible:ring-offset-2 focus-visible:ring-offset-[#140048] motion-reduce:transition-none lg:left-10 lg:top-1/2 lg:-translate-y-1/2"
+          aria-label="Volver al inicio"
+          title="Volver al inicio"
         >
-          <img className="lg:mr-2 w-4 h-4" src={'/headerFooter/arrow_left.svg'} alt="Regresar" />
-          <span className="hidden lg:inline text-sm font-semibold">REGRESAR</span>
+          <span
+            aria-hidden="true"
+            className="h-4 w-4 shrink-0 bg-current transition-transform duration-200 group-hover:-translate-x-0.5 motion-reduce:transition-none [mask-image:url('/headerFooter/arrow_left.svg')] [mask-repeat:no-repeat] [mask-position:center] [mask-size:contain]"
+          />
+          <span>Volver al inicio</span>
         </Link>
-        <Image src={logoLegales} className='my-10' alt="Digimedia" width={160} height={120} />
-      </div>
-      {/* Section text */}
-      <section className='flex-grow grid mx-0 p-10 justify-items-center bg-gradient-to-r from-[#270564] to-[#320874] min-h-screen'>
-        <div className='w-full md:w-2/3 border-b mb-4 text-center md:text-left py-4'>
-          <h1 className='text-4xl pb-2'>Politicas de Privacidad</h1>
+
+        <Image
+          src={logoLegales}
+          className="my-10"
+          alt="DigiMedia"
+          width={160}
+          height={120}
+        />
+      </header>
+
+      {/* Contenido de la política de privacidad */}
+      <main className="grid justify-items-center bg-gradient-to-r from-[#270564] to-[#320874] px-10 py-6 text-white">
+        <div className="mb-3 w-full border-b border-white/20 pb-3 text-center md:w-2/3 md:text-left">
+          <h1 className="pb-2 text-4xl">
+            Políticas de Privacidad
+          </h1>
+
           <p>
-            Digimedia marketing se compromete a proteger la privacidad de nuestros usuarios. 
-            Esta Política de Privacidad describe cómo recopilamos, usamos y compartimos la 
-            información personal que obtenemos a través de nuestro sitio web.
+            Digimedia marketing se compromete a proteger la privacidad de
+            nuestros usuarios. Esta Política de Privacidad describe cómo
+            recopilamos, usamos y compartimos la información personal que
+            obtenemos a través de nuestro sitio web.
           </p>
         </div>
-        <div className='w-full md:w-2/3'>
-          <h2 className='text-2xl p-3'>1. Información que Recopilamos</h2>
-          <p>Cuando usted visita nuestro sitio, recopilamos cierta información 
-            automáticamente, como su dirección IP, tipo de navegador, páginas 
+
+        <div className="w-full text-white md:w-2/3">
+          <h2 className="px-3 pb-1 pt-2 text-2xl">
+            1. Información que Recopilamos
+          </h2>
+
+          <p>
+            Cuando usted visita nuestro sitio, recopilamos cierta información
+            automáticamente, como su dirección IP, tipo de navegador, páginas
             visitadas, tiempo de visita y otros datos de uso del sitio.
           </p>
-          <h2 className='text-2xl p-3'>2. Compartir Información</h2>
-          <p>No compartiremos su información personal con terceros, excepto en las siguientes circunstancias:</p>
-          <ul className='list-inside list-disc pl-5 space-y-2'>
-            <li>Con proveedores de servicios que nos ayudan a operar nuestro sitio web y proporcionar nuestros servicios, como proveedores de alojamiento web, procesadores de pagos y servicios de análisis de datos.</li>
-            <li>Cuando sea necesario para cumplir con la ley o proteger nuestros derechos, su seguridad o la seguridad de otro.</li>
-          </ul>
-          <h2 className='text-2xl p-3'>3. Cookies y Tecnologías Similares</h2>
-          <p>Utilizamos cookies y otras tecnologías de seguimiento para mejorar la 
-            funcionalidad de nuestro sitio web y para comprender mejor cómo los usuarios
-            interactúan con él.
+
+          <h2 className="px-3 pb-1 pt-3 text-2xl">
+            2. Compartir Información
+          </h2>
+
+          <p>
+            No compartiremos su información personal con terceros, excepto en
+            las siguientes circunstancias:
           </p>
-          <p className='py-2'>Razón Social: DIGIMEDIA MARKETING S.A.C.</p>
-          <p className='py-2'>RUC: 20605116559</p>
+
+          <ul className="list-inside list-disc space-y-2 pl-5">
+            <li>
+              Con proveedores de servicios que nos ayudan a operar nuestro
+              sitio web y proporcionar nuestros servicios, como proveedores de
+              alojamiento web, procesadores de pagos y servicios de análisis
+              de datos.
+            </li>
+            <li>
+              Cuando sea necesario para cumplir con la ley o proteger nuestros
+              derechos, su seguridad o la seguridad de otro.
+            </li>
+          </ul>
+
+          <h2 className="px-3 pb-1 pt-3 text-2xl">
+            3. Cookies y Tecnologías Similares
+          </h2>
+
+          <p>
+            Utilizamos cookies y otras tecnologías de seguimiento para mejorar
+            la funcionalidad de nuestro sitio web y para comprender mejor cómo
+            los usuarios interactúan con él.
+          </p>
+
+          <p className="py-2">
+            Razón Social: DIGIMEDIA MARKETING S.A.C.
+          </p>
+
+          <p className="py-2">
+            RUC: 20605116559
+          </p>
         </div>
-      </section>
+      </main>
     </div>
   );
 }
