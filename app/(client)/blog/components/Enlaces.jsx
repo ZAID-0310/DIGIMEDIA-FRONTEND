@@ -188,8 +188,9 @@ function EnlacesForm() {
                       disabled={currentPage <= 1}
                       className={`w-7 h-7 flex items-center justify-center rounded-[6px] border text-sm ${
                         currentPage <= 1
-                          ? "bg-[#ececec] text-[#bdbdbd] border-[#dddddd]"
-                          : "bg-white text-[#727272] border-[#d7d7d7]"
+                                   ? "bg-[#250554] text-[#7252a7] border-[#250554]"
+            : "bg-[#410C89] text-[#FFB800] border-[#410C89] hover:bg-[#5b17bd]"
+
                       }`}
                       aria-label="Página anterior"
                     >
@@ -204,8 +205,9 @@ function EnlacesForm() {
                           onClick={(e) => handlePageChange(e, page)}
                           className={`w-7 h-7 text-[12px] rounded-[6px] border ${
                             currentPage === page
-                              ? "bg-[#100043] border-[#100043] text-white"
-                              : "bg-white border-[#d7d7d7] text-[#4d4d4d]"
+                                       ? "bg-[#100043] border-[#FFB800] text-[#FFB800] font-bold"
+          : "bg-[#410C89] border-[#410C89] text-[#FFB800] hover:bg-[#5b17bd]"
+
                           }`}
                           aria-label={`Página ${page}`}
                         >
@@ -220,8 +222,9 @@ function EnlacesForm() {
                       disabled={currentPage >= totalPages}
                       className={`w-7 h-7 flex items-center justify-center rounded-[6px] border text-sm ${
                         currentPage >= totalPages
-                          ? "bg-[#ececec] text-[#bdbdbd] border-[#dddddd]"
-                          : "bg-white text-[#727272] border-[#d7d7d7]"
+                                    ? "bg-[#250554] text-[#7252a7] border-[#250554]"
+            : "bg-[#410C89] text-[#FFB800] border-[#410C89] hover:bg-[#5b17bd]"
+
                       }`}
                       aria-label="Página siguiente"
                     >
