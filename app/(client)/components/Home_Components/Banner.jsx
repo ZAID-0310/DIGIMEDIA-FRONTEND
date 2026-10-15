@@ -25,7 +25,6 @@ function getSlides(isMobile) {
 export default function Banner() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const currentIndexRef = useRef(0);
-  const [typedText, setTypedText] = useState("");
   const [isMobile, setIsMobile] = useState(false);
   const [viewportReady, setViewportReady] = useState(false);
 
@@ -65,36 +64,39 @@ export default function Banner() {
     };
 
     if (typeof window.requestIdleCallback === "function") {
-      const idleId = window.requestIdleCallback(preloadSecondarySlides);
+      const idleId = window.requestIdleCallback(preloadSecondarySlides, {
+        timeout: 6000,
+      });
       return () => window.cancelIdleCallback(idleId);
     }
 
-    const timeoutId = setTimeout(preloadSecondarySlides, 2000);
+    const timeoutId = setTimeout(preloadSecondarySlides, 6000);
     return () => clearTimeout(timeoutId);
   }, [viewportReady, isMobile]);
 
+  // Rotación del carrusel :
+  // Se mantiene el slide 0 estable durante los primeros 10s para que Lighthouse y Core Web Vitals
+  // registren el LCP del frame inicial sin invalidaciones de pintura tardías.
+  // Posteriormente, continúa la rotación fluida cada 6s.
   useEffect(() => {
-    const interval = setInterval(() => {
+    let intervalId;
+    const initialTimeout = setTimeout(() => {
       const nextIndex = (currentIndexRef.current + 1) % slides.length;
       currentIndexRef.current = nextIndex;
       setCurrentIndex(nextIndex);
-    }, 5000);
 
-    return () => clearInterval(interval);
+      intervalId = setInterval(() => {
+        const idx = (currentIndexRef.current + 1) % slides.length;
+        currentIndexRef.current = idx;
+        setCurrentIndex(idx);
+      }, 6000);
+    }, 10000);
+
+    return () => {
+      clearTimeout(initialTimeout);
+      if (intervalId) clearInterval(intervalId);
+    };
   }, [slides.length]);
-
-  useEffect(() => {
-    let index = 0;
-    const interval = setInterval(() => {
-      if (index <= staticText.length) {
-        setTypedText(staticText.slice(0, index));
-        index++;
-      } else {
-        clearInterval(interval);
-      }
-    }, 50);
-    return () => clearInterval(interval);
-  }, []);
 
   const activeWord = droppingWords[currentIndex % droppingWords.length];
 
@@ -111,7 +113,7 @@ export default function Banner() {
           <picture>
             <source media="(max-width: 767px)" srcSet={mobileSlides[0]} />
             <img
-              key={`slide-0-${currentIndex}`}
+              key="slide-0"
               src={desktopSlides[0]}
               alt="Banner principal Digimedia"
               loading="eager"
@@ -119,11 +121,12 @@ export default function Banner() {
               decoding="async"
               width={desktopDimensions.width}
               height={desktopDimensions.height}
-              className={`w-full h-full object-cover object-[70%] md:object-[30%] absolute inset-0 ${
+              className={`w-full h-full object-cover object-[70%] md:object-[30%] absolute inset-0 transition-opacity duration-1000 ${
                 currentIndex === 0 ? "opacity-100 z-10" : "opacity-0 z-0"
               }`}
               style={{
-                transform: currentIndex === 0 ? "scale(1)" : "scale(1.1)",
+                willChange: "opacity, transform",
+                transform: currentIndex === 0 ? "scale(1)" : "scale(1.05)",
                 animation:
                   currentIndex === 0
                     ? "slowZoomOut 5s ease-out forwards"
@@ -137,16 +140,17 @@ export default function Banner() {
               const index = i + 1;
               return (
                 <img
-                  key={`${isMobile ? "mobile" : "desktop"}-${index}-${currentIndex}`}
+                  key={`${isMobile ? "mobile" : "desktop"}-${index}`}
                   src={src}
                   alt={`Banner ${isMobile ? "mobile" : "desktop"} ${index + 1}`}
-                  className={`w-full h-full object-cover object-[70%] md:object-[30%] absolute inset-0 ${
+                  className={`w-full h-full object-cover object-[70%] md:object-[30%] absolute inset-0 transition-opacity duration-1000 ${
                     index === currentIndex ? "opacity-100 z-10" : "opacity-0 z-0"
                   }`}
                   loading="lazy"
                   decoding="async"
                   style={{
-                    transform: index === currentIndex ? "scale(1)" : "scale(1.1)",
+                    willChange: "opacity, transform",
+                    transform: index === currentIndex ? "scale(1)" : "scale(1.05)",
                     animation:
                       index === currentIndex
                         ? "slowZoomOut 5s ease-out forwards"
@@ -158,16 +162,13 @@ export default function Banner() {
         </div>
 
         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none gap-4">
-          <h1 className="text-white font-bold text-2xl md:text-4xl font-sans leading-tight text-center px-4">
-            <span className="inline-block">{typedText}</span>
-            <span className="dropping-texts inline-block ml-4">
+          <h1 className="text-white font-bold text-2xl md:text-4xl font-sans leading-tight text-center px-4 min-h-[64px] md:min-h-[88px] flex flex-wrap items-center justify-center">
+            <span className="inline-block">{staticText}</span>
+            <span className="dropping-texts inline-block ml-2 md:ml-4">
               <div className="dropping-word" key={currentIndex}>
                 {activeWord}
               </div>
             </span>
-            {typedText.length < staticText.length && (
-              <span className="animate-blink">|</span>
-            )}
           </h1>
           <p className="text-white text-lg md:text-2xl text-center max-w-2xl px-4">
             {subtitle}

@@ -333,13 +333,7 @@ export default function Page() {
                 )}
               </div>
 
-              {data.length === 0 && (
-                <div className="text-center py-10 text-gray-500">
-                  {searchTerm
-                    ? "No se encontraron resultados para tu búsqueda"
-                    : "No hay testimonios registrados"}
-                </div>
-              )}
+              
 
               {data.length > 0 && (
                 <div className="mt-4">

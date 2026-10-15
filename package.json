@@ -6,10 +6,9 @@
     "dev": "next dev --turbopack",
     "prebuild": "node -e \"require('fs').rmSync('.next', { recursive: true, force: true })\" && node scripts/optimize-images.js && node scripts/generate-sitemap.js",
     "build": "next build",
-    "postbuild": "node scripts/defer-css.js",
     "start": "next start",
     "lint": "next lint",
-    "build:staging": "env-cmd -f .env.produ next build && node scripts/defer-css.js",
+    "build:staging": "env-cmd -f .env.produ next build",
     "export:staging": "next export",
     "optimize-images": "node scripts/optimize-images.js"
   },

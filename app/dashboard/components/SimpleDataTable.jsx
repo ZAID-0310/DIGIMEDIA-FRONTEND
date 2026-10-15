@@ -151,7 +151,7 @@ export default function SimpleDataTable({
 
   if (!data || data.length === 0) {
     return (
-      <div className="text-center p-8 bg-gray-50 rounded-md border border-gray-200">
+      <div className="text-center p-8 bg-gray-50 rounded-md border border-gray-200 dark:border-none dark:bg-gray-800 ">
         <p className="text-gray-500">No hay datos disponibles</p>
       </div>
     );
