@@ -1,29 +1,20 @@
 User-agent: *
 Allow: /
+Allow: /_next/
+Allow: /public/
 
+# Bloquear rutas privadas y administrativas
 Disallow: /dashboard*
-
 Disallow: /login*
-
-Disallow: /*.json$
-Disallow: /*.js$
-Disallow: /*.env$
-Disallow: /.env*
 Disallow: /api/
 Disallow: /admin/
+
+# Bloquear archivos y carpetas sensibles / codigo fuente
+Disallow: /*.env$
+Disallow: /.env*
+Disallow: /.git/
 Disallow: /node_modules/
 Disallow: /src/
-Disallow: /.next/
-Disallow: /.git/
-
-Allow: /public/
-Allow: /images/
-Allow: /css/
-Allow: /js/
-Allow: /blog/
-Allow: /servicios/
-Allow: /nosotros/
-Allow: /contactanos/
 
 # Sitemap
 Sitemap: https://digimedia-marketing.com/sitemap.xml
