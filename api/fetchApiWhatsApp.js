@@ -221,6 +221,24 @@ export const campaniaApi = {
     apiRequest(`/api/campanias/${campaniaId}/leads/${watModalId}/retry`, {
       method: "POST",
     }),
+
+  // POST /api/whatsapp/campaign/{id}/pause
+  pause: (id) =>
+    apiRequest(`/api/whatsapp/campaign/${id}/pause`, {
+      method: "POST",
+    }),
+
+  // POST /api/whatsapp/campaign/{id}/resume
+  resume: (id) =>
+    apiRequest(`/api/whatsapp/campaign/${id}/resume`, {
+      method: "POST",
+    }),
+
+  // POST /api/whatsapp/campaign/{id}/cancel
+  cancel: (id) =>
+    apiRequest(`/api/whatsapp/campaign/${id}/cancel`, {
+      method: "POST",
+    }),
 };
 
 export const tiemposApi = {
