@@ -7,20 +7,15 @@ body {
   overflow: visible !important;
   overflow-x: clip !important;
 }
-/* Unifica toda la página de inicio al tono morado corporativo exacto y claro */
-main,
-section,
-div[class*="bg-gradient"],
-div[class*="from-"] {
+/* Modifica el color de fondo sin afectar las imágenes ni tarjetas de la página */
+.bg-gradient-to-br {
     background-image: none !important;
-    background-color: #3b0082 !important; /* El tono morado claro y encendido de la marca */
+    background-color: #25005c !important; /* El tono exacto de tu imagen */
 }
 
-/* Protege las imágenes, tarjetas y carruseles para que no se alteren */
-img, 
-.rounded-xl, 
-.rounded-3xl, 
-[class*="bg-black/"] {
+/* Evita que se tape cualquier contenedor de tarjeta o imagen con transparencia */
+main div[class*="absolute"], 
+main div[class*="rounded"] {
     background-blend-mode: normal !important;
 }
 
