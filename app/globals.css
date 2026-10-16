@@ -7,9 +7,9 @@ body {
   overflow: visible !important;
   overflow-x: clip !important;
 }
-/* Reemplaza el degradado de las secciones de Inicio por el morado plano corporativo */
-main .bg-gradient-to-br, 
-section[class*="bg-gradient"] {
+/* Unifica el fondo de las secciones de Inicio al morado corporativo exacto del menú */
+main > section.bg-gradient-to-br,
+main div[class*="bg-gradient-to-br"]:not([class*="rounded"]) {
     background-image: none !important;
-    background: #18003c !important; /* Tu morado plano original idéntico */
+    background-color: #1e0046 !important;
 }
