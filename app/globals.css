@@ -7,9 +7,19 @@ body {
   overflow: visible !important;
   overflow-x: clip !important;
 }
-/* Unifica el fondo de las secciones de Inicio al morado corporativo exacto del menú */
-main > section.bg-gradient-to-br,
-main div[class*="bg-gradient-to-br"]:not([class*="rounded"]) {
+/* Unificación total del fondo de la Home con el tono morado de la marca sin tapar elementos */
+#root, 
+main, 
+.bg-gradient-to-br,
+div[className*="Home_Components"] {
     background-image: none !important;
     background-color: #1e0046 !important;
+}
+
+/* Protege las tarjetas y capas de imágenes para que no se pinten encima */
+img, 
+.rounded-xl, 
+.rounded-3xl, 
+div[class*="absolute bg-black/"] {
+    background-color: transparent !important;
 }
