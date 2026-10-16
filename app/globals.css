@@ -7,19 +7,21 @@ body {
   overflow: visible !important;
   overflow-x: clip !important;
 }
-/* Unificación total del fondo de la Home con el tono morado de la marca sin tapar elementos */
-#root, 
-main, 
-.bg-gradient-to-br,
-div[className*="Home_Components"] {
+/* Unifica toda la página de inicio al tono morado corporativo exacto y claro */
+main,
+section,
+div[class*="bg-gradient"],
+div[class*="from-"] {
     background-image: none !important;
-    background-color: #1e0046 !important;
+    background-color: #3b0082 !important; /* El tono morado claro y encendido de la marca */
 }
 
-/* Protege las tarjetas y capas de imágenes para que no se pinten encima */
+/* Protege las imágenes, tarjetas y carruseles para que no se alteren */
 img, 
 .rounded-xl, 
 .rounded-3xl, 
-div[class*="absolute bg-black/"] {
-    background-color: transparent !important;
+[class*="bg-black/"] {
+    background-blend-mode: normal !important;
 }
+
+
