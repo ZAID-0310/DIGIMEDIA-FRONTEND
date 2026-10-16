@@ -7,3 +7,7 @@ body {
   overflow: visible !important;
   overflow-x: clip !important;
 }
+/* Unificar el fondo de los componentes de Inicio al color sólido original */
+.bg-gradient-to-br {
+    background: #130026 !important;
+}
