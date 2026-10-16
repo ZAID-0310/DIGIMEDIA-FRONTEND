@@ -117,7 +117,7 @@ function EnlacesForm() {
   ];
 
   return (
-    <section className="bg-gradient-to-br from-[#000118] via-[#410C89] to-[#000118] px-4 md:px-6 pb-10 pt-14 min-h-screen">
+    <section className="bg-[#130026] px-4 md:px-6 pb-10 pt-14 min-h-screen">
       <div className="max-w-[1200px] mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6 lg:gap-10">
           <div className="order-2 lg:order-1" ref={articlesTopRef}>
