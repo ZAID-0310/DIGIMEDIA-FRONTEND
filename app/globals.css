@@ -7,8 +7,9 @@ body {
   overflow: visible !important;
   overflow-x: clip !important;
 }
-/* Forzar el color sólido original en todas las secciones principales de Inicio */
-main, section, div[class*="bg-gradient"] {
+/* Reemplaza el degradado de las secciones de Inicio por el morado plano corporativo */
+main .bg-gradient-to-br, 
+section[class*="bg-gradient"] {
     background-image: none !important;
-    background-color: #130026 !important;
+    background: #18003c !important; /* Tu morado plano original idéntico */
 }
