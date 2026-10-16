@@ -7,16 +7,16 @@ body {
   overflow: visible !important;
   overflow-x: clip !important;
 }
-/* Modifica el color de fondo sin afectar las imágenes ni tarjetas de la página */
-.bg-gradient-to-br {
+/* Unifica absolutamente todo el fondo al tono exacto de tu imagen */
+html, body, #root, main, section, .bg-gradient-to-br {
     background-image: none !important;
-    background-color: #25005c !important; /* El tono exacto de tu imagen */
+    background-color: #25005c !important; /* El tono exacto de tu foto */
 }
 
-/* Evita que se tape cualquier contenedor de tarjeta o imagen con transparencia */
-main div[class*="absolute"], 
-main div[class*="rounded"] {
-    background-blend-mode: normal !important;
+/* Evita que se alteren las tarjetas, imágenes y capas de diseño */
+div[class*="rounded"], div[class*="absolute"], img, card {
+    background-image: initial !important;
 }
+
 
 
