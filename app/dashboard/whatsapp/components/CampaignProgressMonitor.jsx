@@ -1,11 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { apiRequest } from "@/api/fetchApiWhatsApp";
+import { apiRequest, campaniaApi } from "@/api/fetchApiWhatsApp";
+import Swal from "sweetalert2";
+import { Pause, Play, Square, Loader2 } from "lucide-react";
 
 export function CampaignProgressMonitor() {
   const [activeCampaign, setActiveCampaign] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const fetchActiveCampaign = async () => {
@@ -13,7 +16,7 @@ export function CampaignProgressMonitor() {
       const res = await apiRequest("/api/whatsapp/campaigns?limit=10");
 
       if (res?.success) {
-        // El backend ya expone la campaña activa directamente en res.active_campaign
+        // El backend expone la campaña activa directamente en res.active_campaign
         const activeCampaignInfo = res.active_campaign;
 
         if (activeCampaignInfo?.id_campania) {
@@ -40,12 +43,129 @@ export function CampaignProgressMonitor() {
 
   useEffect(() => {
     fetchActiveCampaign();
-    
+
     // Polling cada 5 segundos
     const interval = setInterval(fetchActiveCampaign, 5000);
-    
+
     return () => clearInterval(interval);
   }, []);
+
+  const handlePause = async () => {
+    if (!activeCampaign?.id_campania || actionLoading) return;
+
+    const result = await Swal.fire({
+      title: "¿Pausar campaña?",
+      text: "Los envíos se detendrán temporalmente. Podrás reanudarla cuando lo desees.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#f59e0b",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Sí, pausar",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (!result.isConfirmed) return;
+
+    setActionLoading(true);
+    try {
+      const res = await campaniaApi.pause(activeCampaign.id_campania);
+      if (res?.success) {
+        Swal.fire({
+          title: "Campaña pausada",
+          text: "La campaña se ha pausado correctamente.",
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        await fetchActiveCampaign();
+      } else {
+        Swal.fire("Error", res?.message || "No se pudo pausar la campaña.", "error");
+      }
+    } catch (err) {
+      console.error("Error pausando campaña:", err);
+      Swal.fire("Error", "Ocurrió un error al intentar pausar la campaña.", "error");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleResume = async () => {
+    if (!activeCampaign?.id_campania || actionLoading) return;
+
+    const result = await Swal.fire({
+      title: "¿Reanudar campaña?",
+      text: "Se continuará con el envío a los destinatarios pendientes.",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#10b981",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Sí, reanudar",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (!result.isConfirmed) return;
+
+    setActionLoading(true);
+    try {
+      const res = await campaniaApi.resume(activeCampaign.id_campania);
+      if (res?.success) {
+        Swal.fire({
+          title: "Campaña reanudada",
+          text: "El envío de mensajes se ha reanudado.",
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        await fetchActiveCampaign();
+      } else {
+        Swal.fire("Error", res?.message || "No se pudo reanudar la campaña.", "error");
+      }
+    } catch (err) {
+      console.error("Error reanudando campaña:", err);
+      Swal.fire("Error", "Ocurrió un error al intentar reanudar la campaña.", "error");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleCancel = async () => {
+    if (!activeCampaign?.id_campania || actionLoading) return;
+
+    const result = await Swal.fire({
+      title: "¿Cancelar campaña definitivamente?",
+      text: "Esta acción detendrá de inmediato los envíos restantes y no se podrá reanudar.",
+      icon: "error",
+      showCancelButton: true,
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Sí, cancelar campaña",
+      cancelButtonText: "Volver",
+    });
+
+    if (!result.isConfirmed) return;
+
+    setActionLoading(true);
+    try {
+      const res = await campaniaApi.cancel(activeCampaign.id_campania);
+      if (res?.success) {
+        Swal.fire({
+          title: "Campaña cancelada",
+          text: "La campaña ha sido cancelada.",
+          icon: "info",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        await fetchActiveCampaign();
+      } else {
+        Swal.fire("Error", res?.message || "No se pudo cancelar la campaña.", "error");
+      }
+    } catch (err) {
+      console.error("Error cancelando campaña:", err);
+      Swal.fire("Error", "Ocurrió un error al intentar cancelar la campaña.", "error");
+    } finally {
+      setActionLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -76,14 +196,12 @@ export function CampaignProgressMonitor() {
     );
   }
 
-  const { id_campania, servicio, estado, progreso, envios_hoy, limite_diario } = activeCampaign;
+  const { id_campania, servicio, estado, progreso } = activeCampaign;
   const porcentaje = progreso?.porcentaje || 0;
   const exitosos = progreso?.exitosos || 0;
   const fallidos = progreso?.fallidos || 0;
   const total = progreso?.total || 0;
   const pendientes = progreso?.pendientes || 0;
-  const enviosHoy = envios_hoy || 0;
-  const limiteDiario = limite_diario || 50;
 
   const estadoConfig = {
     en_proceso: {
@@ -93,6 +211,13 @@ export function CampaignProgressMonitor() {
       bgColor: "bg-emerald-50 dark:bg-emerald-950/30",
       borderColor: "border-emerald-200 dark:border-emerald-900",
     },
+    pausada: {
+      color: "bg-amber-500",
+      text: "Pausada Manualmente",
+      icon: "⏸️",
+      bgColor: "bg-amber-50 dark:bg-amber-950/30",
+      borderColor: "border-amber-200 dark:border-amber-900",
+    },
     pausada_hasta_mañana: {
       color: "bg-amber-500",
       text: "Pausada hasta mañana",
@@ -100,12 +225,33 @@ export function CampaignProgressMonitor() {
       bgColor: "bg-amber-50 dark:bg-amber-950/30",
       borderColor: "border-amber-200 dark:border-amber-900",
     },
+    pausada_fuera_horario: {
+      color: "bg-orange-500",
+      text: "Pausada fuera de horario",
+      icon: "⏰",
+      bgColor: "bg-orange-50 dark:bg-orange-950/30",
+      borderColor: "border-orange-200 dark:border-orange-900",
+    },
+    pausada_sin_conexion: {
+      color: "bg-rose-500",
+      text: "Sin Conexión",
+      icon: "📡",
+      bgColor: "bg-rose-50 dark:bg-rose-950/30",
+      borderColor: "border-rose-200 dark:border-rose-900",
+    },
     completada: {
       color: "bg-blue-500",
       text: "Completada",
       icon: "✅",
       bgColor: "bg-blue-50 dark:bg-blue-950/30",
       borderColor: "border-blue-200 dark:border-blue-900",
+    },
+    cancelada: {
+      color: "bg-gray-500",
+      text: "Cancelada",
+      icon: "🛑",
+      bgColor: "bg-gray-50 dark:bg-gray-950/30",
+      borderColor: "border-gray-200 dark:border-gray-800",
     },
     fallida: {
       color: "bg-rose-500",
@@ -117,13 +263,15 @@ export function CampaignProgressMonitor() {
   };
 
   const config = estadoConfig[estado] || estadoConfig.en_proceso;
+  const isPaused = ["pausada", "pausada_hasta_mañana", "pausada_fuera_horario", "pausada_sin_conexion"].includes(estado);
+  const isInProgress = estado === "en_proceso" || estado === "pendiente";
 
   return (
     <div
       className={`rounded-2xl border ${config.borderColor} ${config.bgColor} p-6 shadow-sm transition-all hover:shadow-md`}
     >
       {/* Header */}
-      <div className="mb-4 flex items-start justify-between">
+      <div className="mb-4 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
             <span className="text-2xl">{config.icon}</span>
@@ -135,12 +283,53 @@ export function CampaignProgressMonitor() {
             {servicio || "Servicio desconocido"}
           </p>
         </div>
-        <span
-          className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${config.bgColor}`}
-        >
-          <span className={`h-2 w-2 rounded-full ${config.color} animate-pulse`}></span>
-          {config.text}
-        </span>
+
+        {/* Status Badge + Action Buttons */}
+        <div className="flex flex-wrap items-center gap-2">
+          <span
+            className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${config.bgColor}`}
+          >
+            <span className={`h-2 w-2 rounded-full ${config.color} animate-pulse`}></span>
+            {config.text}
+          </span>
+
+          {/* Botones de Control */}
+          {isInProgress && (
+            <button
+              onClick={handlePause}
+              disabled={actionLoading}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-amber-500 hover:bg-amber-600 text-white shadow-sm transition disabled:opacity-50"
+              title="Pausar envíos temporalmente"
+            >
+              {actionLoading ? <Loader2 size={13} className="animate-spin" /> : <Pause size={13} />}
+              Pausar
+            </button>
+          )}
+
+          {isPaused && (
+            <button
+              onClick={handleResume}
+              disabled={actionLoading}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition disabled:opacity-50"
+              title="Reanudar envíos pendientes"
+            >
+              {actionLoading ? <Loader2 size={13} className="animate-spin" /> : <Play size={13} />}
+              Reanudar
+            </button>
+          )}
+
+          {estado !== "cancelada" && estado !== "completada" && (
+            <button
+              onClick={handleCancel}
+              disabled={actionLoading}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-rose-600 hover:bg-rose-700 text-white shadow-sm transition disabled:opacity-50"
+              title="Cancelar campaña definitivamente"
+            >
+              {actionLoading ? <Loader2 size={13} className="animate-spin" /> : <Square size={13} />}
+              Cancelar
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Barra de progreso */}
@@ -152,7 +341,7 @@ export function CampaignProgressMonitor() {
         <div className="h-3 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
           <div
             className="h-full rounded-full bg-gradient-to-r from-purple-500 to-purple-600 transition-all duration-500 ease-out"
-            style={{ width: `${porcentaje}%` }}
+            style={{ width: `${Math.min(porcentaje, 100)}%` }}
           ></div>
         </div>
       </div>
