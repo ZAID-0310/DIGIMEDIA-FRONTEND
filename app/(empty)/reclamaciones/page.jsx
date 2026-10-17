@@ -492,14 +492,15 @@ const ComplaintForm = () => {
       <Header />
 
       {/* 2. Sección del LOGO: Centrado arriba de forma limpia */}
-      <header className="flex items-center justify-center bg-gradient-to-r from-[#1E033F] to-[#410C89] py-6 relative">
-        <Image
-          src={logoLegales}
-          alt="Digimedia"
-          width={160}
-          height={120}
-          priority
-        />
+      <header className="flex items-center justify-center py-6 relative">
+
+        <img
+  src="/headerFooter/logoFooter.webp"
+  alt="Digimedia"
+  className="w-40 h-auto my-6"
+/>
+
+      
       </header>
 
       {/* 3. Contenedor de contenido para el botón y el formulario */}
