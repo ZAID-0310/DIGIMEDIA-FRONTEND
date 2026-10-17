@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import logoLegales from "@/public/headerFooter/logoFooter.webp";
+import Header from "@/app/(client)/components/Header";
 
 export const metadata = {
   title: "Política de Privacidad - DigiMedia",
@@ -14,6 +15,7 @@ export const metadata = {
 export default function Page() {
   return (
     <div className="min-h-screen bg-gradient-to-r from-[#270564] to-[#320874]">
+      <Header />
       {/* Encabezado con logo */}
       <header className="relative flex items-center justify-center bg-gradient-to-r from-[#140048] to-[#2A0668] p-4">
         {/* Botón Volver al inicio: diseño inspirado en NLP */}
