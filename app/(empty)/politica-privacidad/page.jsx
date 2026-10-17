@@ -33,14 +33,15 @@ export default function Page() {
         <div className="mb-3 w-full border-b border-white/20 pb-3 text-left md:w-2/3">
           
           {/* Botón Volver al inicio: Posicionado arriba del título */}
-          <Link>
-            href="/"
-            className="inline-flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300 transition-colors mb-4"
-            aria-label="Volver al inicio"
-            title="Volver al inicio"
-          
-            <span>← Volver al inicio</span>
-          </Link>
+                <Link
+          href="/"
+          className="inline-flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300 transition-colors mb-4"
+          aria-label="Volver al inicio"
+          title="Volver al inicio"
+        >
+          <span>← Volver al inicio</span>
+        </Link>
+
 
           <h1 className="pb-2 text-4xl font-bold text-white text-left mt-4">
             Políticas de Privacidad
