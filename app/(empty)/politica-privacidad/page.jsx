@@ -13,40 +13,43 @@ export const metadata = {
 };
 
 export default function Page() {
-  return (
+    return (
     <div className="min-h-screen bg-gradient-to-r from-[#270564] to-[#320874]">
       <Header />
-      {/* Encabezado con logo */}
-           <header className="max-w-5xl mx-auto px-6 pt-10 pb-4 flex flex-col items-start gap-6">
-        {/* Botón Volver al inicio alineado a la izquierda */}
+
+      {/* 1. SECCIÓN SUPERIOR: Contenedor para el botón "Volver al inicio" */}
+      <div className="max-w-5xl mx-auto px-6 pt-10">
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300 transition-colors"
           aria-label="Volver al inicio"
           title="Volver al inicio"
         >
-         <span>← Volver al inicio</span>
-
+          <span>← Volver al inicio</span>
         </Link>
+      </div>
 
-
+      {/* 2. SECCIÓN DEL LOGO: Centrado en su propio contenedor flexible */}
+      <header className="flex items-center justify-center py-6">
         <Image
           src={logoLegales}
-          className="my-10"
-          alt="DigiMedia"
+          alt="Digimedia"
           width={160}
           height={120}
+          priority
         />
       </header>
 
+
       {/* Contenido de la política de privacidad */}
       <main className="grid justify-items-center bg-gradient-to-r from-[#270564] to-[#320874] px-10 py-6 text-white">
-        <div className="mb-3 w-full border-b border-white/20 pb-3 text-center md:w-2/3 md:text-left">
-          <h1 className="pb-2 text-4xl">
-            Políticas de Privacidad
-          </h1>
+            <div className="mb-3 w-full border-b border-white/20 pb-3 text-left md:w-2/3">
+        <h1 className="pb-2 text-4xl font-bold text-white text-left">
+          Políticas de Privacidad
+        </h1>
+        
+        <p>
 
-          <p>
             Digimedia marketing se compromete a proteger la privacidad de
             nuestros usuarios. Esta Política de Privacidad describe cómo
             recopilamos, usamos y compartimos la información personal que
