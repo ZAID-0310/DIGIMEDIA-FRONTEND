@@ -10,7 +10,7 @@ import { Loader2 } from "lucide-react";
 import Header from "@/app/(client)/components/Header";
 import Image from "next/image";
 import Link from "next/link";
-import logoLegales from "../../../../public/edition/logo.png";
+import logoLegales from "@/public/headerFooter/logoFooter.webp";
 
 
 
