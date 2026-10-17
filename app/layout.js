@@ -5,7 +5,7 @@ import { Doppio_One } from 'next/font/google';
 import { Plus_Jakarta_Sans } from 'next/font/google';
 import { Hanken_Grotesk } from 'next/font/google';
 import { AuthProvider } from './context/AuthContext';
-import Header from '@/app/(client)/components/Header';
+
 
 const montserrat = localFont({
   src: [
@@ -131,10 +131,10 @@ export default function RootLayout({ children }) {
       <body
         className={`${montserrat.variable} ${telegraf.variable} ${doppioOne.variable} ${plusJakartaSans.variable} ${hankenGrotesk.variable} antialiased`}
       >
-        <AuthProvider>
-  <Header />
+   <AuthProvider>
   {children}
 </AuthProvider>
+
 
 
         <noscript>
