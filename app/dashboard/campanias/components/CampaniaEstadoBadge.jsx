@@ -34,6 +34,13 @@ const ESTADO_CONFIG = {
     icon: Rocket,
   },
 
+  pausada: {
+    bg: "bg-amber-100 dark:bg-amber-900/30",
+    text: "text-amber-700 dark:text-amber-300",
+    label: "Pausada",
+    icon: PauseCircle,
+  },
+
   pausada_hasta_mañana: {
     bg: "bg-amber-100 dark:bg-amber-900/30",
     text: "text-amber-700 dark:text-amber-300",

@@ -15,7 +15,12 @@ import {
   Activity,
   CalendarCheck,
   PauseCircle,
+  Pause,
+  Play,
+  Square,
+  Loader2,
 } from "lucide-react";
+import Swal from "sweetalert2";
 
 export default function Page() {
   const { user, hasRole, isLoading: isAuthLoading } = useAuth();
@@ -25,6 +30,7 @@ export default function Page() {
 
   const [campania, setCampania] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
 
   useEffect(() => {
     if (!isAuthLoading) {
@@ -46,6 +52,120 @@ export default function Page() {
       console.error("Error cargando campaña", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePause = async () => {
+    if (!id || actionLoading) return;
+    const result = await Swal.fire({
+      title: "¿Pausar campaña?",
+      text: "Los envíos se detendrán temporalmente. Podrás reanudarla cuando lo desees.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#f59e0b",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Sí, pausar",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (!result.isConfirmed) return;
+
+    setActionLoading(true);
+    try {
+      const res = await campaniaApi.pause(id);
+      if (res?.success) {
+        Swal.fire({
+          title: "Campaña pausada",
+          text: "La campaña se ha pausado correctamente.",
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        await fetchCampania();
+      } else {
+        Swal.fire("Error", res?.message || "No se pudo pausar la campaña.", "error");
+      }
+    } catch (err) {
+      console.error("Error pausando:", err);
+      Swal.fire("Error", "Ocurrió un error al intentar pausar la campaña.", "error");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleResume = async () => {
+    if (!id || actionLoading) return;
+    const result = await Swal.fire({
+      title: "¿Reanudar campaña?",
+      text: "Se continuará con el envío a los destinatarios pendientes.",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#10b981",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Sí, reanudar",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (!result.isConfirmed) return;
+
+    setActionLoading(true);
+    try {
+      const res = await campaniaApi.resume(id);
+      if (res?.success) {
+        Swal.fire({
+          title: "Campaña reanudada",
+          text: "El envío de mensajes se ha reanudado.",
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        await fetchCampania();
+      } else {
+        Swal.fire("Error", res?.message || "No se pudo reanudar la campaña.", "error");
+      }
+    } catch (err) {
+      console.error("Error reanudando:", err);
+      Swal.fire("Error", "Ocurrió un error al intentar reanudar la campaña.", "error");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleCancel = async () => {
+    if (!id || actionLoading) return;
+    const result = await Swal.fire({
+      title: "¿Cancelar campaña definitivamente?",
+      text: "Esta acción detendrá de inmediato los envíos restantes y no se podrá reanudar.",
+      icon: "error",
+      showCancelButton: true,
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Sí, cancelar campaña",
+      cancelButtonText: "Volver",
+    });
+
+    if (!result.isConfirmed) return;
+
+    setActionLoading(true);
+    try {
+      const res = await campaniaApi.cancel(id);
+      if (res?.success) {
+        Swal.fire({
+          title: "Campaña cancelada",
+          text: "La campaña ha sido cancelada.",
+          icon: "info",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        await fetchCampania();
+      } else {
+        Swal.fire("Error", res?.message || "No se pudo cancelar la campaña.", "error");
+      }
+    } catch (err) {
+      console.error("Error cancelando:", err);
+      Swal.fire("Error", "Ocurrió un error al intentar cancelar la campaña.", "error");
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -133,7 +253,7 @@ export default function Page() {
         {/* IZQUIERDA */}
         <div className="min-w-0 w-full max-w-[700px] bg-white rounded-2xl shadow-sm p-5 dark:bg-gray-800 dark:text-white flex flex-col justify-center">
           {/* TOP */}
-          <div className="flex justify-between items-center mb-3">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
             <button
               onClick={() => router.push("/dashboard/campanias")}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 dark:border-gray-700 text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition"
@@ -141,7 +261,45 @@ export default function Page() {
               ← Volver
             </button>
 
-            <CampaniaEstadoBadge estado={campania.estado} />
+            <div className="flex flex-wrap items-center gap-2">
+              <CampaniaEstadoBadge estado={campania.estado} />
+
+              {["en_proceso", "pendiente"].includes(campania.estado) && (
+                <button
+                  onClick={handlePause}
+                  disabled={actionLoading}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-amber-500 hover:bg-amber-600 text-white shadow-sm transition disabled:opacity-50"
+                  title="Pausar envíos temporalmente"
+                >
+                  {actionLoading ? <Loader2 size={13} className="animate-spin" /> : <Pause size={13} />}
+                  Pausar
+                </button>
+              )}
+
+              {["pausada", "pausada_hasta_mañana", "pausada_fuera_horario", "pausada_sin_conexion"].includes(campania.estado) && (
+                <button
+                  onClick={handleResume}
+                  disabled={actionLoading}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition disabled:opacity-50"
+                  title="Reanudar envíos pendientes"
+                >
+                  {actionLoading ? <Loader2 size={13} className="animate-spin" /> : <Play size={13} />}
+                  Reanudar
+                </button>
+              )}
+
+              {!["cancelada", "completada"].includes(campania.estado) && (
+                <button
+                  onClick={handleCancel}
+                  disabled={actionLoading}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-rose-600 hover:bg-rose-700 text-white shadow-sm transition disabled:opacity-50"
+                  title="Cancelar campaña definitivamente"
+                >
+                  {actionLoading ? <Loader2 size={13} className="animate-spin" /> : <Square size={13} />}
+                  Cancelar
+                </button>
+              )}
+            </div>
           </div>
 
           {/* CARD */}

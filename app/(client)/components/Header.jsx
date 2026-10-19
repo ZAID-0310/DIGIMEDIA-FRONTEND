@@ -272,6 +272,7 @@ export default function Header2() {
               alt="Logo Digimedia Marketing"
               width={200}
               height={85}
+              priority
               className="my-auto object-contain"
               sizes="200px"
             />

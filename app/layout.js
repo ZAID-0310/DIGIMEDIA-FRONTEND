@@ -97,8 +97,8 @@ export default function RootLayout({ children }) {
       <head>
         <style dangerouslySetInnerHTML={{ __html: criticalCSS }} />
         
-        <link rel="preconnect" href="https://www.googletagmanager.com" />
-        <link rel="preconnect" href="https://www.google-analytics.com" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="https://www.google-analytics.com" />
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
 
         <Script id="theme-init" strategy="beforeInteractive">
@@ -115,14 +115,30 @@ export default function RootLayout({ children }) {
           `}
         </Script>
 
-        <Script id="gtm-script" strategy="lazyOnload">
+        <Script id="gtm-script" strategy="afterInteractive">
           {`
-            (function(w,d,s,l,i){w[l]=w[l]||[];
-            w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});
-            var f=d.getElementsByTagName(s)[0],
-            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';
-            j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
-            f.parentNode.insertBefore(j,f);
+            (function(w,d,s,l,i){
+              w[l]=w[l]||[];
+              function loadGTM(){
+                if(w._gtmLoaded) return;
+                w._gtmLoaded = true;
+                w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});
+                var f=d.getElementsByTagName(s)[0],
+                j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';
+                j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
+                f.parentNode.insertBefore(j,f);
+              }
+              var events = ['scroll', 'touchstart', 'click', 'mousemove', 'keydown'];
+              function triggerGTM(){
+                loadGTM();
+                events.forEach(function(e){ window.removeEventListener(e, triggerGTM, {passive: true}); });
+              }
+              events.forEach(function(e){ window.addEventListener(e, triggerGTM, {passive: true, once: true}); });
+              if ('requestIdleCallback' in window) {
+                requestIdleCallback(function(){ setTimeout(loadGTM, 3500); });
+              } else {
+                setTimeout(loadGTM, 4000);
+              }
             })(window,document,'script','dataLayer','GTM-MR2MC9SB');
           `}
         </Script>

@@ -162,7 +162,7 @@ export default function Banner() {
         </div>
 
         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none gap-4">
-          <h1 className="text-white font-bold text-2xl md:text-4xl font-sans leading-tight text-center px-4 min-h-[64px] md:min-h-[88px] flex flex-wrap items-center justify-center">
+          <h1 className="text-white font-bold text-2xl md:text-4xl font-sans leading-tight text-center px-4 min-h-[96px] md:min-h-[88px] flex flex-wrap items-center justify-center">
             <span className="inline-block">{staticText}</span>
             <span className="dropping-texts inline-block ml-2 md:ml-4">
               <div className="dropping-word" key={currentIndex}>
