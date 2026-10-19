@@ -453,23 +453,43 @@ export default function Page() {
             </div>
           ) : (
             <>
-              <div className="rounded-lg overflow-hidden">
-                {auth_service.hasPermission("ver-empleados") && (
-                  <Table
-                    headers={headers}
-                    data={filteredData}
-                    onDelete={onDelete}
-                    onUpdate={onUpdate}
-                    onShow={handleShow}
-                  />
-                )}
-              </div>
-
-              {filteredData.length === 0 && (
-                <div className="text-center py-10 text-gray-500">
-                  {searchTerm || selectedRole !== "all"
-                    ? "No se encontraron resultados para tu búsqueda"
-                    : "No hay empleados registrados"}
+              {filteredData.length > 0 ? (
+                <div className="rounded-lg overflow-hidden">
+                  {auth_service.hasPermission("ver-empleados") && (
+                    <Table
+                      headers={headers}
+                      data={filteredData}
+                      onDelete={onDelete}
+                      onUpdate={onUpdate}
+                      onShow={handleShow}
+                    />
+                  )}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center text-center py-16 rounded-md border border-gray-200 dark:border-gray-700">
+                  <Filter className="h-12 w-12 text-gray-300 dark:text-gray-600 mb-3" />
+                  <p className="text-gray-500 dark:text-gray-400 font-medium mb-1">
+                    No hay datos disponibles
+                  </p>
+                  {searchTerm ? (
+                    <>
+                      <p className="text-gray-400 dark:text-gray-500 text-sm">
+                        No se encontraron resultados para &quot;{searchTerm}&quot;
+                      </p>
+                      <button
+                        onClick={() => setSearchTerm("")}
+                        className="mt-3 text-[#8c52ff] text-sm font-medium hover:underline"
+                      >
+                        Limpiar búsqueda
+                      </button>
+                    </>
+                  ) : (
+                    <p className="text-gray-400 dark:text-gray-500 text-sm">
+                      {selectedRole !== "all"
+                        ? "No se encontraron empleados para el rol seleccionado"
+                        : "No hay empleados registrados"}
+                    </p>
+                  )}
                 </div>
               )}
 

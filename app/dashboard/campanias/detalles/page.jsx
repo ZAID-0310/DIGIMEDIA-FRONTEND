@@ -250,7 +250,7 @@ export default function Page() {
       </div>
 
       {/* TABLE */}
-      <div className="bg-white rounded-2xl shadow-sm p-6 dark:bg-gray-800">
+      <div className="bg-white rounded-2xl shadow-sm p-4 sm:p-6 dark:bg-gray-800">
         <LeadsTable
           campaniaId={id}
           enablePolling={campania?.estado === "en_proceso"}

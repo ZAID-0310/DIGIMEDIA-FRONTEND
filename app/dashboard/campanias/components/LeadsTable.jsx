@@ -142,7 +142,7 @@ export default function LeadsTable({ campaniaId, enablePolling = false }) {
     return () => clearInterval(interval);
   }, [enablePolling, campaniaId, estado, search, page, shouldPoll]);
 
-  const renderEstado = (lead) => {
+  const renderEstado = (lead, showError = true) => {
     const config = {
       enviado: {
         icon: <CheckCircle2 size={14} />,
@@ -181,8 +181,11 @@ export default function LeadsTable({ campaniaId, enablePolling = false }) {
           {current.label}
         </div>
 
-        {lead.error && (
-          <p className="text-xs text-rose-500 max-w-[220px] truncate">
+        {showError && lead.error && (
+          <p
+            className="text-xs text-rose-500 max-w-[220px] truncate"
+            title={lead.error}
+          >
             {lead.error}
           </p>
         )}
@@ -415,14 +418,27 @@ export default function LeadsTable({ campaniaId, enablePolling = false }) {
             >
               {/* Cabecera: Nombre y Estado */}
               <div className="flex justify-between items-start gap-2">
-                <div>
+                <div className="min-w-0 flex-1">
                   <p className="text-xs text-gray-400">Nombre</p>
-                  <h3 className="font-bold text-gray-900 dark:text-white text-base">
+                  <h3 className="font-bold text-gray-900 dark:text-white text-base break-words">
                     {lead.nombre || "-"}
                   </h3>
                 </div>
-                <div>{renderEstado(lead)}</div>
+                <div className="shrink-0">{renderEstado(lead, false)}</div>
               </div>
+
+              {/* Mensaje de error destacado a ancho completo si falló */}
+              {lead.error && (
+                <div className="flex items-start gap-2 p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200/60 dark:border-rose-900/40 text-rose-600 dark:text-rose-400 text-xs">
+                  <AlertTriangle
+                    size={14}
+                    className="shrink-0 mt-0.5 text-rose-500"
+                  />
+                  <span className="leading-relaxed break-words">
+                    {lead.error}
+                  </span>
+                </div>
+              )}
 
               {/* Datos en cuadrícula */}
               <div className="grid grid-cols-2 gap-3 pt-2 border-t border-gray-100 dark:border-gray-800">
