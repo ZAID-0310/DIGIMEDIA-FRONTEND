@@ -22,8 +22,12 @@
 /build
 
 # Artefactos generados dinámicamente en public
+/public/robots.txt
+/public/sitemap.xml
+
 public/robots.txt
 public/sitemap.xml
+
 
 # misc
 .DS_Store
