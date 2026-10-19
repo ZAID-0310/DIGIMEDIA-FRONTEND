@@ -7,6 +7,10 @@ import Swal from "sweetalert2";
 
 import url from "../../../api/url";
 import { Loader2 } from "lucide-react";
+import Header from "@/app/(client)/components/Header";
+import Image from "next/image";
+import Link from "next/link";
+
 
 const URL_API = `${url}/api/reclamaciones`;
 
@@ -481,6 +485,7 @@ const ComplaintForm = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Header />
       <div className="bg-gradient-to-r from-[#1e033f] from-80%  to-[#410C89] relative p-4">
         <button
           onClick={() => (window.location.href = "/")}
