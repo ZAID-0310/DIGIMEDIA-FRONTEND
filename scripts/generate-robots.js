@@ -1,35 +1,48 @@
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
+const fs = require("fs");
+const path = require("path");
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const publicDir = path.join(__dirname, "..", "public");
+const robotsPath = path.join(publicDir, "robots.txt");
 
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://digimedia-marketing.com";
+const siteUrl = (
+  process.env.NEXT_PUBLIC_SITE_URL || "https://digimedia-marketing.com"
+).replace(/\/\$/, "");
+
 const isStaging =
   process.env.APP_ENV === "staging" || siteUrl.includes("staging");
 
 let robotsContent = "";
 
 if (isStaging) {
-  // Staging: Bloquear todos los bots y no exponer sitemap
+  // Staging: Bloqueo absoluto para cualquier bot
   robotsContent = `User-agent: *
 Disallow: /
 `;
-  console.log("🤖 robots.txt generado para STAGING (Disallow: /)");
+  console.log("🤖 robots.txt sobrescrito para STAGING (Disallow: /)");
 } else {
-  // Producción: Permitir rastreo y enlazar el sitemap oficial
+  // Producción: Reglas completas con sitemap
   robotsContent = `User-agent: *
 Allow: /
+Allow: /_next/
+Allow: /public/
 
-Sitemap: ${siteUrl.replace(/\/$/, "")}/sitemap.xml
+# Bloquear rutas privadas y administrativas
+Disallow: /dashboard*
+Disallow: /login*
+Disallow: /api/
+Disallow: /admin/
+
+# Bloquear archivos y carpetas sensibles / codigo fuente
+Disallow: /*.env$
+Disallow: /.env*
+Disallow: /.git/
+Disallow: /node_modules/
+Disallow: /src/
+
+# Sitemap
+Sitemap: ${siteUrl}/sitemap.xml
 `;
-  console.log("🤖 robots.txt generado para PRODUCCIÓN (Allow: /)");
+  console.log("🤖 robots.txt sobrescrito para PRODUCCIÓN");
 }
 
-fs.writeFileSync(
-  path.join(publicDir, "robots.txt"),
-  robotsContent.trim() + "\n",
-  "utf-8",
-);
+fs.writeFileSync(robotsPath, robotsContent.trim() + "\n", "utf-8");

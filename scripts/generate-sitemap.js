@@ -3,10 +3,14 @@ const path = require("path");
 const https = require("https");
 const http = require("http");
 
-const SITE = "https://digimedia-marketing.com";
+const SITE = (
+  process.env.NEXT_PUBLIC_SITE_URL || "https://digimedia-marketing.com"
+).replace(/\/\$/, "");
+
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL_PROD ||
   "https://back.digimedia-marketing.com";
+
 const OUTPUT_PATH = path.join(__dirname, "..", "public", "sitemap.xml");
 
 const isStaging =
@@ -17,6 +21,13 @@ if (isStaging) {
   console.log(
     "Entorno Staging detectado: Omitiendo generación de sitemap.xml.",
   );
+  // Corregido: se usa OUTPUT_PATH en lugar de sitemapPath
+  if (fs.existsSync(OUTPUT_PATH)) {
+    fs.unlinkSync(OUTPUT_PATH);
+    console.log(
+      "🧹 sitemap.xml previo eliminado de public/ para entorno Staging.",
+    );
+  }
   process.exit(0);
 }
 
@@ -121,10 +132,16 @@ function buildXml(urls) {
 }
 
 async function main() {
-  const blogUrls = await getPublishedBlogUrls();
-  const allUrls = [...STATIC_PAGES, ...blogUrls];
-  const xml = buildXml(allUrls);
-  fs.writeFileSync(OUTPUT_PATH, xml, "utf8");
+  try {
+    const blogUrls = await getPublishedBlogUrls();
+    const allUrls = [...STATIC_PAGES, ...blogUrls];
+    const xml = buildXml(allUrls);
+    fs.writeFileSync(OUTPUT_PATH, xml, "utf8");
+    console.log(`✅ sitemap.xml generado con éxito (${allUrls.length} URLs).`);
+  } catch (error) {
+    console.error("❌ Error al generar sitemap.xml:", error);
+    process.exit(1);
+  }
 }
 
 main();
