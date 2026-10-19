@@ -72,8 +72,8 @@ export default function TableRoles({ headers, data, onDelete, onUpdate }) {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 text-amber-500 hover:bg-amber-50"
-                      onClick={() => onUpdate(item.id_rol)} 
+                      className="h-8 w-8 text-amber-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/30"
+                      onClick={() => onUpdate(item)} 
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
@@ -83,7 +83,7 @@ export default function TableRoles({ headers, data, onDelete, onUpdate }) {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 text-red-500 hover:bg-red-50"
+                      className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30"
                       onClick={() => onDelete(item.id_rol)} 
                     >
                       <Trash2 className="h-4 w-4" />

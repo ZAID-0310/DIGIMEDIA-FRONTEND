@@ -4,11 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "prebuild": "node -e \"require('fs').rmSync('.next', { recursive: true, force: true })\" && node scripts/optimize-images.js && node scripts/generate-sitemap.js",
-    "build": "next build",
+    "clean": "node -e \"require('fs').rmSync('.next', { recursive: true, force: true, maxRetries: 5, retryDelay: 200 })\" && node scripts/optimize-images.js",
+    "prebuild": "npm run clean && node scripts/generate-sitemap.js && node scripts/generate-robots.js",
+    "build": "env-cmd -f .env.production.local next build --webpack",
     "start": "next start",
     "lint": "next lint",
-    "build:staging": "env-cmd -f .env.produ next build",
+    "prebuild:staging": "npm run clean && env-cmd -f .env.staging.local node scripts/generate-sitemap.js && env-cmd -f .env.staging.local node scripts/generate-robots.js",
+    "build:staging": "env-cmd -f .env.staging.local next build --webpack",
     "export:staging": "next export",
     "optimize-images": "node scripts/optimize-images.js"
   },

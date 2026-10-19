@@ -122,14 +122,24 @@ export function TestSendTab({ services, isConnected, connectedNumber }) {
           ? Math.max(1, Math.ceil(totalDestinatarios / 50))
           : null;
 
+      const isSandbox = Boolean(previewRes?.data?.is_sandbox);
+      const testNumber = previewRes?.data?.test_number;
+
       // Mostrar confirmación (aún no se envia nada al backend)
       const confirmStart = await Swal.fire({
-        title: "Confirmar campaña",
+        title: isSandbox ? "Confirmar campaña (MODO PRUEBA)" : "Confirmar campaña",
         html: `
-          <p>Esta campaña tiene <strong>${totalDestinatarios > 0 ? totalDestinatarios : "?"}</strong> destinatarios.</p>
+          ${
+            isSandbox
+              ? `<div style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 8px; padding: 10px; margin-bottom: 12px; font-size: 13px; color: #f59e0b; text-align: left;">
+                  <strong>🛡️ Modo Sandbox Activo:</strong> El mensaje se enviará <u>únicamente</u> al número de prueba <strong>${testNumber || "configurado"}</strong>. Ningún cliente real recibirá este mensaje.
+                </div>`
+              : ""
+          }
+          <p>Esta campaña tiene <strong>${totalDestinatarios > 0 ? totalDestinatarios : "?"}</strong> destinatario(s).</p>
           <p class="mt-1">Duración estimada - Sin interrupciones: <strong>${estimatedDays ?? "?"} día(s)</strong> (50 envíos/día).</p>
         `,
-        icon: "info",
+        icon: isSandbox ? "warning" : "info",
         showCancelButton: true,
         confirmButtonText: "Aceptar",
         cancelButtonText: "Cancelar",

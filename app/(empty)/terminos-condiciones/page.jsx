@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import logoLegales from "@/public/headerFooter/logoFooter.webp";
+import Header from "@/app/(client)/components/Header";
 
 export const metadata = {
   title: "Términos y Condiciones - DigiMedia",
@@ -14,34 +15,36 @@ export const metadata = {
 export default function Page() {
   return (
     <div className="min-h-screen bg-gradient-to-r from-[#270564] to-[#320874]">
-      {/* Section with logo */}
-      <div className="bg-gradient-to-r from-[#140048] to-[#2A0668] flex justify-center items-center relative p-4">
-        <Link
-          href="/"
-          className="group absolute left-4 top-4 z-10 inline-flex min-h-11 items-center gap-2 rounded-md px-2 py-2 text-sm font-medium text-[#F472B6] transition-colors duration-200 hover:text-[#F9A8D4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F472B6] focus-visible:ring-offset-2 focus-visible:ring-offset-[#140048] motion-reduce:transition-none lg:left-10 lg:top-1/2 lg:-translate-y-1/2"
-          aria-label="Volver al inicio"
-          title="Volver al inicio"
-        >
-          <span
-            aria-hidden="true"
-            className="h-4 w-4 shrink-0 bg-current transition-transform duration-200 group-hover:-translate-x-0.5 motion-reduce:transition-none [mask-image:url('/headerFooter/arrow_left.svg')] [mask-repeat:no-repeat] [mask-position:center] [mask-size:contain]"
-          />
-          <span>Volver al inicio</span>
-        </Link>
+      {/* 1. Barra de navegación superior */}
+      <Header />
 
+      {/* 2. Sección del LOGO: Centrado arriba */}
+      <header className="flex items-center justify-center py-6">
         <Image
           src={logoLegales}
-          className="my-10"
           alt="Digimedia"
           width={160}
           height={120}
+          priority
         />
-      </div>
+      </header>
 
-      {/* Section text */}
-      <section className="grid mx-0 px-10 py-6 justify-items-center bg-gradient-to-r from-[#270564] to-[#320874] text-white">
-        <div className="w-full md:w-2/3 text-center md:text-left">
-          <h1 className="text-4xl pb-2">Términos y Condiciones</h1>
+      {/* 3. Contenido Principal */}
+      <main className="grid justify-items-center px-10 py-6 text-white w-full">
+
+        <div className="mb-3 w-full border-b border-white/20 pb-3 text-left md:w-2/3">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-sm text-[#E94E77] hover:text-[#D13B62] transition-colors mb-4"
+            aria-label="Volver al inicio"
+            title="Volver al inicio"
+          >
+            <span>← Volver al inicio</span>
+          </Link>
+
+          <h1 className="pb-2 text-4xl font-bold text-white text-left">
+            Términos y Condiciones
+          </h1>
 
           <p className="pb-3">
             El uso del sitio web de la Agencia de Marketing Digimedia está sujeto
@@ -114,7 +117,14 @@ export default function Page() {
             </li>
           </ol>
         </div>
-      </section>
+      </main>
     </div>
   );
 }
+
+
+
+
+
+
+
