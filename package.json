@@ -10,7 +10,7 @@
     "start": "next start",
     "lint": "next lint",
     "prebuild:staging": "npm run clean && env-cmd -f .env.staging.local node scripts/generate-sitemap.js && env-cmd -f .env.staging.local node scripts/generate-robots.js",
-    "build:staging": "env-cmd -f .env.staging.local next build --webpack",
+    "build:staging": "env-cmd -f .env.staging.local next build --webpack && node -e \"const fs = require('fs'); fs.rmSync('out-staging', { recursive: true, force: true }); fs.renameSync('out', 'out-staging');\"",
     "export:staging": "next export",
     "optimize-images": "node scripts/optimize-images.js"
   },

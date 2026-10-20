@@ -7,11 +7,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 /** @type {(phase: string) => import('next').NextConfig} */
 export default (phase) => {
   const isDev = phase === PHASE_DEVELOPMENT_SERVER;
-  const isStaging = process.env.APP_ENV === "staging";
 
   return {
-    distDir: isDev ? ".next" : isStaging ? "out-staging" : "out",
-
     images: {
       unoptimized: true,
       remotePatterns: [
@@ -29,13 +26,12 @@ export default (phase) => {
         "lucide-react",
         "@marsidev/react-turnstile",
       ],
+      clientRouterFilter: false,
     },
     compress: true,
 
-    // Configuración para Turbopack (Next.js 16+)
     turbopack: {
       resolveAlias: {
-        // Redirige el polyfill al módulo vacío equivalente
         "next/dist/build/polyfills/polyfill-module": path.join(
           __dirname,
           "scripts",
@@ -44,7 +40,6 @@ export default (phase) => {
       },
     },
 
-    // Mantenido como respaldo en caso de compilar con el flag --webpack
     webpack: (config, { dev, webpack }) => {
       if (!dev) {
         config.plugins.push(
