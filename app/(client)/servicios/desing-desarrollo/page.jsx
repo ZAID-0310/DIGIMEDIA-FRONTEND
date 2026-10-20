@@ -142,14 +142,14 @@ export default function DisenoDesarrolloWeb() {
         {/* ¿CÓMO FUNCIONA? SECTION */}
       </div>
 
-      <section className="w-full py-16 bg-gradient-to-r from-[#120048] via-[#000000] to-[#120048] border-t border-b border-white/5 relative z-10">
+      <section className="w-full py-16 relative z-10">
         <div className="w-full max-w-[1280px] mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6 }}
-            className="max-w-3xl mx-auto text-center"
+            className="max-w-3xl mx-auto text-center bg-[#1a0050] rounded-2xl px-10 py-12 border border-purple-800/40"
           >
             <h2 className="text-[#FFD100] font-extrabold text-2xl sm:text-3xl md:text-4xl uppercase tracking-wider mb-6 font-display">
               ¿CÓMO FUNCIONA?
