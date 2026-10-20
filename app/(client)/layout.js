@@ -1,6 +1,5 @@
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import Head from "next/head";
 
 export const metadata = {
   title: "Agencia de Marketing Digital en Lima Perú - DigiMedia",
@@ -39,7 +38,7 @@ export const metadata = {
       "Eleva tu presencia online con DigiMedia, la agencia experta en marketing digital en Lima. Potenciamos tu marca con estrategias reales de SEO, redes sociales y publicidad digital enfocadas en maximizar tus ventas y crecimiento.",
     url: "https://digimedia-marketing.com/",
     siteName: "Digimedia Marketing",
-    images: [], // se mantiene vacío por tu preferencia
+    images: [],
     locale: "es_PE",
     type: "website",
   },
@@ -51,25 +50,6 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <>
-      <Head>
-        {/* ✅ Preload de la imagen inicial (optimizada) */}
-        <link
-          rel="preload"
-          href="/optimized_images/image-home/inicio.avif"
-          as="image"
-        />
-
-        {/* ✅ Fuente Montserrat con display=swap */}
-        <meta name="author" content="DigiMedia-Marketing" />
-        <meta name="publisher" content="DigiMedia-Marketing" />
-        <meta name="robots" content="index, follow" />
-        {/* Agrega aquí tus fuentes si las necesitas */}
-
-        {/* ✅ Fuente Telegraf si la usas desde cdnfonts */}
-
-        {/* Agregar Schema Markup (JSON-LD) */}
-      </Head>
-
       <Header />
       <script type="application/ld+json">
         {`

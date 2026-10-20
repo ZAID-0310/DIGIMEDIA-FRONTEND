@@ -101,19 +101,38 @@ export default function RootLayout({ children }) {
         <link rel="dns-prefetch" href="https://www.google-analytics.com" />
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
 
-        <Script id="theme-init" strategy="beforeInteractive">
-          {`
-            try {
-              const theme = localStorage.getItem('theme');
-              if (
-                theme === 'dark' ||
-                (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)
-              ) {
-                document.documentElement.classList.add('dark');
-              }
-            } catch (_) {}
-          `}
-        </Script>
+        {/* Preloads responsivos de alta prioridad para la imagen LCP del Banner */}
+        <link
+          rel="preload"
+          as="image"
+          href="/optimized_images/image-home/celular-1.webp"
+          media="(max-width: 767px)"
+          fetchPriority="high"
+        />
+        <link
+          rel="preload"
+          as="image"
+          href="/optimized_images/image-home/pc-1.webp"
+          media="(min-width: 768px)"
+          fetchPriority="high"
+        />
+
+        <script
+          id="theme-init"
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                const theme = localStorage.getItem('theme');
+                if (
+                  theme === 'dark' ||
+                  (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)
+                ) {
+                  document.documentElement.classList.add('dark');
+                }
+              } catch (_) {}
+            `,
+          }}
+        />
 
         <Script id="gtm-script" strategy="afterInteractive">
           {`
