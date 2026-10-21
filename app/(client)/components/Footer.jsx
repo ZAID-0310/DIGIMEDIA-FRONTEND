@@ -134,7 +134,7 @@ export default function Footer() {
                 <Link
                   href="https://wa.me/983027828?text=Hola"
                   target="_blank"
-                  className="flex items-center gap-3 hover:text-white transition-colors"
+                  className="flex items-center gap-3 hover:text-[#ffb800] transition-colors"
                 >
                   <Image
                     src="/headerFooter/icono-telefono-digimedia.webp"
@@ -148,7 +148,7 @@ export default function Footer() {
               <li className="relative">
                 <div
                   onClick={handleCopyEmail}
-                  className="flex items-center gap-3 cursor-pointer hover:text-white transition-colors"
+                  className="flex items-center gap-3 cursor-pointer hover:text-[#ffb800] transition-colors"
                 >
                   <Image
                     src="/headerFooter/icono-correo-digimedia.webp"
@@ -167,7 +167,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="https://maps.app.goo.gl/T8D8KJT3mWworgCo7"
-                  className="flex items-start gap-3 hover:text-white transition-colors"
+                  className="flex items-start gap-3 hover:text-[#ffb800] transition-colors"
                 >
                   <Image
                     src="/headerFooter/icono-ubicacion-digimedia.webp"

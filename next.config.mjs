@@ -1,6 +1,6 @@
-import { PHASE_DEVELOPMENT_SERVER } from 'next/constants.js';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { PHASE_DEVELOPMENT_SERVER } from "next/constants.js";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -13,29 +13,40 @@ export default (phase) => {
       unoptimized: true,
       remotePatterns: [
         {
-          protocol: 'https',
-          hostname: '**',
+          protocol: "https",
+          hostname: "**",
         },
       ],
     },
-    ...(isDev ? {} : { output: 'export' }),
+    ...(isDev ? {} : { output: "export" }),
     trailingSlash: true,
     experimental: {
-      optimizePackageImports: ['@radix-ui/react-*', 'lucide-react','@marsidev/react-turnstile'],
+      optimizePackageImports: [
+        "@radix-ui/react-*",
+        "lucide-react",
+        "@marsidev/react-turnstile",
+      ],
+      clientRouterFilter: false,
     },
     compress: true,
+
+    turbopack: {
+      resolveAlias: {
+        "next/dist/build/polyfills/polyfill-module": path.join(
+          __dirname,
+          "scripts",
+          "empty-polyfill.js",
+        ),
+      },
+    },
+
     webpack: (config, { dev, webpack }) => {
       if (!dev) {
-        // Next.js incluye este polyfill de forma incondicional (Array.at, flat,
-        // flatMap, Object.fromEntries, Object.hasOwn, String.trimStart/trimEnd),
-        // sin respetar el browserslist del proyecto. Como ya solo damos soporte
-        // a navegadores que implementan estas funciones de forma nativa, se
-        // sustituye por un módulo vacío para no enviarlo al cliente.
         config.plugins.push(
           new webpack.NormalModuleReplacementPlugin(
             /build[\\/]polyfills[\\/]polyfill-module/,
-            path.join(__dirname, 'scripts', 'empty-polyfill.js')
-          )
+            path.join(__dirname, "scripts", "empty-polyfill.js"),
+          ),
         );
       }
       return config;
