@@ -662,5 +662,4 @@ function PageContent() {
   );
 }
 
-<<<<<<< HEAD
 export default Page;
