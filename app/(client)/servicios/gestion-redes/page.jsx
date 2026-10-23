@@ -68,7 +68,7 @@ export default function GestionRedesSociales() {
   };
 
   return (
-    <div className="bg-[#0a0028] text-white min-h-screen relative overflow-hidden font-sans">
+    <div className="bg-gradient-to-b from-[#1D006F] to-[#0E0630] text-white min-h-screen relative overflow-hidden font-sans">
       {/* Background Glow Orbs */}
       
 
