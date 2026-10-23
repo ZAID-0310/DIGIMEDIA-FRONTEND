@@ -68,7 +68,7 @@ export default function GestionRedesSociales() {
   };
 
   return (
-    <div className="bg-[#0a001a] bg-gradient-to-b from-[#10003b] via-[#090022] to-[#050014] text-white min-h-screen relative overflow-hidden font-sans">
+    <div className="bg-[#0a0028] text-white min-h-screen relative overflow-hidden font-sans">
       {/* Background Glow Orbs */}
       <div className="absolute top-[5%] left-[-15%] w-[40vw] h-[40vw] max-w-[600px] bg-purple-600/10 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute top-[35%] right-[-15%] w-[45vw] h-[45vw] max-w-[700px] bg-[#FF037F]/5 rounded-full blur-[120px] pointer-events-none" />
@@ -121,7 +121,7 @@ export default function GestionRedesSociales() {
         {/* ¿CÓMO FUNCIONA? SECTION */}
       </div>
 
-      <section className="w-full py-16 bg-gradient-to-r from-[#120048] via-[#000000] to-[#120048] border-t border-b border-white/5 relative z-10">
+      <section  className="w-full py-16 bg-[#0d0035] border-t border-b border-white/5 relative z-10">
         <div className="w-full max-w-[1280px] mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
