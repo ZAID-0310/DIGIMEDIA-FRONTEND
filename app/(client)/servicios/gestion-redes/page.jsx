@@ -70,9 +70,7 @@ export default function GestionRedesSociales() {
   return (
     <div className="bg-[#0a0028] text-white min-h-screen relative overflow-hidden font-sans">
       {/* Background Glow Orbs */}
-      <div className="absolute top-[5%] left-[-15%] w-[40vw] h-[40vw] max-w-[600px] bg-purple-600/10 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute top-[35%] right-[-15%] w-[45vw] h-[45vw] max-w-[700px] bg-[#FF037F]/5 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[15%] left-[10%] w-[35vw] h-[35vw] max-w-[500px] bg-[#b525fe]/8 rounded-full blur-[100px] pointer-events-none" />
+      
 
       {/* Main Container */}
       <div className="w-full max-w-[1280px] mx-auto px-6 relative z-10">
@@ -123,6 +121,7 @@ export default function GestionRedesSociales() {
 
       <section  className="w-full py-16 bg-[#0d0035] border-t border-b border-white/5 relative z-10">
         <div className="w-full max-w-[1280px] mx-auto px-6">
+          <div className="max-w-3xl mx-auto bg-[#120048]/80 border border-white/10 rounded-3xl p-10 shadow-2xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -138,6 +137,7 @@ export default function GestionRedesSociales() {
             </p>
           </motion.div>
         </div>
+            </div>
       </section>
 
       <div className="w-full max-w-[1280px] mx-auto px-6 relative z-10">
