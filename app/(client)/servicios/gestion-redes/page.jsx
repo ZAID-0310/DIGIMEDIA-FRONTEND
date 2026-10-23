@@ -119,7 +119,7 @@ export default function GestionRedesSociales() {
         {/* ¿CÓMO FUNCIONA? SECTION */}
       </div>
 
-      <section  className="w-full py-16 bg-[#0d0035] border-t border-b border-white/5 relative z-10">
+      <section className="w-full py-16 bg-transparent relative z-10">
         <div className="w-full max-w-[1280px] mx-auto px-6">
           <div className="max-w-3xl mx-auto bg-[#120048]/80 border border-white/10 rounded-3xl p-10 shadow-2xl">
           <motion.div
