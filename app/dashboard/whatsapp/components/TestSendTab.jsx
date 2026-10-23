@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Swal from "sweetalert2";
 import { apiRequest } from "@/api/fetchApiWhatsApp";
 import { Card, CardTitle } from "./TabButton";
@@ -9,6 +9,9 @@ import {
   CheckCheck,
   User,
   Image as ImageIcon,
+  Users,
+  Clock,
+  Loader2,
 } from "lucide-react";
 
 export function TestSendTab({ services, isConnected, connectedNumber }) {
@@ -21,18 +24,88 @@ export function TestSendTab({ services, isConnected, connectedNumber }) {
   const [loading, setLoading] = useState(false);
   const [lastResponse, setLastResponse] = useState(null);
 
+  // Estados para cantidad de destinatarios
+  const [availableLeads, setAvailableLeads] = useState(null);
+  const [loadingPreview, setLoadingPreview] = useState(false);
+  const [sendToAll, setSendToAll] = useState(true);
+  const [customRecipients, setCustomRecipients] = useState("");
+
   const serviceIdAsNumber = useMemo(() => {
     if (!service) return null;
     const n = Number(String(service).replace("p", ""));
     return Number.isFinite(n) ? n : null;
   }, [service]);
 
+  // Cargar total de destinatarios disponibles al cambiar de servicio
+  useEffect(() => {
+    if (!service) {
+      setAvailableLeads(null);
+      setCustomRecipients("");
+      setSendToAll(true);
+      return;
+    }
+
+    let isMounted = true;
+    const fetchServicePreview = async () => {
+      setLoadingPreview(true);
+      try {
+        const previewRes = await apiRequest(
+          `/api/whatsapp/campaign/preview/${service}`,
+        );
+        if (isMounted) {
+          const total = Number(
+            previewRes?.data?.total_destinatarios ??
+            previewRes?.data?.destinatarios_disponibles ??
+            0
+          );
+          setAvailableLeads(total);
+          setCustomRecipients((prev) => {
+            if (prev && Number(prev) > total) {
+              return String(total);
+            }
+            return prev;
+          });
+        }
+      } catch (err) {
+        console.error("Error al previsualizar servicio:", err);
+        if (isMounted) setAvailableLeads(null);
+      } finally {
+        if (isMounted) setLoadingPreview(false);
+      }
+    };
+
+    fetchServicePreview();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [service]);
+
+  const targetRecipients = useMemo(() => {
+    if (sendToAll) {
+      return availableLeads;
+    }
+    const n = parseInt(customRecipients, 10);
+    return Number.isFinite(n) && n > 0 ? n : null;
+  }, [sendToAll, customRecipients, availableLeads]);
+
+  const isCustomRecipientValid = useMemo(() => {
+    if (sendToAll) return true;
+    const n = parseInt(customRecipients, 10);
+    if (!Number.isFinite(n) || n < 1) return false;
+    if (availableLeads !== null && n > availableLeads) return false;
+    return true;
+  }, [sendToAll, customRecipients, availableLeads]);
+
   const canSend = Boolean(
     isConnected &&
     service &&
     paragraph.trim().length >= 10 &&
     imageFile &&
-    !loading,
+    !loading &&
+    !loadingPreview &&
+    (availableLeads === null || availableLeads > 0) &&
+    isCustomRecipientValid
   );
 
   const payloadPreview = useMemo(() => {
@@ -109,6 +182,18 @@ export function TestSendTab({ services, isConnected, connectedNumber }) {
       return;
     }
 
+    if (!sendToAll) {
+      const parsed = parseInt(customRecipients, 10);
+      if (!Number.isFinite(parsed) || parsed < 1) {
+        Swal.fire("Cantidad inválida", "Debes especificar al menos 1 destinatario.", "warning");
+        return;
+      }
+      if (availableLeads && parsed > availableLeads) {
+        Swal.fire("Cantidad excedida", `Solo hay ${availableLeads} destinatarios disponibles para este servicio.`, "warning");
+        return;
+      }
+    }
+
     setLoading(true);
     setLastResponse(null);
 
@@ -117,13 +202,17 @@ export function TestSendTab({ services, isConnected, connectedNumber }) {
         `/api/whatsapp/campaign/preview/${service}`,
       );
       const totalDestinatarios = Number(previewRes?.data?.total_destinatarios);
-      const estimatedDays =
-        Number.isFinite(totalDestinatarios) && totalDestinatarios > 0
-          ? Math.max(1, Math.ceil(totalDestinatarios / 50))
-          : null;
-
       const isSandbox = Boolean(previewRes?.data?.is_sandbox);
       const testNumber = previewRes?.data?.test_number;
+
+      const recipientsToSend = sendToAll
+        ? totalDestinatarios
+        : Math.min(parseInt(customRecipients, 10), totalDestinatarios);
+
+      const estimatedDays =
+        Number.isFinite(recipientsToSend) && recipientsToSend > 0
+          ? Math.max(1, Math.ceil(recipientsToSend / 50))
+          : null;
 
       // Mostrar confirmación (aún no se envia nada al backend)
       const confirmStart = await Swal.fire({
@@ -136,7 +225,7 @@ export function TestSendTab({ services, isConnected, connectedNumber }) {
                 </div>`
               : ""
           }
-          <p>Esta campaña tiene <strong>${totalDestinatarios > 0 ? totalDestinatarios : "?"}</strong> destinatario(s).</p>
+          <p>Esta campaña se enviará a <strong>${recipientsToSend > 0 ? recipientsToSend : "?"}</strong> destinatario(s)${!sendToAll ? ` <span class="text-xs text-slate-500">(de un total de ${totalDestinatarios} disponibles)</span>` : ""}.</p>
           <p class="mt-1">Duración estimada - Sin interrupciones: <strong>${estimatedDays ?? "?"} día(s)</strong> (50 envíos/día).</p>
         `,
         icon: isSandbox ? "warning" : "info",
@@ -155,6 +244,9 @@ export function TestSendTab({ services, isConnected, connectedNumber }) {
       formData.append("service", service);
       formData.append("paragraph", paragraph);
       formData.append("image", imageFile);
+      if (!sendToAll && customRecipients) {
+        formData.append("cantidad_destinatarios", customRecipients);
+      }
 
       const createRes = await apiRequest("/api/whatsapp/campaign/create", {
         method: "POST",
@@ -281,6 +373,104 @@ export function TestSendTab({ services, isConnected, connectedNumber }) {
                 id_servicio.
               </p>
             </div>
+
+            {/* Destinatarios */}
+            {service && (
+              <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50/70 p-4 dark:border-slate-700 dark:bg-slate-900/50">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <Users size={16} className="text-[rgba(140,82,255,1)]" />
+                    <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+                      Destinatarios de la Campaña
+                    </span>
+                  </div>
+
+                  {loadingPreview ? (
+                    <span className="flex items-center gap-1.5 text-xs text-slate-500">
+                      <Loader2 size={13} className="animate-spin text-[rgba(140,82,255,1)]" />
+                      Consultando...
+                    </span>
+                  ) : availableLeads !== null ? (
+                    <span className="inline-flex items-center rounded-full bg-purple-100 px-2.5 py-0.5 text-xs font-semibold text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
+                      {availableLeads} disponible{availableLeads === 1 ? "" : "s"}
+                    </span>
+                  ) : null}
+                </div>
+
+                {availableLeads === 0 && !loadingPreview ? (
+                  <p className="text-xs text-rose-500 font-medium">
+                    ⚠️ No hay leads activos con teléfono válido registrados para este servicio.
+                  </p>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <label className="flex items-center gap-2 text-xs font-medium text-slate-700 dark:text-slate-300 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="recipient_mode"
+                          checked={sendToAll}
+                          onChange={() => setSendToAll(true)}
+                          className="text-[rgba(140,82,255,1)] focus:ring-[rgba(140,82,255,0.4)]"
+                        />
+                        Todos los disponibles ({availableLeads ?? "..."})
+                      </label>
+
+                      <label className="flex items-center gap-2 text-xs font-medium text-slate-700 dark:text-slate-300 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="recipient_mode"
+                          checked={!sendToAll}
+                          onChange={() => {
+                            setSendToAll(false);
+                            if (!customRecipients && availableLeads) {
+                              setCustomRecipients(String(Math.min(50, availableLeads)));
+                            }
+                          }}
+                          className="text-[rgba(140,82,255,1)] focus:ring-[rgba(140,82,255,0.4)]"
+                        />
+                        Especificar cantidad
+                      </label>
+                    </div>
+
+                    {!sendToAll && (
+                      <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="number"
+                            min="1"
+                            max={availableLeads ?? undefined}
+                            value={customRecipients}
+                            onChange={(e) => setCustomRecipients(e.target.value)}
+                            placeholder={`ej. 25 (máx: ${availableLeads ?? 0})`}
+                            className="w-44 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-[rgba(140,82,255,1)] focus:ring-2 focus:ring-[rgba(140,82,255,0.2)] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                          />
+                          <span className="text-xs text-slate-500 dark:text-slate-400">
+                            de {availableLeads ?? 0} destinatarios
+                          </span>
+                        </div>
+
+                        {!isCustomRecipientValid && customRecipients !== "" && (
+                          <p className="mt-1.5 text-xs text-rose-500">
+                            {Number(customRecipients) > (availableLeads ?? 0)
+                              ? `No puede superar los ${availableLeads} disponibles.`
+                              : "Debe ser al menos 1 destinatario."}
+                          </p>
+                        )}
+                      </div>
+                    )}
+
+                    {targetRecipients && targetRecipients > 0 && (
+                      <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400 pt-1">
+                        <Clock size={13} className="text-slate-400" />
+                        <span>
+                          Duración estimada: <strong>{Math.max(1, Math.ceil(targetRecipients / 50))} día(s)</strong> (ritmo de 50 envíos/día)
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* ---- CONTENEDOR PRINCIPAL: PÁRRAFO + IMAGEN (IZQ) | VISTA PREVIA (DER) ---- */}
@@ -414,6 +604,9 @@ export function TestSendTab({ services, isConnected, connectedNumber }) {
                     setImageFile(null);
                     setImagePreviewUrl(null);
                     setLastResponse(null);
+                    setAvailableLeads(null);
+                    setSendToAll(true);
+                    setCustomRecipients("");
                   }}
                   className="inline-flex w-full sm:w-auto items-center justify-center rounded-full bg-slate-900 px-8 py-3 text-sm font-semibold text-white hover:bg-slate-800 active:bg-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 dark:active:bg-slate-700"
                 >

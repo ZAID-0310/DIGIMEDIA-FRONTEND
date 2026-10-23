@@ -12,6 +12,7 @@ export default function CampaniaListPage() {
   const router = useRouter();
 
   const [campanias, setCampanias] = useState([]);
+  const [activeCampaign, setActiveCampaign] = useState(null);
   const [loading, setLoading] = useState(true);
   const [estado, setEstado] = useState("");
   const [page, setPage] = useState(1);
@@ -42,6 +43,9 @@ export default function CampaniaListPage() {
       const campanias = paginated?.data?.data ?? paginated?.data ?? [];
 
       setCampanias(campanias);
+      if (response?.active_campaign) {
+        setActiveCampaign(response.active_campaign);
+      }
 
       const meta = paginated;
 
@@ -270,7 +274,13 @@ export default function CampaniaListPage() {
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {campanias.map((campania) => (
-              <CampaniaCard key={campania.id_campania} campania={campania} />
+              <CampaniaCard
+                key={campania.id_campania}
+                campania={campania}
+                allCampaigns={campanias}
+                activeCampaign={activeCampaign}
+                onUpdate={fetchCampanias}
+              />
             ))}
           </div>
         )}
