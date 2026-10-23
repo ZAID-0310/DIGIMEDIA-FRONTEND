@@ -222,6 +222,12 @@ export const campaniaApi = {
       method: "POST",
     }),
 
+  // POST /api/whatsapp/campaign/{id}/start
+  start: (id) =>
+    apiRequest(`/api/whatsapp/campaign/${id}/start`, {
+      method: "POST",
+    }),
+
   // POST /api/whatsapp/campaign/{id}/pause
   pause: (id) =>
     apiRequest(`/api/whatsapp/campaign/${id}/pause`, {

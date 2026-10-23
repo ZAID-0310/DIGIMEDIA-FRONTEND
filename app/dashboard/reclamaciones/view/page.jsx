@@ -131,13 +131,14 @@ export default function Page() {
               </h2>
 
               <div className="space-y-2.5">
-                <div className="flex items-start">
-                  <div className="flex-shrink-0 w-24">
-                    <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                <div className="flex items-center">
+                  <div className="w-24 flex-shrink-0">
+                    <span className="flex items-center whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400">
+                      <User className="w-3 h-3 mr-1 text-gray-400" />
                       Nombre:
                     </span>
                   </div>
-                  <div className="flex-grow">
+                  <div className="min-w-0 flex-grow">
                     <span className="text-xs text-gray-800 dark:text-gray-200 font-medium">
                       {reclamacion.nombre} {reclamacion.apellido}
                     </span>
@@ -163,15 +164,15 @@ export default function Page() {
                   </div>
                 </div>
 
-                <div className="flex items-start">
-                  <div className="flex-shrink-0 w-24">
-                    <span className="text-xs font-medium text-gray-500 dark:text-gray-400 flex items-center">
+                <div className="flex items-center">
+                  <div className="w-24 flex-shrink-0">
+                    <span className="flex items-center whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400">
                       <FileText className="w-3 h-3 mr-1 text-gray-400" />
                       Documento:
                     </span>
                   </div>
-                  <div className="flex-grow">
-                    <span className="text-xs text-gray-800 dark:text-gray-200">
+                  <div className="min-w-0 flex-grow">
+                    <span className="break-words text-xs leading-5 text-gray-800 dark:text-gray-200">
                       {reclamacion.documento}: {reclamacion.numeroDocumento}
                     </span>
                   </div>
@@ -202,15 +203,15 @@ export default function Page() {
                   </div>
                 </div>
 
-                <div className="flex items-start">
-                  <div className="flex-shrink-0 w-24">
-                    <span className="text-xs font-medium text-gray-500 dark:text-gray-400 flex items-center">
+                <div className="flex items-center">
+                  <div className="w-24 flex-shrink-0">
+                    <span className="flex items-center whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400">
                       <MapPin className="w-3 h-3 mr-1 text-gray-400" />
                       Dirección:
                     </span>
                   </div>
-                  <div className="flex-grow">
-                    <span className="text-xs text-gray-800 dark:text-gray-200">
+                  <div className="min-w-0 flex-grow">
+                    <span className="break-words text-xs leading-5 text-gray-800 dark:text-gray-200">
                       {reclamacion.direccion}, {reclamacion.distrito},{" "}
                       {reclamacion.ciudad}
                     </span>
@@ -260,24 +261,24 @@ export default function Page() {
                     <span className="text-xs font-medium text-gray-500 dark:text-gray-400 flex items-center">
                       <Tag className="w-3 h-3 mr-1 text-gray-400" />
                       Tipo Reclamo:
-                    </span>
-                  </div>
-                  <div className="flex-grow">
-                    <span className="text-xs text-gray-800 dark:text-gray-200">
-                      {reclamacion.tipoReclamo}
-                    </span>
-                  </div>
+                  </span>
                 </div>
+                <div className="flex-grow">
+                  <span className="text-xs text-gray-800 dark:text-gray-200">
+                    {reclamacion.tipoReclamo}
+                  </span>
+                </div>
+              </div>
 
-                <div className="flex items-start">
-                  <div className="flex-shrink-0 w-24">
-                    <span className="text-xs font-medium text-gray-500 dark:text-gray-400 flex items-center">
+                <div className="flex items-center">
+                  <div className="w-24 flex-shrink-0">
+                    <span className="flex items-center whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400">
                       <Package className="w-3 h-3 mr-1 text-gray-400" />
                       Servicio:
                     </span>
                   </div>
-                  <div className="flex-grow">
-                    <span className="text-xs text-gray-800 dark:text-gray-200">
+                  <div className="min-w-0 flex-grow">
+                    <span className="break-words text-xs leading-5 text-gray-800 dark:text-gray-200">
                       {reclamacion.id_servicio}
                     </span>
                   </div>

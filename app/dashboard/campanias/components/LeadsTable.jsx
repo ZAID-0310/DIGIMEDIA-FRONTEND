@@ -23,6 +23,7 @@ export default function LeadsTable({ campaniaId, enablePolling = false }) {
   const [estado, setEstado] = useState("");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(15);
 
   const [pagination, setPagination] = useState({
     current_page: 1,
@@ -37,6 +38,7 @@ export default function LeadsTable({ campaniaId, enablePolling = false }) {
     currentEstado = estado,
     currentSearch = search,
     currentPage = page,
+    currentPerPage = perPage,
     showLoading = true,
   ) => {
     if (showLoading) {
@@ -48,6 +50,7 @@ export default function LeadsTable({ campaniaId, enablePolling = false }) {
         estado: currentEstado,
         search: currentSearch,
         page: currentPage,
+        per_page: currentPerPage,
       });
 
       const payload = res?.data ?? {};
@@ -123,11 +126,11 @@ export default function LeadsTable({ campaniaId, enablePolling = false }) {
     if (!campaniaId) return;
 
     const timer = setTimeout(() => {
-      fetchLeads();
+      fetchLeads(estado, search, page, perPage);
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [estado, search, page, campaniaId]);
+  }, [estado, search, page, perPage, campaniaId]);
 
   // POLLING
   useEffect(() => {
@@ -136,11 +139,11 @@ export default function LeadsTable({ campaniaId, enablePolling = false }) {
     }
 
     const interval = setInterval(() => {
-      fetchLeads(estado, search, page, false);
+      fetchLeads(estado, search, page, perPage, false);
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [enablePolling, campaniaId, estado, search, page, shouldPoll]);
+  }, [enablePolling, campaniaId, shouldPoll, estado, search, page, perPage]);
 
   const renderEstado = (lead, showError = true) => {
     const config = {
@@ -236,6 +239,24 @@ export default function LeadsTable({ campaniaId, enablePolling = false }) {
             {filtro.label}
           </button>
         ))}
+
+        {/* SELECTOR REGISTROS POR PÁGINA */}
+        <div className="flex items-center gap-2">
+          <select
+            value={perPage}
+            onChange={(e) => {
+              setPerPage(Number(e.target.value));
+              setPage(1);
+            }}
+            className="rounded-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 outline-none focus:ring-2 focus:ring-blue-500 transition cursor-pointer"
+            title="Cantidad de mensajes por página"
+          >
+            <option value={10}>10 / pág.</option>
+            <option value={15}>15 / pág.</option>
+            <option value={25}>25 / pág.</option>
+            <option value={50}>50 / pág.</option>
+          </select>
+        </div>
 
         {/* SEARCH */}
         <div className="ml-auto relative w-full sm:w-72">
@@ -510,29 +531,53 @@ export default function LeadsTable({ campaniaId, enablePolling = false }) {
       </div>
 
       {/* PAGINACIÓN */}
-      {pagination.last_page > 1 && (
-        <div className="flex flex-wrap gap-2 pt-2">
-          {Array.from({
-            length: pagination.last_page,
-          }).map((_, i) => {
-            const pageNumber = i + 1;
-
-            return (
-              <button
-                key={pageNumber}
-                onClick={() => setPage(pageNumber)}
-                className={`w-9 h-9 rounded-lg text-sm font-medium transition ${
-                  page === pageNumber
-                    ? "bg-blue-600 text-white"
-                    : "bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800"
-                }`}
-              >
-                {pageNumber}
-              </button>
-            );
-          })}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-gray-100 dark:border-gray-800">
+        <div className="text-xs text-gray-500 dark:text-gray-400">
+          {pagination.total > 0 ? (
+            <>
+              Mostrando{" "}
+              <span className="font-semibold text-gray-700 dark:text-gray-200">
+                {(page - 1) * perPage + 1}
+              </span>{" "}
+              -{" "}
+              <span className="font-semibold text-gray-700 dark:text-gray-200">
+                {Math.min(page * perPage, pagination.total)}
+              </span>{" "}
+              de{" "}
+              <span className="font-semibold text-gray-700 dark:text-gray-200">
+                {pagination.total}
+              </span>{" "}
+              destinatarios
+            </>
+          ) : (
+            "0 destinatarios"
+          )}
         </div>
-      )}
+
+        {pagination.last_page > 1 && (
+          <div className="flex flex-wrap gap-2">
+            {Array.from({
+              length: pagination.last_page,
+            }).map((_, i) => {
+              const pageNumber = i + 1;
+
+              return (
+                <button
+                  key={pageNumber}
+                  onClick={() => setPage(pageNumber)}
+                  className={`w-9 h-9 rounded-lg text-sm font-medium transition ${
+                    page === pageNumber
+                      ? "bg-blue-600 text-white"
+                      : "bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  }`}
+                >
+                  {pageNumber}
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

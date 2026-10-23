@@ -10,7 +10,7 @@ import Image from "next/image";
 import { useAuth } from "@/app/context/AuthContext";
 import { dashboardLinks } from "@/app/dashboard/dashboardsLinks/dashboardsLinks";
 import auth_service from "@/app/dashboard/users/services/auth.service";
-import Swal from "sweetalert2";
+
 export default function Header2() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -29,12 +29,14 @@ export default function Header2() {
   const [submenuAlign, setSubmenuAlign] = useState({});
   const submenuRefs = useRef({});
 
-  const filterLinks = dashboardLinks.filter((item) => {
-    const hasPermission =
-      !item.permission || auth_service.hasPermission(item.permission);
-    const hasRole = !item.role || auth_service.hasRole(item.role);
-    return hasPermission && hasRole;
-  });
+  const filterLinks = isAuthenticated
+    ? dashboardLinks.filter((item) => {
+        const hasPermission =
+          !item.permission || auth_service.hasPermission(item.permission);
+        const hasRole = !item.role || auth_service.hasRole(item.role);
+        return hasPermission && hasRole;
+      })
+    : [];
 
   const isActive = (path) => pathname === path || pathname === `${path}/`;
 
@@ -195,7 +197,8 @@ export default function Header2() {
       ? "!text-[#ffb800] !font-bold"
       : "!text-white hover:!text-[#f4d534] transition-colors";
 
-  const confirmLogout = () => {
+  const confirmLogout = async () => {
+    const { default: Swal } = await import("sweetalert2");
     Swal.fire({
       html: `
       <div class="flex flex-col items-center text-center">

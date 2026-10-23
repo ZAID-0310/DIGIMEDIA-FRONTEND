@@ -125,12 +125,10 @@ export default function Banner() {
                 currentIndex === 0 ? "opacity-100 z-10" : "opacity-0 z-0"
               }`}
               style={{
-                willChange: "opacity, transform",
                 transform: currentIndex === 0 ? "scale(1)" : "scale(1.05)",
-                animation:
-                  currentIndex === 0
-                    ? "slowZoomOut 5s ease-out forwards"
-                    : "none",
+                ...(viewportReady && currentIndex === 0
+                  ? { animation: "slowZoomOut 5s ease-out forwards", willChange: "opacity, transform" }
+                  : {}),
               }}
             />
           </picture>

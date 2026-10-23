@@ -86,7 +86,7 @@ export default function DisenoDesarrolloWeb() {
   };
 
   return (
-    <div className="bg-[#0a001a] bg-gradient-to-b from-[#10003b] via-[#090022] to-[#050014] text-white min-h-screen relative overflow-hidden font-sans">
+    <div className="bg-gradient-to-b from-[#1D006F] to-[#0E0630] text-white min-h-screen relative overflow-hidden font-sans">
       {/* Background Glow Orbs */}
       <div className="absolute top-[5%] left-[-15%] w-[40vw] h-[40vw] max-w-[600px] bg-purple-600/10 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute top-[35%] right-[-15%] w-[45vw] h-[45vw] max-w-[700px] bg-[#FF037F]/5 rounded-full blur-[120px] pointer-events-none" />
@@ -142,14 +142,14 @@ export default function DisenoDesarrolloWeb() {
         {/* ¿CÓMO FUNCIONA? SECTION */}
       </div>
 
-      <section className="w-full py-16 bg-gradient-to-r from-[#120048] via-[#000000] to-[#120048] border-t border-b border-white/5 relative z-10">
+      <section className="w-full py-16 relative z-10">
         <div className="w-full max-w-[1280px] mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6 }}
-            className="max-w-3xl mx-auto text-center"
+            className="max-w-3xl mx-auto text-center bg-[#1a0050] rounded-2xl px-10 py-12 border border-purple-800/40"
           >
             <h2 className="text-[#FFD100] font-extrabold text-2xl sm:text-3xl md:text-4xl uppercase tracking-wider mb-6 font-display">
               ¿CÓMO FUNCIONA?
