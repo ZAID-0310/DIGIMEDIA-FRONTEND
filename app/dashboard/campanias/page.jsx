@@ -84,6 +84,10 @@ export default function CampaniaListPage() {
       label: "Pausadas",
       options: [
         {
+          label: "Pausada Manual",
+          value: "pausada",
+        },
+        {
           label: "Pausada (Límite)",
           value: "pausada_hasta_mañana",
         },
@@ -107,6 +111,10 @@ export default function CampaniaListPage() {
         {
           label: "Cancelada",
           value: "cancelada",
+        },
+        {
+          label: "Eliminada",
+          value: "eliminada",
         },
       ],
     },

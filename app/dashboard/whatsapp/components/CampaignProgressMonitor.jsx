@@ -253,6 +253,13 @@ export function CampaignProgressMonitor() {
       bgColor: "bg-gray-50 dark:bg-gray-950/30",
       borderColor: "border-gray-200 dark:border-gray-800",
     },
+    eliminada: {
+      color: "bg-red-500",
+      text: "Eliminada",
+      icon: "🗑️",
+      bgColor: "bg-red-50 dark:bg-red-950/30",
+      borderColor: "border-red-200 dark:border-red-900",
+    },
     fallida: {
       color: "bg-rose-500",
       text: "Fallida",
@@ -318,7 +325,7 @@ export function CampaignProgressMonitor() {
             </button>
           )}
 
-          {estado !== "cancelada" && estado !== "completada" && (
+          {estado !== "cancelada" && estado !== "completada" && estado !== "eliminada" && (
             <button
               onClick={handleCancel}
               disabled={actionLoading}

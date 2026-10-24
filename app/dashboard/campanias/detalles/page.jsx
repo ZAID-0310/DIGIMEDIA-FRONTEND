@@ -19,6 +19,7 @@ import {
   Play,
   Square,
   Loader2,
+  Trash2,
 } from "lucide-react";
 import Swal from "sweetalert2";
 
@@ -169,6 +170,44 @@ export default function Page() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!id || actionLoading) return;
+    const result = await Swal.fire({
+      title: "¿Eliminar campaña?",
+      text: "Esta campaña se marcará con la etiqueta de 'Eliminada' para fines de auditoría y no se podrá volver a reactivar.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#dc2626",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Sí, eliminar campaña",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (!result.isConfirmed) return;
+
+    setActionLoading(true);
+    try {
+      const res = await campaniaApi.delete(id);
+      if (res?.success) {
+        Swal.fire({
+          title: "Campaña eliminada",
+          text: "La campaña ha sido marcada como eliminada para auditoría.",
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        await fetchCampania();
+      } else {
+        Swal.fire("Error", res?.message || "No se pudo eliminar la campaña.", "error");
+      }
+    } catch (err) {
+      console.error("Error eliminando:", err);
+      Swal.fire("Error", "Ocurrió un error al intentar eliminar la campaña.", "error");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!id || isAuthLoading || !user || !hasRole("administrador, marketing")) return;
 
@@ -233,7 +272,7 @@ export default function Page() {
     (campania.envios_fallidos || 0) +
     (campania.envios_pendientes || 0);
 
-  const estadosFinalizados = ["completada", "cancelada", "error"];
+  const estadosFinalizados = ["completada", "cancelada", "eliminada", "error"];
 
   const estadosPausados = [
     "pausada_hasta_mañana",
@@ -242,7 +281,7 @@ export default function Page() {
   ];
 
   const estaFinalizada = estadosFinalizados.includes(campania.estado);
-
+  const estaEliminada = campania.estado === "eliminada";
   const estaPausada = estadosPausados.includes(campania.estado);
 
   const fechaFinalizacion = campania.fecha_fin || campania.updated_at;
@@ -288,7 +327,7 @@ export default function Page() {
                 </button>
               )}
 
-              {!["cancelada", "completada"].includes(campania.estado) && (
+              {!["cancelada", "completada", "eliminada"].includes(campania.estado) && (
                 <button
                   onClick={handleCancel}
                   disabled={actionLoading}
@@ -297,6 +336,18 @@ export default function Page() {
                 >
                   {actionLoading ? <Loader2 size={13} className="animate-spin" /> : <Square size={13} />}
                   Cancelar
+                </button>
+              )}
+
+              {!estaEliminada && (
+                <button
+                  onClick={handleDelete}
+                  disabled={actionLoading}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-red-50 hover:bg-red-100 text-red-600 dark:bg-red-950/40 dark:hover:bg-red-900/50 dark:text-red-400 border border-red-200 dark:border-red-900/60 shadow-sm transition disabled:opacity-50"
+                  title="Marcar como eliminada para auditoría"
+                >
+                  {actionLoading ? <Loader2 size={13} className="animate-spin" /> : <Trash2 size={13} />}
+                  Eliminar
                 </button>
               )}
             </div>
@@ -327,17 +378,30 @@ export default function Page() {
               </div>
             </div>
 
-            {/* FECHAS */}
+            {/* FECHAS Y AUDITORÍA */}
             <div className="flex flex-wrap gap-4 text-xs text-gray-500">
               <span>
                 Creada: {new Date(campania.created_at).toLocaleString("es-PE")}
               </span>
 
-              {estaFinalizada && fechaFinalizacion && (
+              {campania.usuario?.name && (
+                <span>Por: <strong className="text-gray-700 dark:text-gray-300">{campania.usuario.name}</strong></span>
+              )}
+
+              {estaFinalizada && fechaFinalizacion && !estaEliminada && (
                 <span className="flex items-center gap-1 text-green-600 dark:text-green-400">
                   <CalendarCheck size={14} />
                   Finalizó:{" "}
                   {new Date(fechaFinalizacion).toLocaleString("es-PE")}
+                </span>
+              )}
+
+              {estaEliminada && (
+                <span className="flex items-center gap-1 text-red-600 dark:text-red-400 font-medium">
+                  <Trash2 size={14} />
+                  Eliminada
+                  {campania.fecha_eliminada ? ` el ${new Date(campania.fecha_eliminada).toLocaleString("es-PE")}` : ""}
+                  {campania.usuario_eliminador?.name ? ` por ${campania.usuario_eliminador.name}` : ""}
                 </span>
               )}
 
