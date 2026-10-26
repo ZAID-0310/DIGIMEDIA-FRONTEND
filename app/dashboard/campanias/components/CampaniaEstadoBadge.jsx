@@ -10,6 +10,7 @@ import {
   CheckCircle2,
   XCircle,
   AlertTriangle,
+  Trash2,
 } from "lucide-react";
 
 const ESTADO_CONFIG = {
@@ -74,6 +75,13 @@ const ESTADO_CONFIG = {
     text: "text-rose-700 dark:text-rose-300",
     label: "Cancelada",
     icon: XCircle,
+  },
+
+  eliminada: {
+    bg: "bg-red-100 dark:bg-red-950/40",
+    text: "text-red-700 dark:text-red-400",
+    label: "Eliminada",
+    icon: Trash2,
   },
 
   error: {

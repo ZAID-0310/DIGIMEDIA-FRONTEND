@@ -245,6 +245,12 @@ export const campaniaApi = {
     apiRequest(`/api/whatsapp/campaign/${id}/cancel`, {
       method: "POST",
     }),
+
+  // POST /api/whatsapp/campaign/{id}/delete
+  delete: (id) =>
+    apiRequest(`/api/whatsapp/campaign/${id}/delete`, {
+      method: "POST",
+    }),
 };
 
 export const tiemposApi = {

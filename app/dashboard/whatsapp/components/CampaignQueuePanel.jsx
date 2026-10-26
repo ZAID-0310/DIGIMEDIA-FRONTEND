@@ -129,6 +129,11 @@ export function CampaignQueuePanel() {
         text: 'text-purple-700',
         label: '🚀 En Proceso',
       },
+      pausada: {
+        bg: 'bg-amber-100',
+        text: 'text-amber-700',
+        label: '⏸️ Pausada',
+      },
       pausada_hasta_mañana: {
         bg: 'bg-amber-100',
         text: 'text-amber-700',
@@ -153,6 +158,11 @@ export function CampaignQueuePanel() {
         bg: 'bg-rose-100',
         text: 'text-rose-700',
         label: '❌ Cancelada',
+      },
+      eliminada: {
+        bg: 'bg-rose-100',
+        text: 'text-rose-700',
+        label: '🗑️ Eliminada',
       },
       error: { bg: 'bg-red-100', text: 'text-red-700', label: '⚠️ Error' },
     };
