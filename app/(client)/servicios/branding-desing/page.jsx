@@ -119,8 +119,9 @@ export default function BrandingDesing() {
         {/* ¿CÓMO FUNCIONA? SECTION */}
       </div>
 
-      <section className="w-full py-16 bg-gradient-to-r from-[#120048] via-[#000000] to-[#120048] border-t border-b border-white/5 relative z-10">
-        <div className="w-full max-w-[1280px] mx-auto px-6">
+      <section className="w-full py-16 bg-transparent relative z-10">
+       <div className="w-full max-w-[1280px] mx-auto px-6">
+        <div className="max-w-3xl mx-auto bg-[#120048]/80 border border-white/10 rounded-3xl p-10 shadow-2xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -135,6 +136,8 @@ export default function BrandingDesing() {
               El branding y el diseño se encargan de construir la identidad de una marca a través de elementos visuales y conceptuales que comunican su personalidad, valores y propósito, logrando que sea reconocible, coherente y memorable para su público.
             </p>
           </motion.div>
+          </div> 
+          
         </div>
       </section>
 
