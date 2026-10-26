@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { CampaniaEstadoBadge } from "./CampaniaEstadoBadge";
 import { campaniaApi } from "@/api/fetchApiWhatsApp";
 import Swal from "sweetalert2";
-import { Pause, Play, Square, Loader2 } from "lucide-react";
+import { Pause, Play, Square, Loader2, Trash2 } from "lucide-react";
 
 export default function CampaniaCard({
   campania,
@@ -31,8 +31,10 @@ export default function CampaniaCard({
     "pausada_sin_conexion",
   ].includes(campania.estado);
   const isDraft = campania.estado === "borrador";
-  const isTerminated = ["completada", "cancelada"].includes(campania.estado);
+  const isDeleted = campania.estado === "eliminada";
+  const isTerminated = ["completada", "cancelada", "eliminada"].includes(campania.estado);
   const canCancel = !isTerminated;
+  const canDelete = !isDeleted;
 
   const handleActivate = async () => {
     if (actionLoading) return;
@@ -240,6 +242,49 @@ export default function CampaniaCard({
     }
   };
 
+  const handleDelete = async () => {
+    if (actionLoading) return;
+
+    const result = await Swal.fire({
+      title: `¿Eliminar Campaña #${campania.id_campania}?`,
+      text: "Esta campaña se marcará con la etiqueta de 'Eliminada' para fines de auditoría y no se podrá volver a reactivar.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#dc2626",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Sí, eliminar campaña",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (!result.isConfirmed) return;
+
+    setActionLoading(true);
+    try {
+      const res = await campaniaApi.delete(campania.id_campania);
+      if (res?.success) {
+        Swal.fire({
+          title: "Campaña eliminada",
+          text: `La campaña #${campania.id_campania} ha sido marcada como eliminada para auditoría.`,
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        if (onUpdate) await onUpdate();
+      } else {
+        Swal.fire(
+          "Error",
+          res?.message || "No se pudo eliminar la campaña.",
+          "error"
+        );
+      }
+    } catch (err) {
+      console.error("Error eliminando campaña:", err);
+      Swal.fire("Error", "Ocurrió un error al eliminar la campaña.", "error");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   return (
     <div className="border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm space-y-3 hover:shadow-md transition text-slate-800 dark:text-white flex flex-col justify-between">
       <div className="space-y-3">
@@ -344,6 +389,22 @@ export default function CampaniaCard({
               <Square size={12} />
             )}
             Cancelar
+          </button>
+        )}
+
+        {canDelete && (
+          <button
+            onClick={handleDelete}
+            disabled={actionLoading}
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-red-50 hover:bg-red-100 text-red-600 dark:bg-red-950/40 dark:hover:bg-red-900/50 dark:text-red-400 border border-red-200 dark:border-red-900/60 shadow-sm transition disabled:opacity-50"
+            title="Marcar como eliminada para auditoría"
+          >
+            {actionLoading ? (
+              <Loader2 size={12} className="animate-spin" />
+            ) : (
+              <Trash2 size={12} />
+            )}
+            Eliminar
           </button>
         )}
       </div>
