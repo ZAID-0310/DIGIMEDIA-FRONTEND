@@ -12,18 +12,24 @@ export default function EditionLayout({ children }) {
   const pathname = usePathname()
   const normalizedPathname = pathname.replace(/\/+$/, "") || "/"
   const searchParams = useSearchParams()
-  const [selectedSection, setSelectedSection] = useState("header")
+  const [selectedSection, setSelectedSection] = useState(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const observerRef = useRef(null)
-  const isNavigatingRef = useRef(false)
+  const scrollFrameRef = useRef(null)
   const sectionsRef = useRef(null)
   const isHomeActive =
     normalizedPathname === "/dashboard/blogs" ||
     normalizedPathname.startsWith("/dashboard/blogs/")
+  const editingBlogId = searchParams.get("id") || searchParams.get("id_blog")
+  const templatesHref =
+    searchParams.get("mode") === "edit" && editingBlogId
+      ? `/edition?mode=edit&id=${encodeURIComponent(editingBlogId)}&view=templates`
+      : "/edition/"
   const isTemplatesActive =
     normalizedPathname === "/edition" &&
-    searchParams.get("mode") !== "edit" &&
-    !searchParams.has("template")
+    ((searchParams.get("mode") === "edit" &&
+      searchParams.get("view") === "templates") ||
+      (searchParams.get("mode") !== "edit" && !searchParams.has("template")))
   const isSectionActive = (section) =>
     !isTemplatesActive && selectedSection === section
 
@@ -31,23 +37,42 @@ export default function EditionLayout({ children }) {
     setSelectedSection(id);
     setSidebarOpen(false);
 
-    if (observerRef.current) {
-      observerRef.current.disconnect();
-    }
-
-    isNavigatingRef.current = true;
-
     const targetElement = document.getElementById(id);
     if (targetElement) {
       targetElement.scrollIntoView({ behavior: "smooth", block: "center" });
     }
+  };
 
-    setTimeout(() => {
-      if (document.getElementById(id)) {
-        setupObserver();
-        isNavigatingRef.current = false;
+  const updateSelectedSection = () => {
+    if (isTemplatesActive) return;
+
+    sectionsRef.current = document.querySelectorAll("#header, #body, #footer")
+    const viewportTop = window.innerHeight * 0.05;
+    const viewportBottom = window.innerHeight * 0.95;
+    let mostVisibleSection = null;
+    let maxVisibility = 0;
+
+    sectionsRef.current.forEach((section) => {
+      const rect = section.getBoundingClientRect();
+      const visibleHeight = Math.max(
+        0,
+        Math.min(rect.bottom, viewportBottom) - Math.max(rect.top, viewportTop)
+      );
+      const visibleWidth = Math.max(
+        0,
+        Math.min(rect.right, window.innerWidth) - Math.max(rect.left, 0)
+      );
+      const visibility = visibleHeight * visibleWidth;
+
+      if (visibility > maxVisibility) {
+        maxVisibility = visibility;
+        mostVisibleSection = section.id;
       }
-    }, 1000);
+    });
+
+    setSelectedSection((currentSection) =>
+      currentSection === mostVisibleSection ? currentSection : mostVisibleSection
+    );
   };
 
   const setupObserver = () => {
@@ -56,28 +81,12 @@ export default function EditionLayout({ children }) {
     }
 
     sectionsRef.current = document.querySelectorAll("#header, #body, #footer")
+    if (sectionsRef.current.length !== 3) return false;
 
     observerRef.current = new IntersectionObserver(
-      (entries) => {
-        if (!isNavigatingRef.current) {
-          let mostVisibleSection = null;
-          let maxVisibility = 0;
-
-          entries.forEach((entry) => {
-            const visibility = entry.intersectionRect.height * entry.intersectionRect.width;
-            if (visibility > maxVisibility) {
-              maxVisibility = visibility;
-              mostVisibleSection = entry.target.id;
-            }
-          });
-
-          if (mostVisibleSection) {
-            setSelectedSection(mostVisibleSection);
-          }
-        }
-      },
+      updateSelectedSection,
       {
-        threshold: Array.from({ length: 21 }, (_, i) => i / 20),
+        threshold: [0, 0.5, 1],
         rootMargin: "-5% 0px -5% 0px",
       }
     );
@@ -87,6 +96,9 @@ export default function EditionLayout({ children }) {
         observerRef.current.observe(section);
       });
     }
+
+    updateSelectedSection();
+    return true;
   };
 
   useEffect(() => {
@@ -95,18 +107,26 @@ export default function EditionLayout({ children }) {
         observerRef.current.disconnect()
       }
       sectionsRef.current = null
-      isNavigatingRef.current = false
       setSelectedSection(null)
       return
     }
 
-    setSelectedSection("header")
-    const timer = setTimeout(() => {
-      setupObserver()
-    }, 500)
+    const observerReady = setupObserver()
+    const sectionMountObserver = observerReady
+      ? null
+      : new MutationObserver(() => {
+          if (setupObserver()) {
+            sectionMountObserver.disconnect()
+          }
+        })
+
+    sectionMountObserver?.observe(document.body, {
+      childList: true,
+      subtree: true,
+    })
 
     return () => {
-      clearTimeout(timer)
+      sectionMountObserver?.disconnect()
       if (observerRef.current) {
         observerRef.current.disconnect()
       }
@@ -115,15 +135,27 @@ export default function EditionLayout({ children }) {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (isNavigatingRef.current) return
+      if (scrollFrameRef.current !== null) return
+      scrollFrameRef.current = window.requestAnimationFrame(() => {
+        scrollFrameRef.current = null
+        updateSelectedSection()
+      })
     }
 
-    window.addEventListener('scroll', handleScroll, { passive: true })
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    document.addEventListener("scroll", handleScroll, { capture: true, passive: true })
+    window.addEventListener("resize", handleScroll, { passive: true })
 
     return () => {
-      window.removeEventListener('scroll', handleScroll)
+      window.removeEventListener("scroll", handleScroll)
+      document.removeEventListener("scroll", handleScroll, true)
+      window.removeEventListener("resize", handleScroll)
+      if (scrollFrameRef.current !== null) {
+        window.cancelAnimationFrame(scrollFrameRef.current)
+        scrollFrameRef.current = null
+      }
     }
-  }, [])
+  }, [isTemplatesActive])
 
   useEffect(() => {
     if (sidebarOpen) {
@@ -197,7 +229,7 @@ export default function EditionLayout({ children }) {
             <div className="space-y-3 w-full mb-auto">
               <button
                 disabled={isTemplatesActive}
-                className={`section group w-full py-3 px-4 rounded-lg text-sm font-medium transition-all duration-300 flex items-center disabled:cursor-not-allowed disabled:opacity-50
+                className={`section group w-full py-3 px-4 rounded-lg text-sm font-medium transition-all duration-150 flex items-center disabled:cursor-not-allowed disabled:opacity-50
                   ${isSectionActive("header")
                     ? "bg-gradient-to-r from-slate-700 to-slate-800 text-white shadow-lg border-l-4 border-emerald-500"
                     : "bg-slate-800/30 hover:bg-slate-700/50 hover:translate-x-1"
@@ -212,7 +244,7 @@ export default function EditionLayout({ children }) {
 
               <button
                 disabled={isTemplatesActive}
-                className={`section group w-full py-3 px-4 rounded-lg text-sm font-medium transition-all duration-300 flex items-center disabled:cursor-not-allowed disabled:opacity-50
+                className={`section group w-full py-3 px-4 rounded-lg text-sm font-medium transition-all duration-150 flex items-center disabled:cursor-not-allowed disabled:opacity-50
                   ${isSectionActive("body")
                     ? "bg-gradient-to-r from-slate-700 to-slate-800 text-white shadow-lg border-l-4 border-emerald-500"
                     : "bg-slate-800/30 hover:bg-slate-700/50 hover:translate-x-1"
@@ -227,7 +259,7 @@ export default function EditionLayout({ children }) {
 
               <button
                 disabled={isTemplatesActive}
-                className={`section group w-full py-3 px-4 rounded-lg text-sm font-medium transition-all duration-300 flex items-center disabled:cursor-not-allowed disabled:opacity-50
+                className={`section group w-full py-3 px-4 rounded-lg text-sm font-medium transition-all duration-150 flex items-center disabled:cursor-not-allowed disabled:opacity-50
                   ${isSectionActive("footer")
                     ? "bg-gradient-to-r from-slate-700 to-slate-800 text-white shadow-lg border-l-4 border-emerald-500"
                     : "bg-slate-800/30 hover:bg-slate-700/50 hover:translate-x-1"
@@ -263,7 +295,7 @@ export default function EditionLayout({ children }) {
             </Link>
 
             <Link
-              href="/edition/"
+              href={templatesHref}
               aria-current={isTemplatesActive ? "page" : undefined}
               className={`group w-full py-3 px-4 rounded-lg text-sm font-medium transition-all duration-300 flex items-center ${
                 isTemplatesActive
