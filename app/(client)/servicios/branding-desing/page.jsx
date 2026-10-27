@@ -68,11 +68,9 @@ export default function BrandingDesing() {
   };
 
   return (
-    <div className="bg-[#0a001a] bg-gradient-to-b from-[#10003b] via-[#090022] to-[#050014] text-white min-h-screen relative overflow-hidden font-sans">
+    <div className="bg-gradient-to-b from-[#1D006F] to-[#0E0630] text-white min-h-screen relative overflow-hidden font-sans">
       {/* Background Glow Orbs */}
-      <div className="absolute top-[5%] left-[-15%] w-[40vw] h-[40vw] max-w-[600px] bg-purple-600/10 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute top-[35%] right-[-15%] w-[45vw] h-[45vw] max-w-[700px] bg-[#FF037F]/5 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[15%] left-[10%] w-[35vw] h-[35vw] max-w-[500px] bg-[#b525fe]/8 rounded-full blur-[100px] pointer-events-none" />
+      
 
       {/* Main Container */}
       <div className="w-full max-w-[1280px] mx-auto px-6 relative z-10">
@@ -121,8 +119,9 @@ export default function BrandingDesing() {
         {/* ¿CÓMO FUNCIONA? SECTION */}
       </div>
 
-      <section className="w-full py-16 bg-gradient-to-r from-[#120048] via-[#000000] to-[#120048] border-t border-b border-white/5 relative z-10">
-        <div className="w-full max-w-[1280px] mx-auto px-6">
+      <section className="w-full py-16 bg-transparent relative z-10">
+       <div className="w-full max-w-[1280px] mx-auto px-6">
+        <div className="max-w-3xl mx-auto bg-[#120048]/80 border border-white/10 rounded-3xl p-10 shadow-2xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -137,6 +136,8 @@ export default function BrandingDesing() {
               El branding y el diseño se encargan de construir la identidad de una marca a través de elementos visuales y conceptuales que comunican su personalidad, valores y propósito, logrando que sea reconocible, coherente y memorable para su público.
             </p>
           </motion.div>
+          </div> 
+          
         </div>
       </section>
 
