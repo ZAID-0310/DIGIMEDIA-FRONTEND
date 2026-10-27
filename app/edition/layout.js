@@ -2,17 +2,30 @@
 
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
+import { usePathname, useSearchParams } from "next/navigation"
 import Header from "./components/Header"
 import Footer from "./components/Footer"
 import { Button } from "@/components/ui/button"
 import { Save, Layout, Type, FootprintsIcon as FooterIcon, House, BookTemplate, Pencil, Menu, X } from "lucide-react"
 
 export default function EditionLayout({ children }) {
+  const pathname = usePathname()
+  const normalizedPathname = pathname.replace(/\/+$/, "") || "/"
+  const searchParams = useSearchParams()
   const [selectedSection, setSelectedSection] = useState("header")
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const observerRef = useRef(null)
   const isNavigatingRef = useRef(false)
   const sectionsRef = useRef(null)
+  const isHomeActive =
+    normalizedPathname === "/dashboard/blogs" ||
+    normalizedPathname.startsWith("/dashboard/blogs/")
+  const isTemplatesActive =
+    normalizedPathname === "/edition" &&
+    searchParams.get("mode") !== "edit" &&
+    !searchParams.has("template")
+  const isSectionActive = (section) =>
+    !isTemplatesActive && selectedSection === section
 
   const handleSectionClick = (id) => {
     setSelectedSection(id);
@@ -42,9 +55,7 @@ export default function EditionLayout({ children }) {
       observerRef.current.disconnect();
     }
 
-    if (!sectionsRef.current) {
-      sectionsRef.current = document.querySelectorAll("#header, #body, #footer");
-    }
+    sectionsRef.current = document.querySelectorAll("#header, #body, #footer")
 
     observerRef.current = new IntersectionObserver(
       (entries) => {
@@ -79,8 +90,18 @@ export default function EditionLayout({ children }) {
   };
 
   useEffect(() => {
+    if (isTemplatesActive) {
+      if (observerRef.current) {
+        observerRef.current.disconnect()
+      }
+      sectionsRef.current = null
+      isNavigatingRef.current = false
+      setSelectedSection(null)
+      return
+    }
+
+    setSelectedSection("header")
     const timer = setTimeout(() => {
-      sectionsRef.current = document.querySelectorAll("#header, #body, #footer")
       setupObserver()
     }, 500)
 
@@ -90,7 +111,7 @@ export default function EditionLayout({ children }) {
         observerRef.current.disconnect()
       }
     }
-  }, [])
+  }, [isTemplatesActive])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -175,43 +196,46 @@ export default function EditionLayout({ children }) {
 
             <div className="space-y-3 w-full mb-auto">
               <button
-                className={`section group w-full py-3 px-4 rounded-lg text-sm font-medium transition-all duration-300 flex items-center
-                  ${selectedSection === "header"
+                disabled={isTemplatesActive}
+                className={`section group w-full py-3 px-4 rounded-lg text-sm font-medium transition-all duration-300 flex items-center disabled:cursor-not-allowed disabled:opacity-50
+                  ${isSectionActive("header")
                     ? "bg-gradient-to-r from-slate-700 to-slate-800 text-white shadow-lg border-l-4 border-emerald-500"
                     : "bg-slate-800/30 hover:bg-slate-700/50 hover:translate-x-1"
                   }`}
                 onClick={() => handleSectionClick("header")}
               >
                 <Layout
-                  className={`mr-3 h-4 w-4 ${selectedSection === "header" ? "text-emerald-400" : "text-slate-400 group-hover:text-white"}`}
+                  className={`mr-3 h-4 w-4 ${isSectionActive("header") ? "text-emerald-400" : "text-slate-400 group-hover:text-white"}`}
                 />
                 Header
               </button>
 
               <button
-                className={`section group w-full py-3 px-4 rounded-lg text-sm font-medium transition-all duration-300 flex items-center
-                  ${selectedSection === "body"
+                disabled={isTemplatesActive}
+                className={`section group w-full py-3 px-4 rounded-lg text-sm font-medium transition-all duration-300 flex items-center disabled:cursor-not-allowed disabled:opacity-50
+                  ${isSectionActive("body")
                     ? "bg-gradient-to-r from-slate-700 to-slate-800 text-white shadow-lg border-l-4 border-emerald-500"
                     : "bg-slate-800/30 hover:bg-slate-700/50 hover:translate-x-1"
                   }`}
                 onClick={() => handleSectionClick("body")}
               >
                 <Layout
-                  className={`mr-3 h-4 w-4 ${selectedSection === "body" ? "text-emerald-400" : "text-slate-400 group-hover:text-white"}`}
+                  className={`mr-3 h-4 w-4 ${isSectionActive("body") ? "text-emerald-400" : "text-slate-400 group-hover:text-white"}`}
                 />
                 Body
               </button>
 
               <button
-                className={`section group w-full py-3 px-4 rounded-lg text-sm font-medium transition-all duration-300 flex items-center
-                  ${selectedSection === "footer"
+                disabled={isTemplatesActive}
+                className={`section group w-full py-3 px-4 rounded-lg text-sm font-medium transition-all duration-300 flex items-center disabled:cursor-not-allowed disabled:opacity-50
+                  ${isSectionActive("footer")
                     ? "bg-gradient-to-r from-slate-700 to-slate-800 text-white shadow-lg border-l-4 border-emerald-500"
                     : "bg-slate-800/30 hover:bg-slate-700/50 hover:translate-x-1"
                   }`}
                 onClick={() => handleSectionClick("footer")}
               >
                 <FooterIcon
-                  className={`mr-3 h-4 w-4 ${selectedSection === "footer" ? "text-emerald-400" : "text-slate-400 group-hover:text-white"}`}
+                  className={`mr-3 h-4 w-4 ${isSectionActive("footer") ? "text-emerald-400" : "text-slate-400 group-hover:text-white"}`}
                 />
                 Footer
               </button>
@@ -223,27 +247,35 @@ export default function EditionLayout({ children }) {
               <span className="h-px flex-grow bg-slate-700 ml-2"></span>
             </h2>
 
-            <button
-              className="group w-full py-3 px-4 rounded-lg text-sm font-medium transition-all duration-300 flex items-center bg-slate-800/30 hover:bg-slate-700/50 hover:translate-x-1"
+            <Link
+              href="/dashboard/blogs"
+              aria-current={isHomeActive ? "page" : undefined}
+              className={`group w-full py-3 px-4 rounded-lg text-sm font-medium transition-all duration-300 flex items-center ${
+                isHomeActive
+                  ? "bg-gradient-to-r from-slate-700 to-slate-800 text-white shadow-lg border-l-4 border-emerald-500"
+                  : "bg-slate-800/30 hover:bg-slate-700/50 hover:translate-x-1"
+              }`}
             >
-              <Link href="/dashboard/blogs" className="flex items-center w-full">
-                <House
-                  className="mr-3 h-4 w-4 text-slate-400 group-hover:text-white"
-                />
-                Inicio
-              </Link>
-            </button>
+              <House
+                className={`mr-3 h-4 w-4 ${isHomeActive ? "text-emerald-400" : "text-slate-400 group-hover:text-white"}`}
+              />
+              Inicio
+            </Link>
 
-            <button
-              className="group w-full py-3 px-4 rounded-lg text-sm font-medium transition-all duration-300 flex items-center bg-slate-800/30 hover:bg-slate-700/50 hover:translate-x-1"
+            <Link
+              href="/edition/"
+              aria-current={isTemplatesActive ? "page" : undefined}
+              className={`group w-full py-3 px-4 rounded-lg text-sm font-medium transition-all duration-300 flex items-center ${
+                isTemplatesActive
+                  ? "bg-gradient-to-r from-slate-700 to-slate-800 text-white shadow-lg border-l-4 border-emerald-500"
+                  : "bg-slate-800/30 hover:bg-slate-700/50 hover:translate-x-1"
+              }`}
             >
-              <Link href="/edition/" className="flex items-center w-full">
-                <BookTemplate
-                  className="mr-3 h-4 w-4 text-slate-400 group-hover:text-white"
-                />
-                Plantillas
-              </Link>
-            </button>
+              <BookTemplate
+                className={`mr-3 h-4 w-4 ${isTemplatesActive ? "text-emerald-400" : "text-slate-400 group-hover:text-white"}`}
+              />
+              Plantillas
+            </Link>
 
             <div className="mt-6 pt-6 border-t border-slate-700/50">
               <h2 className="text-xs font-medium uppercase tracking-wider text-slate-400 mb-4 flex items-center">
