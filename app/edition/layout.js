@@ -1,22 +1,29 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback, useMemo } from "react"
 import Link from "next/link"
-import { usePathname, useSearchParams } from "next/navigation"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import Header from "./components/Header"
 import Footer from "./components/Footer"
 import { Button } from "@/components/ui/button"
-import { Save, Layout, Type, FootprintsIcon as FooterIcon, House, BookTemplate, Pencil, Menu, X } from "lucide-react"
+import { AlertTriangle, BookTemplate, FootprintsIcon as FooterIcon, House, Layout, Loader2, Pencil, Save, Menu, X } from "lucide-react"
+import { EditNavigationContext } from "./context/EditNavigationContext"
 
 export default function EditionLayout({ children }) {
+  const router = useRouter()
   const pathname = usePathname()
   const normalizedPathname = pathname.replace(/\/+$/, "") || "/"
   const searchParams = useSearchParams()
   const [selectedSection, setSelectedSection] = useState(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  const [pendingNavigation, setPendingNavigation] = useState(null)
+  const [savingBeforeLeave, setSavingBeforeLeave] = useState(false)
+  const [navigationSaveError, setNavigationSaveError] = useState("")
   const observerRef = useRef(null)
   const scrollFrameRef = useRef(null)
   const sectionsRef = useRef(null)
+  const formActionsRef = useRef(null)
   const isHomeActive =
     normalizedPathname === "/dashboard/blogs" ||
     normalizedPathname.startsWith("/dashboard/blogs/")
@@ -30,8 +37,64 @@ export default function EditionLayout({ children }) {
     ((searchParams.get("mode") === "edit" &&
       searchParams.get("view") === "templates") ||
       (searchParams.get("mode") !== "edit" && !searchParams.has("template")))
+  const isEditingBlog =
+    searchParams.get("mode") === "edit" &&
+    searchParams.get("view") !== "templates" &&
+    Boolean(editingBlogId)
   const isSectionActive = (section) =>
     !isTemplatesActive && selectedSection === section
+  const registerFormState = useCallback((formState) => {
+    formActionsRef.current = formState
+    setHasUnsavedChanges(Boolean(formState?.isDirty))
+  }, [])
+  const navigationContextValue = useMemo(
+    () => ({ registerFormState }),
+    [registerFormState]
+  )
+
+  const handleDashboardNavigation = (event) => {
+    event.preventDefault()
+    setSidebarOpen(false)
+
+    if (isEditingBlog && hasUnsavedChanges) {
+      setNavigationSaveError("")
+      setPendingNavigation("/dashboard/blogs")
+      return
+    }
+
+    router.push("/dashboard/blogs")
+  }
+
+  const handleSaveBeforeLeave = async () => {
+    const save = formActionsRef.current?.save
+    if (!save) {
+      setNavigationSaveError("No se pudo acceder al formulario para guardar los cambios.")
+      return
+    }
+
+    setSavingBeforeLeave(true)
+    setNavigationSaveError("")
+
+    try {
+      const saved = await save()
+      if (saved) {
+        setPendingNavigation(null)
+      } else {
+        setNavigationSaveError("No se pudieron guardar los cambios. Revisa el formulario e inténtalo nuevamente.")
+      }
+    } finally {
+      setSavingBeforeLeave(false)
+    }
+  }
+
+  const handleLeaveWithoutSaving = () => {
+    const destination = pendingNavigation
+    setPendingNavigation(null)
+    setHasUnsavedChanges(false)
+    if (destination) {
+      router.push(destination)
+    }
+  }
 
   const handleSectionClick = (id) => {
     setSelectedSection(id);
@@ -170,7 +233,7 @@ export default function EditionLayout({ children }) {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Header />
+      <Header onNavigate={handleDashboardNavigation} />
 
       {/* Botón hamburguesa flotante: ahora visible hasta pantallas xl (< 1280px) */}
       <button
@@ -281,6 +344,7 @@ export default function EditionLayout({ children }) {
 
             <Link
               href="/dashboard/blogs"
+              onClick={handleDashboardNavigation}
               aria-current={isHomeActive ? "page" : undefined}
               className={`group w-full py-3 px-4 rounded-lg text-sm font-medium transition-all duration-300 flex items-center ${
                 isHomeActive
@@ -322,12 +386,82 @@ export default function EditionLayout({ children }) {
 
         {/* Contenedor del contenido principal: recupera todo el ancho en tablets */}
         <div className="flex-1 p-4 pt-20 xl:p-6 xl:pt-24 ml-0 xl:ml-64 bg-slate-50 overflow-auto w-full">
-          {children}
+          <EditNavigationContext.Provider value={navigationContextValue}>
+            {children}
+          </EditNavigationContext.Provider>
         </div>
       </div>
       <div>
         <Footer />
       </div>
+
+      {pendingNavigation && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm">
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="unsaved-blog-changes-title"
+            className="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl"
+          >
+            <div className="flex items-center gap-3 bg-slate-800 px-6 py-5 text-white">
+              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-amber-400/15 text-amber-300">
+                <AlertTriangle className="h-6 w-6" />
+              </span>
+              <div>
+                <h2 id="unsaved-blog-changes-title" className="text-lg font-semibold">
+                  Cambios sin guardar
+                </h2>
+                <p className="text-sm text-slate-300">Estás editando un blog</p>
+              </div>
+            </div>
+
+            <div className="space-y-5 p-6">
+              <p className="text-sm leading-6 text-slate-600">
+                ¿Quieres guardar los cambios antes de regresar a la lista de blogs?
+              </p>
+              {navigationSaveError && (
+                <p role="alert" className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                  {navigationSaveError}
+                </p>
+              )}
+              <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPendingNavigation(null)
+                    setNavigationSaveError("")
+                  }}
+                  disabled={savingBeforeLeave}
+                  className="min-h-[62px] rounded-xl border-0 bg-slate-600 px-4 py-3 text-sm font-bold leading-tight text-white shadow-none outline-none transition-colors hover:bg-slate-700 focus-visible:ring-2 focus-visible:ring-slate-400 disabled:cursor-not-allowed disabled:opacity-50 sm:flex-1"
+                >
+                  Seguir editando
+                </button>
+                <button
+                  type="button"
+                  onClick={handleLeaveWithoutSaving}
+                  disabled={savingBeforeLeave}
+                  className="min-h-[62px] rounded-xl border-0 bg-red-700 px-4 py-3 text-sm font-bold leading-tight text-white shadow-none outline-none transition-colors hover:bg-red-800 focus-visible:ring-2 focus-visible:ring-red-300 disabled:cursor-not-allowed disabled:opacity-50 sm:flex-1"
+                >
+                  Salir sin guardar
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveBeforeLeave}
+                  disabled={savingBeforeLeave}
+                  className="inline-flex min-h-[62px] items-center justify-center gap-2 rounded-xl border-0 bg-blue-600 px-4 py-3 text-sm font-bold leading-tight text-white shadow-md outline-none transition-colors hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-300 disabled:cursor-not-allowed disabled:opacity-60 sm:flex-1"
+                >
+                  {savingBeforeLeave ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Save className="h-5 w-5 shrink-0" />
+                  )}
+                  {savingBeforeLeave ? "Guardando..." : "Guardar cambios"}
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+      )}
     </div>
   )
 }

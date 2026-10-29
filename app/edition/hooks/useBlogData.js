@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { getCookie } from "cookies-next";
 import Api from "../services/api";
 import blogImageService from "../services/blogImageService";
@@ -96,6 +96,34 @@ export default function useBlogData(
   const [fileFooterFile1, setFileFooterFile1] = useState(null);
   const [fileFooterFile2, setFileFooterFile2] = useState(null);
   const [fileFooterFile3, setFileFooterFile3] = useState(null);
+
+  const currentFormSnapshot = JSON.stringify({
+    resolvedPlantillaId,
+    formEncabezadoHeader,
+    formImagenHeader,
+    formEncabezadoBody,
+    formCommendBody,
+    formGaleryBody,
+    formInfoBody,
+    formEncabezadoFooter,
+    formImagenFooter,
+    files: [
+      fileHeader,
+      fileBodyHeader,
+      fileBodyFile1,
+      fileBodyFile2,
+      fileFooterFile1,
+      fileFooterFile2,
+      fileFooterFile3,
+    ].map((file) =>
+      file
+        ? { name: file.name, size: file.size, lastModified: file.lastModified, type: file.type }
+        : null
+    ),
+  });
+  const cleanFormSnapshotRef = useRef(null);
+  const hydrationInProgressRef = useRef(false);
+  const resetSnapshotWhenStableRef = useRef(false);
 
   // ========== ESTADOS DE VALIDACIÓN ==========
   const [validacionHeader, setValidacionHeader] = useState(false);
@@ -827,6 +855,7 @@ descripcion: footerEnabled
         setFileFooterFile1(null);
         setFileFooterFile2(null);
         setFileFooterFile3(null);
+        resetSnapshotWhenStableRef.current = true;
         setIsDirty(false);
 
         return result;
@@ -871,6 +900,7 @@ descripcion: footerEnabled
         setFileFooterFile1(null);
         setFileFooterFile2(null);
         setFileFooterFile3(null);
+        resetSnapshotWhenStableRef.current = true;
         setIsDirty(false);
 
         return result;
@@ -923,6 +953,7 @@ descripcion: footerEnabled
     setFileFooterFile1(null);
     setFileFooterFile2(null);
     setFileFooterFile3(null);
+    resetSnapshotWhenStableRef.current = true;
 
     setValidacionHeader(false);
     setValidacionBody(false);
@@ -939,23 +970,29 @@ descripcion: footerEnabled
     });
   }, [cleanupBlobUrls, resetAllForms]);
 
-  // Marcar como modificado cuando cambien los datos
+  // Compare actual values against the last loaded or saved version.
   useEffect(() => {
-    if (!loading && !hydrating) {
-      setIsDirty(true);
+    if (hydrating) {
+      hydrationInProgressRef.current = true;
+      return;
     }
-  }, [
-    formEncabezadoHeader,
-    formImagenHeader,
-    formEncabezadoBody,
-    formCommendBody,
-    formGaleryBody,
-    formInfoBody,
-    formEncabezadoFooter,
-    formImagenFooter,
-    loading,
-    hydrating,
-  ]);
+
+    if (loading) return;
+
+    if (
+      cleanFormSnapshotRef.current === null ||
+      hydrationInProgressRef.current ||
+      resetSnapshotWhenStableRef.current
+    ) {
+      cleanFormSnapshotRef.current = currentFormSnapshot;
+      hydrationInProgressRef.current = false;
+      resetSnapshotWhenStableRef.current = false;
+      setIsDirty(false);
+      return;
+    }
+
+    setIsDirty(currentFormSnapshot !== cleanFormSnapshotRef.current);
+  }, [currentFormSnapshot, loading, hydrating]);
 
   // ========== LIMPIEZA DE MEMORY LEAKS ==========
   // Limpiar URLs blob al desmontar para evitar memory leaks
@@ -1048,4 +1085,3 @@ descripcion: footerEnabled
     cleanupBlobUrls,
   };
 }
-
