@@ -33,6 +33,7 @@ function EditionContent() {
     const paramMode = searchParams.get("mode") || "create";
     const paramTemplate = searchParams.get("template");
     const paramId = searchParams.get("id") || searchParams.get("id_blog");
+    const paramView = searchParams.get("view");
 
     setMode(paramMode);
 
@@ -46,7 +47,7 @@ function EditionContent() {
       }
       
       setBlogId(paramId);
-      setCurrentView("form");
+      setCurrentView(paramView === "templates" ? "template-select" : "form");
       setLoading(false);
       
     } else {
@@ -85,6 +86,11 @@ function EditionContent() {
 
   // Handler para cancelar selección de plantilla
   const handleTemplateCancel = () => {
+    if (mode === "edit" && blogId) {
+      router.replace(`/edition?mode=edit&id=${encodeURIComponent(blogId)}`);
+      return;
+    }
+
     router.push("/dashboard/blogs");
   };
 
