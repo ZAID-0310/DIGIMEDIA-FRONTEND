@@ -1,100 +1,122 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useRef, useCallback, useMemo } from "react"
-import Link from "next/link"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import Header from "./components/Header"
-import Footer from "./components/Footer"
-import { Button } from "@/components/ui/button"
-import { AlertTriangle, BookTemplate, FootprintsIcon as FooterIcon, House, Layout, Loader2, Pencil, Save, Menu, X } from "lucide-react"
-import { EditNavigationContext } from "./context/EditNavigationContext"
+import {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+  Suspense,
+} from "react";
+import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import { Button } from "@/components/ui/button";
+import {
+  AlertTriangle,
+  BookTemplate,
+  FootprintsIcon as FooterIcon,
+  House,
+  Layout,
+  Loader2,
+  Pencil,
+  Save,
+  Menu,
+  X,
+} from "lucide-react";
+import { EditNavigationContext } from "./context/EditNavigationContext";
 
-export default function EditionLayout({ children }) {
-  const router = useRouter()
-  const pathname = usePathname()
-  const normalizedPathname = pathname.replace(/\/+$/, "") || "/"
-  const searchParams = useSearchParams()
-  const [selectedSection, setSelectedSection] = useState(null)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
-  const [pendingNavigation, setPendingNavigation] = useState(null)
-  const [savingBeforeLeave, setSavingBeforeLeave] = useState(false)
-  const [navigationSaveError, setNavigationSaveError] = useState("")
-  const observerRef = useRef(null)
-  const scrollFrameRef = useRef(null)
-  const sectionsRef = useRef(null)
-  const formActionsRef = useRef(null)
+function EditionLayoutInner({ children }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const normalizedPathname = pathname.replace(/\/+$/, "") || "/";
+  const searchParams = useSearchParams();
+  const [selectedSection, setSelectedSection] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState(null);
+  const [savingBeforeLeave, setSavingBeforeLeave] = useState(false);
+  const [navigationSaveError, setNavigationSaveError] = useState("");
+  const observerRef = useRef(null);
+  const scrollFrameRef = useRef(null);
+  const sectionsRef = useRef(null);
+  const formActionsRef = useRef(null);
   const isHomeActive =
     normalizedPathname === "/dashboard/blogs" ||
-    normalizedPathname.startsWith("/dashboard/blogs/")
-  const editingBlogId = searchParams.get("id") || searchParams.get("id_blog")
+    normalizedPathname.startsWith("/dashboard/blogs/");
+  const editingBlogId = searchParams.get("id") || searchParams.get("id_blog");
   const templatesHref =
     searchParams.get("mode") === "edit" && editingBlogId
       ? `/edition?mode=edit&id=${encodeURIComponent(editingBlogId)}&view=templates`
-      : "/edition/"
+      : "/edition/";
   const isTemplatesActive =
     normalizedPathname === "/edition" &&
     ((searchParams.get("mode") === "edit" &&
       searchParams.get("view") === "templates") ||
-      (searchParams.get("mode") !== "edit" && !searchParams.has("template")))
+      (searchParams.get("mode") !== "edit" && !searchParams.has("template")));
   const isEditingBlog =
     searchParams.get("mode") === "edit" &&
     searchParams.get("view") !== "templates" &&
-    Boolean(editingBlogId)
+    Boolean(editingBlogId);
   const isSectionActive = (section) =>
-    !isTemplatesActive && selectedSection === section
+    !isTemplatesActive && selectedSection === section;
   const registerFormState = useCallback((formState) => {
-    formActionsRef.current = formState
-    setHasUnsavedChanges(Boolean(formState?.isDirty))
-  }, [])
+    formActionsRef.current = formState;
+    setHasUnsavedChanges(Boolean(formState?.isDirty));
+  }, []);
   const navigationContextValue = useMemo(
     () => ({ registerFormState }),
-    [registerFormState]
-  )
+    [registerFormState],
+  );
 
   const handleDashboardNavigation = (event) => {
-    event.preventDefault()
-    setSidebarOpen(false)
+    event.preventDefault();
+    setSidebarOpen(false);
 
     if (isEditingBlog && hasUnsavedChanges) {
-      setNavigationSaveError("")
-      setPendingNavigation("/dashboard/blogs")
-      return
+      setNavigationSaveError("");
+      setPendingNavigation("/dashboard/blogs");
+      return;
     }
 
-    router.push("/dashboard/blogs")
-  }
+    router.push("/dashboard/blogs");
+  };
 
   const handleSaveBeforeLeave = async () => {
-    const save = formActionsRef.current?.save
+    const save = formActionsRef.current?.save;
     if (!save) {
-      setNavigationSaveError("No se pudo acceder al formulario para guardar los cambios.")
-      return
+      setNavigationSaveError(
+        "No se pudo acceder al formulario para guardar los cambios.",
+      );
+      return;
     }
 
-    setSavingBeforeLeave(true)
-    setNavigationSaveError("")
+    setSavingBeforeLeave(true);
+    setNavigationSaveError("");
 
     try {
-      const saved = await save()
+      const saved = await save();
       if (saved) {
-        setPendingNavigation(null)
+        setPendingNavigation(null);
       } else {
-        setNavigationSaveError("No se pudieron guardar los cambios. Revisa el formulario e inténtalo nuevamente.")
+        setNavigationSaveError(
+          "No se pudieron guardar los cambios. Revisa el formulario e inténtalo nuevamente.",
+        );
       }
     } finally {
-      setSavingBeforeLeave(false)
+      setSavingBeforeLeave(false);
     }
-  }
+  };
 
   const handleLeaveWithoutSaving = () => {
-    const destination = pendingNavigation
-    setPendingNavigation(null)
-    setHasUnsavedChanges(false)
+    const destination = pendingNavigation;
+    setPendingNavigation(null);
+    setHasUnsavedChanges(false);
     if (destination) {
-      router.push(destination)
+      router.push(destination);
     }
-  }
+  };
 
   const handleSectionClick = (id) => {
     setSelectedSection(id);
@@ -109,7 +131,7 @@ export default function EditionLayout({ children }) {
   const updateSelectedSection = () => {
     if (isTemplatesActive) return;
 
-    sectionsRef.current = document.querySelectorAll("#header, #body, #footer")
+    sectionsRef.current = document.querySelectorAll("#header, #body, #footer");
     const viewportTop = window.innerHeight * 0.05;
     const viewportBottom = window.innerHeight * 0.95;
     let mostVisibleSection = null;
@@ -119,11 +141,11 @@ export default function EditionLayout({ children }) {
       const rect = section.getBoundingClientRect();
       const visibleHeight = Math.max(
         0,
-        Math.min(rect.bottom, viewportBottom) - Math.max(rect.top, viewportTop)
+        Math.min(rect.bottom, viewportBottom) - Math.max(rect.top, viewportTop),
       );
       const visibleWidth = Math.max(
         0,
-        Math.min(rect.right, window.innerWidth) - Math.max(rect.left, 0)
+        Math.min(rect.right, window.innerWidth) - Math.max(rect.left, 0),
       );
       const visibility = visibleHeight * visibleWidth;
 
@@ -134,7 +156,9 @@ export default function EditionLayout({ children }) {
     });
 
     setSelectedSection((currentSection) =>
-      currentSection === mostVisibleSection ? currentSection : mostVisibleSection
+      currentSection === mostVisibleSection
+        ? currentSection
+        : mostVisibleSection,
     );
   };
 
@@ -143,16 +167,13 @@ export default function EditionLayout({ children }) {
       observerRef.current.disconnect();
     }
 
-    sectionsRef.current = document.querySelectorAll("#header, #body, #footer")
+    sectionsRef.current = document.querySelectorAll("#header, #body, #footer");
     if (sectionsRef.current.length !== 3) return false;
 
-    observerRef.current = new IntersectionObserver(
-      updateSelectedSection,
-      {
-        threshold: [0, 0.5, 1],
-        rootMargin: "-5% 0px -5% 0px",
-      }
-    );
+    observerRef.current = new IntersectionObserver(updateSelectedSection, {
+      threshold: [0, 0.5, 1],
+      rootMargin: "-5% 0px -5% 0px",
+    });
 
     if (sectionsRef.current) {
       sectionsRef.current.forEach((section) => {
@@ -167,69 +188,72 @@ export default function EditionLayout({ children }) {
   useEffect(() => {
     if (isTemplatesActive) {
       if (observerRef.current) {
-        observerRef.current.disconnect()
+        observerRef.current.disconnect();
       }
-      sectionsRef.current = null
-      setSelectedSection(null)
-      return
+      sectionsRef.current = null;
+      setSelectedSection(null);
+      return;
     }
 
-    const observerReady = setupObserver()
+    const observerReady = setupObserver();
     const sectionMountObserver = observerReady
       ? null
       : new MutationObserver(() => {
           if (setupObserver()) {
-            sectionMountObserver.disconnect()
+            sectionMountObserver.disconnect();
           }
-        })
+        });
 
     sectionMountObserver?.observe(document.body, {
       childList: true,
       subtree: true,
-    })
+    });
 
     return () => {
-      sectionMountObserver?.disconnect()
+      sectionMountObserver?.disconnect();
       if (observerRef.current) {
-        observerRef.current.disconnect()
+        observerRef.current.disconnect();
       }
-    }
-  }, [isTemplatesActive])
+    };
+  }, [isTemplatesActive]);
 
   useEffect(() => {
     const handleScroll = () => {
-      if (scrollFrameRef.current !== null) return
+      if (scrollFrameRef.current !== null) return;
       scrollFrameRef.current = window.requestAnimationFrame(() => {
-        scrollFrameRef.current = null
-        updateSelectedSection()
-      })
-    }
+        scrollFrameRef.current = null;
+        updateSelectedSection();
+      });
+    };
 
-    window.addEventListener("scroll", handleScroll, { passive: true })
-    document.addEventListener("scroll", handleScroll, { capture: true, passive: true })
-    window.addEventListener("resize", handleScroll, { passive: true })
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    document.addEventListener("scroll", handleScroll, {
+      capture: true,
+      passive: true,
+    });
+    window.addEventListener("resize", handleScroll, { passive: true });
 
     return () => {
-      window.removeEventListener("scroll", handleScroll)
-      document.removeEventListener("scroll", handleScroll, true)
-      window.removeEventListener("resize", handleScroll)
+      window.removeEventListener("scroll", handleScroll);
+      document.removeEventListener("scroll", handleScroll, true);
+      window.removeEventListener("resize", handleScroll);
       if (scrollFrameRef.current !== null) {
-        window.cancelAnimationFrame(scrollFrameRef.current)
-        scrollFrameRef.current = null
+        window.cancelAnimationFrame(scrollFrameRef.current);
+        scrollFrameRef.current = null;
       }
-    }
-  }, [isTemplatesActive])
+    };
+  }, [isTemplatesActive]);
 
   useEffect(() => {
     if (sidebarOpen) {
-      document.body.style.overflow = "hidden"
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = ""
+      document.body.style.overflow = "";
     }
     return () => {
-      document.body.style.overflow = ""
-    }
-  }, [sidebarOpen])
+      document.body.style.overflow = "";
+    };
+  }, [sidebarOpen]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -293,9 +317,10 @@ export default function EditionLayout({ children }) {
               <button
                 disabled={isTemplatesActive}
                 className={`section group w-full py-3 px-4 rounded-lg text-sm font-medium transition-all duration-150 flex items-center disabled:cursor-not-allowed disabled:opacity-50
-                  ${isSectionActive("header")
-                    ? "bg-gradient-to-r from-slate-700 to-slate-800 text-white shadow-lg border-l-4 border-emerald-500"
-                    : "bg-slate-800/30 hover:bg-slate-700/50 hover:translate-x-1"
+                  ${
+                    isSectionActive("header")
+                      ? "bg-gradient-to-r from-slate-700 to-slate-800 text-white shadow-lg border-l-4 border-emerald-500"
+                      : "bg-slate-800/30 hover:bg-slate-700/50 hover:translate-x-1"
                   }`}
                 onClick={() => handleSectionClick("header")}
               >
@@ -308,9 +333,10 @@ export default function EditionLayout({ children }) {
               <button
                 disabled={isTemplatesActive}
                 className={`section group w-full py-3 px-4 rounded-lg text-sm font-medium transition-all duration-150 flex items-center disabled:cursor-not-allowed disabled:opacity-50
-                  ${isSectionActive("body")
-                    ? "bg-gradient-to-r from-slate-700 to-slate-800 text-white shadow-lg border-l-4 border-emerald-500"
-                    : "bg-slate-800/30 hover:bg-slate-700/50 hover:translate-x-1"
+                  ${
+                    isSectionActive("body")
+                      ? "bg-gradient-to-r from-slate-700 to-slate-800 text-white shadow-lg border-l-4 border-emerald-500"
+                      : "bg-slate-800/30 hover:bg-slate-700/50 hover:translate-x-1"
                   }`}
                 onClick={() => handleSectionClick("body")}
               >
@@ -323,9 +349,10 @@ export default function EditionLayout({ children }) {
               <button
                 disabled={isTemplatesActive}
                 className={`section group w-full py-3 px-4 rounded-lg text-sm font-medium transition-all duration-150 flex items-center disabled:cursor-not-allowed disabled:opacity-50
-                  ${isSectionActive("footer")
-                    ? "bg-gradient-to-r from-slate-700 to-slate-800 text-white shadow-lg border-l-4 border-emerald-500"
-                    : "bg-slate-800/30 hover:bg-slate-700/50 hover:translate-x-1"
+                  ${
+                    isSectionActive("footer")
+                      ? "bg-gradient-to-r from-slate-700 to-slate-800 text-white shadow-lg border-l-4 border-emerald-500"
+                      : "bg-slate-800/30 hover:bg-slate-700/50 hover:translate-x-1"
                   }`}
                 onClick={() => handleSectionClick("footer")}
               >
@@ -408,7 +435,10 @@ export default function EditionLayout({ children }) {
                 <AlertTriangle className="h-6 w-6" />
               </span>
               <div>
-                <h2 id="unsaved-blog-changes-title" className="text-lg font-semibold">
+                <h2
+                  id="unsaved-blog-changes-title"
+                  className="text-lg font-semibold"
+                >
                   Cambios sin guardar
                 </h2>
                 <p className="text-sm text-slate-300">Estás editando un blog</p>
@@ -417,10 +447,14 @@ export default function EditionLayout({ children }) {
 
             <div className="space-y-5 p-6">
               <p className="text-sm leading-6 text-slate-600">
-                ¿Quieres guardar los cambios antes de regresar a la lista de blogs?
+                ¿Quieres guardar los cambios antes de regresar a la lista de
+                blogs?
               </p>
               {navigationSaveError && (
-                <p role="alert" className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                <p
+                  role="alert"
+                  className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+                >
                   {navigationSaveError}
                 </p>
               )}
@@ -428,8 +462,8 @@ export default function EditionLayout({ children }) {
                 <button
                   type="button"
                   onClick={() => {
-                    setPendingNavigation(null)
-                    setNavigationSaveError("")
+                    setPendingNavigation(null);
+                    setNavigationSaveError("");
                   }}
                   disabled={savingBeforeLeave}
                   className="min-h-[62px] rounded-xl border-0 bg-slate-600 px-4 py-3 text-sm font-bold leading-tight text-white shadow-none outline-none transition-colors hover:bg-slate-700 focus-visible:ring-2 focus-visible:ring-slate-400 disabled:cursor-not-allowed disabled:opacity-50 sm:flex-1"
@@ -463,5 +497,13 @@ export default function EditionLayout({ children }) {
         </div>
       )}
     </div>
-  )
+  );
+}
+
+export default function EditionLayout({ children }) {
+  return (
+    <Suspense fallback={null}>
+      <EditionLayoutInner>{children}</EditionLayoutInner>
+    </Suspense>
+  );
 }
