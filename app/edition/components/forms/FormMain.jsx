@@ -14,6 +14,7 @@ import useBlogData from "../../hooks/useBlogData";
 import FormHeader from "./FormHeader";
 import FormBody from "./FormBody";
 import FormFooter from "./FormFooter";
+import { useEditNavigation } from "../../context/EditNavigationContext";
 
 // Configuración de plantillas
 import {
@@ -51,6 +52,7 @@ export default function FormMain({
   autoSave = false,
   autoSaveInterval = 30000, // 30 segundos
 }) {
+  const { registerFormState } = useEditNavigation();
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
@@ -343,7 +345,7 @@ useEffect(() => {
   const handleSave = useCallback(async () => {
   if (!isFormValid) {
     setError("Por favor completa todos los campos obligatorios");
-    return;
+    return false;
   }
 
   try {
@@ -359,14 +361,20 @@ useEffect(() => {
     setTimeout(() => setSaveSuccess(false), 3000);
 
     onSuccess?.(result);
+    return true;
   } catch (err) {
     setError("No se pudo guardar el blog. Intenta nuevamente.");
+    return false;
   } finally {
     setIsSaving(false);
   }
 }, [isFormValid, saveBlog, onSuccess, isPublicado, formEncabezadoFooter, setError, clearError]);
 
+  useEffect(() => {
+    registerFormState({ isDirty, save: handleSave });
+  }, [isDirty, handleSave, registerFormState]);
 
+  useEffect(() => () => registerFormState(null), [registerFormState]);
 
   // Handler para cancelar
   const handleCancel = useCallback(() => {
