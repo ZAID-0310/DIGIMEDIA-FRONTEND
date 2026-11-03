@@ -78,7 +78,7 @@ export default function Page() {
 
   return (
     <div className="bg-[linear-gradient(180deg,#000118_0%,#410C89_50%,#000118_100%)] min-h-screen pb-20 font-sans">
-      {/* Banner */}
+      {/* Banner (Sin cambios) */}
       <div className="relative w-full h-[500px] flex items-center justify-center overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"
@@ -94,26 +94,26 @@ export default function Page() {
         </h1>
       </div>
 
-      {/* Información */}
-      <div className="w-full py-16 flex justify-center">
-        <div className="w-full max-w-[1300px] px-4">
-          <div className="bg-[#05000a] rounded-[3rem] py-10 px-8 text-center shadow-2xl border border-white/5">
-            <p className="text-gray-300 text-base md:text-lg leading-relaxed font-light">
-              Encuentra respuestas a las dudas
-              <br className="hidden sm:block" />
-              más comunes sobre
-              <br className="hidden sm:block" />
-              nuestros servicios.
-            </p>
-          </div>
-        </div>
-      </div>
+      {/* Información (Sin cambios) */}
 
-      {/* Preguntas */}
+<div className="w-full py-16 flex justify-center">
+  <div className="w-full max-w-[1000px] px-4">
+    <div className="bg-white/8 backdrop-blur-xl rounded-[3rem] py-10 px-8 text-center shadow-[0_8px_32px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.2)] border border-white/20">
+      <p className="text-white/80 text-base md:text-lg leading-relaxed font-light">
+        Encuentra respuestas a las dudas más comunes sobre nuestros servicios.
+      </p>
+    </div>
+  </div>
+</div>
+
+      {/* =========================================================
+          PREGUNTAS 
+          ========================================================= */}
       <div className="max-w-[1000px] mx-auto px-4 mb-6 sm:mb-12">
-        <div className="bg-[#1c083b]/90 rounded-[2.5rem] p-6 sm:p-10 shadow-2xl border border-white/5">
+        <div className="bg-white/8 backdrop-blur-xl rounded-[2.5rem] p-6 sm:p-10 shadow-[0_8px_32px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.2)] border border-white/20">
+          
           {/* Categorías */}
-          <div className="flex flex-wrap justify-between items-center border-b border-[#3b1575] pb-4 mb-8 gap-4 px-2">
+          <div className="flex flex-wrap justify-between items-center border-b border-white/10 pb-4 mb-8 gap-4 px-2">
             {categories.map((category, index) => (
               <button
                 key={index}
@@ -123,8 +123,8 @@ export default function Page() {
                 }}
                 className={`pb-2 text-sm md:text-base font-medium transition-all duration-300 ${
                   activeCategory === index
-                    ? "text-[#f5a000] border-b-2 border-[#f5a000]"
-                    : "text-gray-400 hover:text-white"
+                    ? "text-white border-b-2 border-white"
+                    : "text-white/50 hover:text-white/80"
                 }`}
               >
                 {category.name}
@@ -132,9 +132,10 @@ export default function Page() {
             ))}
           </div>
 
-          {/* Contenedor */}
-          <div className="bg-[#05000a] rounded-[2rem] p-6 sm:p-10 shadow-inner">
-            <h2 className="text-center text-xl font-bold text-[#f5a000] mb-8">
+          {/* Contenedor Interno */}
+          <div className="rounded-[2rem] p-6 sm:p-10">
+            {/* Título de la categoría activa */}
+            <h2 className="text-center text-xl font-bold text-white mb-8 tracking-wider">
               {categories[activeCategory].name}
             </h2>
 
@@ -145,18 +146,18 @@ export default function Page() {
                 return (
                   <div
                     key={itemIndex}
-                    className="rounded-xl overflow-hidden border border-[#2b0854]/50 bg-[#0f0121] transition-all duration-300"
+                    className="rounded-xl overflow-hidden border border-white/10 bg-white/3 transition-all duration-300 hover:bg-white/10"
                   >
                     <button
                       onClick={() => setOpenQuestion(isOpen ? null : itemIndex)}
-                      className="w-full flex justify-between items-center px-6 py-5 text-left hover:bg-[#170330] transition-colors duration-300"
+                      className="w-full flex justify-between items-center px-6 py-5 text-left transition-colors duration-300"
                     >
                       <span className="text-white font-medium pr-5">
                         {data[itemIndex].question}
                       </span>
 
                       <svg
-                        className={`w-6 h-6 text-[#f5a000] transition-transform duration-300 ${
+                        className={`w-6 h-6 text-white transition-transform duration-300 ${
                           isOpen ? "rotate-180" : ""
                         }`}
                         fill="none"
@@ -180,8 +181,8 @@ export default function Page() {
                       }`}
                     >
                       <div className="overflow-hidden">
-                        <div className="border-t border-[#2b0854]/40 bg-[#14032b] px-6 py-5">
-                          <p className="text-gray-300 leading-8">
+                        <div className="border-t border-white/10 bg-black/20 px-6 py-5">
+                          <p className="text-white/80 leading-8">
                             {data[itemIndex].answer}
                           </p>
                         </div>
@@ -194,42 +195,32 @@ export default function Page() {
           </div>
         </div>
       </div>
+      {/* =========================================================
+          FIN DE LA SECCIÓN 
+          ========================================================= */}
 
-      {/* Contacto */}
-      <div className="w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-12">
-        <div className="max-w-7xl mx-auto">
-          {/* Fondo exterior */}
-          <div className="relative overflow-hidden rounded-[3rem] bg-gradient-to-r from-[#5a18b8] via-[#8d24ff] to-[#5a18b8] p-[2px] shadow-[0_25px_80px_rgba(140,36,255,.35)]">
-            {/* Fondo interior */}
-            <div className="relative overflow-hidden rounded-[3rem] bg-[#22064b] px-8 py-14 md:px-16">
-              {/* Decoración */}
-              <div className="absolute -top-32 -left-32 w-72 h-72 rounded-full bg-[#c63cff]/20 blur-3xl"></div>
-              <div className="absolute -bottom-32 -right-32 w-72 h-72 rounded-full bg-[#6d17ff]/20 blur-3xl"></div>
-
-              <div className="relative z-10 max-w-4xl mx-auto">
-                {/* Caja central */}
-                <div className="bg-[#2a0b57]/90 border border-white/5 rounded-[2rem] px-8 py-12 text-center shadow-2xl">
-                  <h2 className="text-white text-3xl md:text-4xl font-bold mb-4">
-                    ¿No encuentras la respuesta que buscas?
-                  </h2>
-
-                  <p className="text-gray-300 text-base md:text-lg leading-8 max-w-2xl mx-auto mb-10">
-                    Nuestro equipo está listo para resolver cualquier duda sobre
-                    nuestros servicios. Escríbenos por WhatsApp y recibe
-                    atención personalizada en pocos minutos.
-                  </p>
-
-                  <a
-                    href="https://wa.me/983027828?text=Hola, quisiera realizar una pregunta sobre su negocio."
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full max-w-[280px] mx-auto inline-flex items-center justify-center rounded-2xl bg-[#f5a000] px-4 py-3.5 text-base sm:text-lg font-bold text-black text-center leading-tight transition-all duration-300 hover:bg-[#ffb81a] hover:scale-105 hover:shadow-[0_0_35px_rgba(245,160,0,.45)]"
-                  >
-                    CONTÁCTANOS AHORA
-                  </a>
-                </div>
-              </div>
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-12">
+        <div className="max-w-5xl mx-auto">
+          <div className="relative overflow-hidden rounded-[32px] bg-white/[0.03] backdrop-blur-3xl border border-white/15 shadow-[0_30px_60px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.2)] px-8 py-16 md:px-16 text-center">
+            <div className="relative z-10 max-w-3xl mx-auto">
+              <h2 className="text-white text-3xl md:text-4xl font-bold mb-6 tracking-wide">
+                ¿No encuentras la respuesta que buscas?
+              </h2>
+              <p className="text-gray-300 text-base md:text-lg leading-8 mb-10 font-light">
+                Nuestro equipo está listo para resolver cualquier duda sobre
+                nuestros servicios. Escríbenos por WhatsApp y recibe
+                atención personalizada en pocos minutos.
+              </p>
+              <a
+                href="https://wa.me/983027828?text=Hola, quisiera realizar una pregunta sobre su negocio."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center rounded-2xl bg-[#f5a000] px-8 py-4 text-base sm:text-lg font-bold text-black transition-all duration-300 hover:-translate-y-1 hover:bg-[#ffb81a] hover:shadow-[0_0_35px_rgba(245,160,0,0.6)] shadow-[0_0_20px_rgba(245,160,0,0.3)]"
+              >
+                CONTÁCTANOS AHORA
+              </a>
             </div>
+
           </div>
         </div>
       </div>
