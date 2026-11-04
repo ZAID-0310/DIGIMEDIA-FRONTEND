@@ -17,13 +17,13 @@ export default function DisenoDesarrolloWeb() {
   const nextRef = useRef(null);
   const servicios = [
     {
-      title: "DESARROLLO RESPONSIVE",
+      title: "DESARROLLO WEB",
       text: "Creamos experiencias modernas que atrapan, cautivan y convierten visitantes en clientes fieles.",
       image:
         "/servicios/diseno_desarrollo_web/desarrollo_web/desarrollo-web-responsive-digimedia.webp",
       ruta: "/servicios/desarrollo-webs/",
-      imageTitle: "Sub servicio de creación y desarrollo web",
-      imageAlt: "Imagen de desarrollo web responsive ofrecido por Digimedia",
+      imageTitle: "Sub servicio de desarrollo web",
+      imageAlt: "Imagen de desarrollo web ofrecido por Digimedia",
     },
     {
       title: "EXPERIENCIA DE USUARIO Y DISEÑO",
@@ -40,7 +40,7 @@ export default function DisenoDesarrolloWeb() {
       text: "Mayor visibilidad, mejor posicionamiento y más clientes potenciales. Llevamos tu sitio web a los primeros resultados de búsqueda.",
       image:
         "/servicios/diseno_desarrollo_web/dominio_hosting/optimizacion-seo-buscadores-digimedia.webp",
-      ruta: "/servicios/dominio_hosting/",
+      ruta: "/servicios/seo/",
       imageTitle: "Sub servicio de optimización SEO para buscadores",
       imageAlt:
         "Imagen de optimización SEO en buscadores y posicionamiento orgánico",
@@ -50,7 +50,7 @@ export default function DisenoDesarrolloWeb() {
       text: "Desarrollamos sitios web adaptables y conectados con herramientas digitales que potencian la conversión y optimizan tu gestión.",
       image:
         "/servicios/diseno_desarrollo_web/seo/desarrollo-responsive-integraciones-digitales-digimedia.webp",
-      ruta: "/servicios/seo/",
+      ruta: "/servicios/desarrollo-responsive/",
       imageTitle:
         "Subservicio de Desarrollo responsive e integraciones digitales",
       imageAlt:

@@ -45,7 +45,7 @@ const STATIC_PAGES = [
   { loc: "/servicios/branding-desing/", priority: "0.80" },
   { loc: "/servicios/marketing-gestion/", priority: "0.80" },
   { loc: "/servicios/desarrollo-webs/", priority: "0.64" },
-  { loc: "/servicios/dominio_hosting/", priority: "0.64" },
+  { loc: "/servicios/dominio-hosting/", priority: "0.64" },
   { loc: "/servicios/seo/", priority: "0.64" },
   { loc: "/servicios/planificacion-cronograma/", priority: "0.64" },
   { loc: "/servicios/diseno-pautas/", priority: "0.64" },

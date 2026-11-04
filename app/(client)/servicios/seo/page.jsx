@@ -6,21 +6,21 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function IntegracionesDigitales() {
+export default function OptimizacionSEO() {
   const servicios = [
     {
-      title: "DISEÑO RESPONSIVE",
-      text: "Adaptamos tu sitio a todos los dispositivos para garantizar una experiencia fluida y profesional.",
-      image: "/servicios/diseno_desarrollo_web/seo/diseno-responsive-digimedia-icono.webp",
-      imageTitle: "Sub-subservicio de Diseño responsive",
-      imageAlt: "Ícono adaptabilidad en pantallas móviles y escritorio",
+      title: "SEO ON-PAGE",
+      text: "Analizamos y optimizamos la estructura web para asegurar su correcta indexación, mejorando la velocidad de carga, la jerarquía de contenidos y el posicionamiento en buscadores.",
+      image: "/servicios/diseno_desarrollo_web/dominio_hosting/seo-on-page-digimedia-icono.webp",
+      imageTitle: "Sub-subservicio de SEO ON-PAGE",
+      imageAlt: "Ícono que contiene las siglas SEO dentro de una lupa",
     },
     {
-      title: "INTEGRACIONES DIGITALES",
-      text: "Conectamos tu web con herramientas como WhatsApp, redes sociales y formularios para facilitar la conversión.",
-      image: "/servicios/diseno_desarrollo_web/seo/integraciones-digitales-digimedia-icono.webp",
-      imageTitle: "Sub-subservicio de Integraciones digitales",
-      imageAlt: "Ícono que representa conexiones y API en la nube",
+      title: "SEO OFF-PAGE",
+      text: "Desarrollamos enlaces de calidad para aumentar la autoridad del dominio y reforzar la relevancia de su marca en su sector.",
+      image: "/servicios/diseno_desarrollo_web/dominio_hosting/seo-off-page-digimedia-icono.webp",
+      imageTitle: "Sub-subservicio de SEO OFF-PAGE",
+      imageAlt: "Ícono que contiene las siglas SEO dentro de una lupa por delante de una pantalla",
     },
   ];
 
@@ -63,9 +63,9 @@ export default function IntegracionesDigitales() {
             {/* Left Side: Image */}
             <div className="relative w-full aspect-[4/3] sm:aspect-[16/10] lg:aspect-[4/3] rounded-[24px] md:rounded-[32px] overflow-hidden shadow-lg border border-white/5">
               <Image
-                src="/servicios/diseno_desarrollo_web/seo/desarrollo-responsive-e-integraciones-digitales-digimedia.webp"
-                alt="Subservicio de Desarrollo responsive e integraciones digitales"
-                title="Desarrollo responsive e integraciones digitales | Digimedia"
+                src="/servicios/diseno_desarrollo_web/dominio_hosting/estrategia-seo-para-buscadores-digimedia.webp"
+                alt="Subservicio de Optimización SEO para buscadores"
+                title="Subservicio de Optimización SEO para buscadores | Digimedia"
                 fill
                 priority
                 className="object-cover"
@@ -82,12 +82,12 @@ export default function IntegracionesDigitales() {
               
               {/* Title */}
               <h1 className="text-white font-extrabold text-3xl sm:text-4xl md:text-5xl leading-tight mb-6 font-display tracking-tight uppercase">
-                DESARROLLO RESPONSIVE <br className="hidden sm:inline" /> E INTEGRACIONES DIGITALES
+                OPTIMIZACIÓN SEO <br className="hidden sm:inline" /> PARA BUSCADORES
               </h1>
               
               {/* Description */}
               <p className="text-gray-300 text-base sm:text-lg leading-relaxed">
-                Creamos sitios web adaptables a todos los dispositivos e integramos herramientas digitales clave, pasarelas de pago, automatizaciones y analítica para optimizar la experiencia del usuario y potenciar la conversión.
+                Mejoramos la visibilidad de tu sitio web en los motores de búsqueda mediante una optimización técnica y estratégica. Trabajamos palabras clave, estructura, velocidad y contenido para atraer tráfico cualificado y aumentar tus conversiones de forma orgánica.
               </p>
             </div>
           </motion.div>
