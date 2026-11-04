@@ -82,7 +82,7 @@ export default function DesarrolloResponsive() {
               
               {/* Title */}
               <h1 className="text-white font-extrabold text-3xl sm:text-4xl md:text-5xl leading-tight mb-6 font-display tracking-tight uppercase">
-                DESARROLLO <br className="hidden sm:inline" /> RESPONSIVE
+                DESARROLLO WEB
               </h1>
               
               {/* Description */}
