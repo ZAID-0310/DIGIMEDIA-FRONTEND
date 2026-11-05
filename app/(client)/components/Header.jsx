@@ -40,6 +40,14 @@ export default function Header2() {
 
   const isActive = (path) => pathname === path || pathname === `${path}/`;
 
+  const isActiveGroup = (paths) =>
+    paths.some(
+      (path) =>
+        pathname === path ||
+        pathname === `${path}/` ||
+        pathname.startsWith(`${path}/`)
+    );
+
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth <= 768);
     check();
@@ -192,10 +200,17 @@ export default function Header2() {
     transition: "background-color 0.15s ease",
   });
 
-  const getNavColor = (isActiveCheck) =>
-    isActiveCheck
-      ? "!text-[#ffb800] !font-bold"
-      : "!text-white hover:!text-[#f4d534] transition-colors";
+const getNavColor = (isActiveCheck, isOpen = false) => {
+  const underline =
+    "after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-0 after:h-[3px] after:bg-[#ffb800] after:rounded-full after:transition-all after:duration-300 hover:after:w-[80%] after:pointer-events-none";
+  if (isActiveCheck) {
+    return "!text-[#ffb800] !font-bold transition-colors rounded-xl px-4 py-2 relative";
+  }
+  if (isOpen) {
+    return `!text-[#ffb800] transition-colors rounded-xl px-4 py-2 relative ${underline}`;
+  }
+  return `!text-white hover:!text-[#ffb800] transition-colors rounded-xl px-4 py-2 relative ${underline}`;
+};
 
   const confirmLogout = async () => {
     const { default: Swal } = await import("sweetalert2");
@@ -366,76 +381,116 @@ export default function Header2() {
               onMouseLeave={handleMouseLeave}
             >
               <p
-                className={`flex justify-center items-center gap-2 px-4 py-3 h-full ${getNavColor(isActive("/servicios") || openSubmenu === "services")}`}
+                className={`flex justify-center items-center gap-2 ${getNavColor(
+                  isActiveGroup(["/servicios"]),
+                  openSubmenu === "services"
+    
+  )}`}
+  style={{ position: "relative" }}
               >
                 Servicios
                 <ChevronDown
                   className={`w-4 h-4 ${styles.chevron} ${openSubmenu === "services" ? styles.chevronOpen : ""}`}
                 />
               </p>
-              <ul
-                ref={(el) => (submenuRefs.current["services"] = el)}
-                suppressHydrationWarning
-                className={`${styles.menuVertical} !bg-[#130049] shadow-lg md:absolute top-full mt-0 min-w-[280px] py-4 flex flex-col gap-4 z-50`}
-                style={submenuStyle("services")}
-              >
-                <li
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    closeMenu();
-                  }}
-                  className="w-full"
-                >
-                  <Link
-                    href="/servicios/desing-desarrollo"
-                    className="!block !w-full !px-4 !py-2 !text-center !text-white !font-extrabold hover:!text-[#ffb800] transition-colors text-[15px]"
-                  >
-                    Diseño y Desarrollo Web
-                  </Link>
-                </li>
-                <li
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    closeMenu();
-                  }}
-                  className="w-full"
-                >
-                  <Link
-                    href="/servicios/gestion-redes"
-                    className="!block !w-full !px-4 !py-2 !text-center !text-white !font-extrabold hover:!text-[#ffb800] transition-colors text-[15px]"
-                  >
-                    Gestión de Redes Sociales
-                  </Link>
-                </li>
-                <li
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    closeMenu();
-                  }}
-                  className="w-full"
-                >
-                  <Link
-                    href="/servicios/marketing-gestion"
-                    className="!block !w-full !px-4 !py-2 !text-center !text-white !font-extrabold hover:!text-[#ffb800] transition-colors text-[15px]"
-                  >
-                    Marketing y Gestión Digital
-                  </Link>
-                </li>
-                <li
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    closeMenu();
-                  }}
-                  className="w-full"
-                >
-                  <Link
-                    href="/servicios/branding-desing"
-                    className="!block !w-full !px-4 !py-2 !text-center !text-white !font-extrabold hover:!text-[#ffb800] transition-colors text-[15px]"
-                  >
-                    Branding y Diseño
-                  </Link>
-                </li>
-              </ul>
+                <ul
+  ref={(el) => (submenuRefs.current["services"] = el)}
+  suppressHydrationWarning
+  className={`${styles.menuVertical} !bg-[#130049] shadow-lg md:absolute top-full mt-0 min-w-[280px] py-4 flex flex-col gap-4 z-50`}
+  style={submenuStyle("services")}
+>
+  {/* 1. Diseño y Desarrollo Web */}
+  <li
+    onClick={(e) => {
+      e.stopPropagation();
+      if (!isActive("/servicios/desing-desarrollo")) closeMenu();
+    }}
+    className="w-full"
+  >
+    <Link
+      href="/servicios/desing-desarrollo"
+      onClick={(e) => {
+        if (isActive("/servicios/desing-desarrollo")) e.preventDefault();
+      }}
+      className={`!block !w-full !px-4 !py-2 !text-center !font-extrabold transition-colors text-[15px] ${
+        isActive("/servicios/desing-desarrollo")
+          ? "!text-[#ffb800] cursor-default font-black bg-white/10 rounded-md cursor-default"
+          : "!text-white hover:!text-[#ffb800] cursor-pointer"
+      }`}
+    >
+      Diseño y Desarrollo Web
+    </Link>
+  </li>
+
+  {/* 2. Gestión de Redes Sociales */}
+  <li
+    onClick={(e) => {
+      e.stopPropagation();
+      if (!isActive("/servicios/gestion-redes")) closeMenu();
+    }}
+    className="w-full"
+  >
+    <Link
+      href="/servicios/gestion-redes"
+      onClick={(e) => {
+        if (isActive("/servicios/gestion-redes")) e.preventDefault();
+      }}
+      className={`!block !w-full !px-4 !py-2 !text-center !font-extrabold transition-colors text-[15px] ${
+        isActive("/servicios/gestion-redes")
+          ? "!text-[#ffb800] cursor-default font-black bg-white/10 rounded-md cursor-default"
+          : "!text-white hover:!text-[#ffb800] cursor-pointer"
+      }`}
+    >
+      Gestión de Redes Sociales
+    </Link>
+  </li>
+
+  {/* 3. Marketing y Gestión Digital */}
+  <li
+    onClick={(e) => {
+      e.stopPropagation();
+      if (!isActive("/servicios/marketing-gestion")) closeMenu();
+    }}
+    className="w-full"
+  >
+    <Link
+      href="/servicios/marketing-gestion"
+      onClick={(e) => {
+        if (isActive("/servicios/marketing-gestion")) e.preventDefault();
+      }}
+      className={`!block !w-full !px-4 !py-2 !text-center !font-extrabold transition-colors text-[15px] ${
+        isActive("/servicios/marketing-gestion")
+          ? "!text-[#ffb800] cursor-default font-black bg-white/10 rounded-md cursor-default"
+          : "!text-white hover:!text-[#ffb800] cursor-pointer"
+      }`}
+    >
+      Marketing y Gestión Digital
+    </Link>
+  </li>
+
+  {/* 4. Branding y Diseño */}
+  <li
+    onClick={(e) => {
+      e.stopPropagation();
+      if (!isActive("/servicios/branding-desing")) closeMenu();
+    }}
+    className="w-full"
+  >
+    <Link
+      href="/servicios/branding-desing"
+      onClick={(e) => {
+        if (isActive("/servicios/branding-desing")) e.preventDefault();
+      }}
+      className={`!block !w-full !px-4 !py-2 !text-center !font-extrabold transition-colors text-[15px] ${
+        isActive("/servicios/branding-desing")
+          ? "!text-[#ffb800] cursor-default font-black bg-white/10 rounded-md cursor-default"
+          : "!text-white hover:!text-[#ffb800] cursor-pointer"
+      }`}
+    >
+      Branding y Diseño
+    </Link>
+  </li>
+</ul>
             </li>
 
             {/* Blogs */}
@@ -456,7 +511,7 @@ export default function Header2() {
 
             {/* Mas */}
             <li
-              className={`cursor-pointer relative ${styles.menuItem} ${openSubmenu === "more" ? "!bg-[#130049]" : ""}`}
+              className={`cursor-pointer relative ${styles.menuItem}`}
               style={touchStyle("more")}
               onTouchStart={() => setTouchedItem("more")}
               onTouchEnd={() => setTouchedItem(null)}
@@ -465,75 +520,100 @@ export default function Header2() {
               onMouseLeave={handleMouseLeave}
             >
               <p
-                className={`flex justify-center items-center gap-2 px-4 py-3 h-full ${getNavColor(
-                  isActive("/preguntas") ||
-                    isActive("/contactanos") ||
-                    (!isAuthenticated && isActive("/login")) ||
-                    openSubmenu === "more",
+                className={`flex items-center gap-2 ${getNavColor(
+                  isActive("/preguntas") || isActive("/contactanos") || (!isAuthenticated && isActive("/login")),
+                  openSubmenu === "more"
                 )}`}
-              >
+                  style={{ position: "relative" }}
+                            >
                 Mas
                 <ChevronDown
                   className={`w-4 h-4 ${styles.chevron} ${openSubmenu === "more" ? styles.chevronOpen : ""}`}
                 />
               </p>
               <ul
-                ref={(el) => (submenuRefs.current["more"] = el)}
-                suppressHydrationWarning
-                className={`${styles.menuVertical} !bg-[#130049] shadow-lg md:absolute top-full mt-0  py-4 flex flex-col gap-4 z-50`}
-                style={submenuStyle("more")}
-              >
-                <li
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    closeMenu();
-                  }}
-                  className="w-full"
-                >
-                  <Link
-                    href="/preguntas"
-                    className="!block !w-full !px-2 !py-2 !text-center !text-white !font-extrabold hover:!text-[#ffb800] transition-colors text-[15px]"
-                  >
-                    Preguntas Frecuentes
-                  </Link>
-                </li>
-                <li
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    closeMenu();
-                  }}
-                  className="w-full"
-                >
-                  <Link
-                    href="/contactanos"
-                    className="!block !w-full !px-2 !py-2 !text-center !text-white !font-extrabold hover:!text-[#ffb800] transition-colors text-[15px]"
-                  >
-                    Contacto
-                  </Link>
-                </li>
-                {!isAuthenticated && (
-                  <li
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      closeMenu();
-                    }}
-                    className="w-full"
-                  >
-                    <Link
-                      href="/login"
-                      className="!block !w-full !px-2 !py-2 !text-center !text-white !font-extrabold hover:!text-[#ffb800] transition-colors text-[15px]"
-                    >
-                      Ingresar
-                    </Link>
-                  </li>
-                )}
-              </ul>
+  ref={(el) => (submenuRefs.current["more"] = el)}
+  suppressHydrationWarning
+  className={`${styles.menuVertical} !bg-[#130049] shadow-lg md:absolute top-full mt-0 py-4 flex flex-col gap-4 z-50`}
+  style={submenuStyle("more")}
+>
+  {/* 1. Preguntas Frecuentes */}
+  <li
+    onClick={(e) => {
+      e.stopPropagation();
+      if (!isActive("/preguntas")) closeMenu();
+    }}
+    className="w-full"
+  >
+    <Link
+      href="/preguntas"
+      onClick={(e) => {
+        if (isActive("/preguntas")) e.preventDefault();
+      }}
+      className={`!block !w-full !px-2 !py-2 !text-center !font-extrabold transition-colors text-[15px] ${
+        isActive("/preguntas")
+          ? "!text-[#ffb800] cursor-default font-black bg-white/10 rounded-md cursor-default"
+          : "!text-white hover:!text-[#ffb800] cursor-pointer"
+      }`}
+    >
+      Preguntas Frecuentes
+    </Link>
+  </li>
+
+  {/* 2. Contacto */}
+  <li
+    onClick={(e) => {
+      e.stopPropagation();
+      if (!isActive("/contactanos")) closeMenu();
+    }}
+    className="w-full"
+  >
+    <Link
+      href="/contactanos"
+      onClick={(e) => {
+        if (isActive("/contactanos")) e.preventDefault();
+      }}
+      className={`!block !w-full !px-2 !py-2 !text-center !font-extrabold transition-colors text-[15px] ${
+        isActive("/contactanos")
+          ? "!text-[#ffb800] cursor-default font-black bg-white/10 rounded-md cursor-default"
+          : "!text-white hover:!text-[#ffb800] cursor-pointer"
+      }`}
+    >
+      Contacto
+    </Link>
+  </li>
+
+  {/* 3. Ingresar (solo si no está autenticado) */}
+  {!isAuthenticated && (
+    <li
+      onClick={(e) => {
+        e.stopPropagation();
+        if (!isActive("/login")) closeMenu();
+      }}
+      className="w-full"
+    >
+      <Link
+        href="/login"
+        onClick={(e) => {
+          if (isActive("/login")) e.preventDefault();
+        }}
+        className={`!block !w-full !px-2 !py-2 !text-center !font-extrabold transition-colors text-[15px] ${
+          isActive("/login")
+            ? "!text-[#ffb800] cursor-default font-black bg-white/10 rounded-md cursor-default"
+            : "!text-white hover:!text-[#ffb800] cursor-pointer"
+        }`}
+      >
+        Ingresar
+      </Link>
+    </li>
+  )}
+</ul>
             </li>
 
             {/* Panel (solo autenticado) */}
             {isAuthenticated && (
               <li
-                className={`cursor-pointer relative ${styles.panelItem} ${openSubmenu === "panel" ? "!bg-[#130049]" : ""}`}
+                className={`cursor-pointer relative ${styles.panelItem}`}
                 style={touchStyle("panel")}
                 onTouchStart={() => setTouchedItem("panel")}
                 onTouchEnd={() => setTouchedItem(null)}
