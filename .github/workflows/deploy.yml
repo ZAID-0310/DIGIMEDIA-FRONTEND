@@ -1,40 +1,57 @@
-name: Deploy to Git Branch
+name: Deploy Production (Digimedia Frontend)
 
 on:
   push:
     branches:
-      - rama_produccion
-  workflow_dispatch: {}
-  schedule:
-    # Reconstruye el sitio todas las noches para que los blogs publicados
-    # en el dashboard (que no generan un push a este repo) terminen saliendo
-    # como páginas estáticas y entrando al sitemap sin intervención manual.
-    - cron: "0 7 * * *"
+      - master
+  workflow_dispatch:
+
 jobs:
   build-and-deploy:
+    name: Build y Despliegue en Producción
     runs-on: ubuntu-latest
-    env:
-      NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}
-      NEXT_PUBLIC_API_URL_DEV: ${{ secrets.NEXT_PUBLIC_API_URL_DEV }}
-      NEXT_PUBLIC_API_URL_PROD: ${{ secrets.NEXT_PUBLIC_API_URL_PROD }}
-      NEXT_PUBLIC_API_URL_WHATSAPP_DEV: ${{ secrets.NEXT_PUBLIC_API_URL_WHATSAPP_DEV }}
-      NEXT_PUBLIC_API_URL_WHATSAPP_PROD: ${{ secrets.NEXT_PUBLIC_API_URL_WHATSAPP_PROD }}
-      CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
-      CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+
     steps:
-      - name: Clonar código
-        uses: actions/checkout@v3
+      # 1. Clonar el código de la rama master
+      - name: Clonando el código de la rama master
+        uses: actions/checkout@v4
 
-      - name: Instalar dependencias
-        run: npm ci
+      # 2. Configurar Node.js con caché de npm para acelerar el build
+      - name: Configurando Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
 
-      - name: Build estático
+      # 3. Instalar dependencias
+      - name: Instalando dependencias
+        run: npm install
+
+      # 4. Crear el archivo .env.production.local desde GitHub Secrets
+      - name: Crear .env.production.local
+        env:
+          ENV_CONTENT: ${{ secrets.ENV_PRODUCTION }}
+        run: |
+          printf "%s\n" "$ENV_CONTENT" > .env.production.local
+
+      # 5. Ejecutar el build de producción (genera la carpeta out)
+      - name: Ejecutando build de producción
         run: npm run build
 
-      - name: Push a rama deploy
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          token: ${{ secrets.PERSONAL_TOKEN }}
-          branch: deploy
-          folder: out
-          clean: true
+      # 6. Configurar la clave SSH privada y agregar el servidor a known_hosts
+      - name: Configurar la clave SSH privada
+        env:
+          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          printf "%s\n" "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -p 65002 -H 217.15.169.25 >> ~/.ssh/known_hosts
+
+      # 7. Subir el contenido de out/ a public_html (Solo sobrescribir)
+      - name: Subiendo el contenido de out/ a public_html
+        run: |
+          rsync -avz \
+            -e "ssh -i ~/.ssh/id_ed25519 -p 65002 -o StrictHostKeyChecking=no" \
+            ./out/ \
+            u268804017@217.15.169.25:/home/u268804017/domains/digimedia-marketing.com/public_html/
