@@ -25,7 +25,7 @@ jobs:
 
       # 3. Instalar dependencias
       - name: Instalando dependencias
-        run: npm ci
+        run: npm install
 
       # 4. Crear el archivo .env.staging.local desde GitHub Secrets
       - name: Crear .env.staging.local
