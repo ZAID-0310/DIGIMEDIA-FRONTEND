@@ -1,0 +1,35 @@
+name: Test SSH Deploy Staging
+
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch: # Permite ejecutarlo manualmente con un botón en GitHub
+
+jobs:
+  test-deploy:
+    name: Probar subida de archivo si_llego
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Configurar la clave SSH privada
+      - name: Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -p 65002 -H 217.15.169.25 >> ~/.ssh/known_hosts
+
+      # 2. Crear carpeta out-staging de prueba y el archivo "si_llego"
+      - name: Crear archivo de prueba si_llego
+        run: |
+          mkdir -p ./out-staging
+          echo "Prueba exitosa desde GitHub Actions - $(date)" > ./out-staging/si_llego
+
+      # 3. Subir el contenido de out-staging/ a public_html (Solo sobrescribir)
+      - name: Subiendo el contenido de out-staging/ a public_html
+        run: |
+          rsync -avz \
+            -e "ssh -i ~/.ssh/id_ed25519 -p 65002 -o StrictHostKeyChecking=no" \
+            ./out-staging/ \
+            u268804017@217.15.169.25:/home/u268804017/domains/staging.digimedia-marketing.com/public_html/
