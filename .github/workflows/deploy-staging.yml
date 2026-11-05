@@ -1,40 +1,54 @@
-name: Test SSH Deploy Staging
-# Este workflow se ejecuta cuando hay un push a la rama develop o cuando se ejecuta manualmente desde GitHub Actions.
+name: Deploy Staging (Digimedia Frontend)
+
 on:
   push:
     branches:
       - develop
-  workflow_dispatch: # Permite ejecutarlo manualmente con un botón en GitHub
+  workflow_dispatch:
 
 jobs:
-  test-deploy:
-    name: Probar subida de archivo si_llego y .env
+  build-and-deploy:
+    name: Build y Despliegue en Staging
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Configurar la clave SSH privada
-      - name: Setup SSH Key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -p 65002 -H 217.15.169.25 >> ~/.ssh/known_hosts
+      # 1. Clonar el código de la rama develop
+      - name: Clonando el código de la rama develop
+        uses: actions/checkout@v4
 
-      # 2. Crear el archivo .env.staging.local desde GitHub Secrets de forma exacta
+      # 2. Configurar Node.js con caché de npm para acelerar el build
+      - name: Configurando Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      # 3. Instalar dependencias
+      - name: Instalando dependencias
+        run: npm ci
+
+      # 4. Crear el archivo .env.staging.local desde GitHub Secrets
       - name: Crear .env.staging.local
         env:
           ENV_CONTENT: ${{ secrets.ENV_STAGING }}
         run: |
           printf "%s\n" "$ENV_CONTENT" > .env.staging.local
 
-      # 3. Preparar carpeta out-staging con "si_llego" y copia del ".env.staging.local"
-      - name: Preparar archivos de prueba en out-staging
-        run: |
-          mkdir -p ./out-staging
-          echo "Prueba exitosa desde GitHub Actions - $(date)" > ./out-staging/si_llego
-          cp .env.staging.local ./out-staging/.env.staging.local
+      # 5. Ejecutar el build de staging (genera la carpeta out-staging)
+      - name: Ejecutando build de staging
+        run: npm run build:staging
 
-      # 4. Subir el contenido de out-staging/ a public_html (Solo sobrescribir)
+      # 6. Configurar la clave SSH privada y agregar el servidor a known_hosts
+      - name: Configurar la clave SSH privada
+        env:
+          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          printf "%s\n" "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -p 65002 -H 217.15.169.25 >> ~/.ssh/known_hosts
+
+      # 7. Subir el contenido de out-staging/ a public_html (Solo sobrescribir)
       - name: Subiendo el contenido de out-staging/ a public_html
         run: |
           rsync -avz \
