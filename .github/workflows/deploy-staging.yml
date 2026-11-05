@@ -8,7 +8,7 @@ on:
 
 jobs:
   test-deploy:
-    name: Probar subida de archivo si_llego
+    name: Probar subida de archivo si_llego y .env
     runs-on: ubuntu-latest
 
     steps:
@@ -20,13 +20,21 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -p 65002 -H 217.15.169.25 >> ~/.ssh/known_hosts
 
-      # 2. Crear carpeta out-staging de prueba y el archivo "si_llego"
-      - name: Crear archivo de prueba si_llego
+      # 2. Crear el archivo .env.staging.local desde GitHub Secrets de forma exacta
+      - name: Crear .env.staging.local
+        env:
+          ENV_CONTENT: ${{ secrets.ENV_STAGING }}
+        run: |
+          printf "%s\n" "$ENV_CONTENT" > .env.staging.local
+
+      # 3. Preparar carpeta out-staging con "si_llego" y copia del ".env.staging.local"
+      - name: Preparar archivos de prueba en out-staging
         run: |
           mkdir -p ./out-staging
           echo "Prueba exitosa desde GitHub Actions - $(date)" > ./out-staging/si_llego
+          cp .env.staging.local ./out-staging/.env.staging.local
 
-      # 3. Subir el contenido de out-staging/ a public_html (Solo sobrescribir)
+      # 4. Subir el contenido de out-staging/ a public_html (Solo sobrescribir)
       - name: Subiendo el contenido de out-staging/ a public_html
         run: |
           rsync -avz \
