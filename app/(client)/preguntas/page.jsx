@@ -99,7 +99,7 @@ export default function Page() {
       <div className="w-full py-16 flex justify-center">
         <div className="w-full max-w-[1000px] px-4">
           <div className="bg-white/8 backdrop-blur-xl rounded-[3rem] py-10 px-8 text-center shadow-[0_8px_32px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.2)] border border-white/20">
-            <p className="text-white/80 text-base md:text-lg leading-relaxed font-light">
+            <p className="text-white text-base md:text-lg leading-relaxed font-light">
               Encuentra respuestas a las dudas más comunes sobre nuestros
               servicios.
             </p>
@@ -121,10 +121,10 @@ export default function Page() {
                   setActiveCategory(index);
                   setOpenQuestion(null);
                 }}
-                className={`pb-2 text-sm md:text-base font-medium transition-all duration-300 ${
+                className={`pb-2 text-sm md:text-base font-bold text-white transition-all duration-300 ${
                   activeCategory === index
                     ? "!text-[#ffb800] border-b-2  border-[#ffb800]"
-                    : "text-white/50 hover:!text-[#ffb800] transition-colors"
+                    : "hover:text-[#ffb800]"
                 }`}
               >
                 {category.name}
@@ -217,7 +217,7 @@ export default function Page() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center rounded-2xl bg-[#f5a000] px-8 py-4 text-base sm:text-lg font-bold text-black transition-all duration-300 hover:-translate-y-1 hover:bg-[#ffb81a] hover:shadow-[0_0_35px_rgba(245,160,0,0.6)] shadow-[0_0_20px_rgba(245,160,0,0.3)]"
               >
-                CONTÁCTANOS AHORA
+                Ir a WhatsApp
               </a>
             </div>
           </div>
