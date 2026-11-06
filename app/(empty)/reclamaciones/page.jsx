@@ -29,9 +29,9 @@ const ComplaintForm = () => {
   const today = new Date();
   const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
 
-  // Clase base para mantener texto blanco visible, fondo translúcido y placeholders claros
+  // Clase base para mantener texto blanco visible, fondo translúcido y placeholders claros, neutralizando el autofill del navegador
   const inputBaseStyles =
-    "w-full p-2 border border-white/40 rounded bg-white/10 text-white placeholder-white/70 focus:outline-none focus:border-white focus:ring-2 focus:ring-white/20";
+    "w-full p-2 border border-white/40 rounded bg-white/10 text-white placeholder-white/70 focus:outline-none focus:border-white focus:ring-2 focus:ring-white/20 autofill:shadow-[inset_0_0_0px_1000px_#3e1c78] autofill:text-white [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_#3e1c78] [&:-webkit-autofill:hover]:shadow-[inset_0_0_0px_1000px_#3e1c78] [&:-webkit-autofill:focus]:shadow-[inset_0_0_0px_1000px_#3e1c78] [&:-webkit-autofill]:[-webkit-text-fill-color:#ffffff] [&:-webkit-autofill:hover]:[-webkit-text-fill-color:#ffffff] [&:-webkit-autofill:focus]:[-webkit-text-fill-color:#ffffff] [&:-webkit-autofill]:[caret-color:#ffffff] [&:-webkit-autofill]:[transition:background-color_5000s_ease-in-out_0s]";
 
   const isFormValid = () => {
     const fields = [
