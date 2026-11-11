@@ -167,17 +167,9 @@ export default function Servicios() {
 
   return (
     <section
-      className="w-full relative py-20 px-4 md:px-12 overflow-hidden bg-black"
+      className="w-full relative py-20 px-4 md:px-12 overflow-hidden bg-transparent"
       id="services"
-      style={{
-        background:
-          "linear-gradient(135deg, #100043 0%, #130049 40%, #410c89 100%)",
-      }}
     >
-      {/* Background decorations for a premium look */}
-      <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-[#ffb800]/10 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full bg-[#b525fe]/10 blur-[120px] pointer-events-none" />
-
       <div className="max-w-[1450px] mx-auto relative z-10">
         {/* Section Header */}
         <div className="text-center mb-16 max-w-4xl mx-auto">
