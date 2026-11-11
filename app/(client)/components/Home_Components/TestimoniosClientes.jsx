@@ -189,21 +189,7 @@ export default function TestimoniosClientes() {
   if (testimonialsData.length === 0) return null; // no renderiza nada si no hay testimonios de bd ni del fallback
 
   return (
-    <section
-      className="w-full relative py-20 px-4 md:px-12 overflow-hidden"
-      style={{
-        // Nosotros hereda su fondo del wrapper de NosotrosClient.jsx
-        // (bg-gradient-to-b from-[#1D006F] to-[#0E0630]); Inicio no tiene ese wrapper
-        // compartido, así que esta sección necesita su propio degradado para no
-        // cortar abruptamente contra las secciones vecinas (Servicios, CTA Testimonios, Clientes).
-        background:
-          "linear-gradient(135deg, #130049 0%, #100043 60%, #000118 100%)",
-      }}
-    >
-      {/* Background decorations, igual que en Nosotros */}
-      <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full bg-[#ffb800]/10 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-[#b525fe]/10 blur-[120px] pointer-events-none" />
-
+    <section className="w-full relative py-20 px-4 md:px-12 overflow-hidden bg-transparent">
       <div className="mx-auto max-w-7xl px-6 relative z-10">
         {/* Título */}
         <div className="mb-14 text-center max-w-4xl mx-auto">

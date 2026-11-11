@@ -108,7 +108,7 @@ export default function Banner() {
           100% { transform: scale(1); }
         }
       `}</style>
-      <main className="relative h-[calc(100dvh-125px)] w-full overflow-hidden bg-black">
+      <main className="relative h-[calc(100dvh-125px)] w-full overflow-hidden bg-transparent">
         <div className="absolute inset-0 w-full h-full">
           <picture>
             <source media="(max-width: 767px)" srcSet={mobileSlides[0]} />
