@@ -32,21 +32,27 @@ export default function Footer() {
         { name: "Landing Page", route: "/servicios/landing-page/" },
       ],
     },
+    
+{
+  title: "GESTIÓN DE REDES SOCIALES",
+  route: "/servicios/gestion-redes/",
+  items: [
     {
-      title: "GESTIÓN DE REDES SOCIALES",
-      route: "/servicios/gestion-redes/",
-      items: [
-        {
-          name: "Estrategia de Contenido",
-          route: "/servicios/planificacion-cronograma/",
-        },
-        {
-          name: "Social Ads & Performance",
-          route: "/servicios/diseno-pautas/",
-        },
-        { name: "Diseño UX y UI", route: "/servicios/ui/?from=gestionRedes" },
-      ],
+      name: "Estrategia de Contenido",
+      route: "/servicios/planificacion-cronograma/",
     },
+    {
+      name: "Social Ads & Performance",
+      route: "/servicios/diseno-pautas/",
+    },
+    { name: "Diseño UX y UI", route: "/servicios/ui/?from=gestionRedes" },
+    {
+      name: "Producción Audiovisual",
+      route: "/servicios/produccion-audiovisual/",
+    },
+  ],
+},
+
     {
       title: "MARKETING Y GESTIÓN DIGITAL",
       route: "/servicios/marketing-gestion/",
