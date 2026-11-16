@@ -2,13 +2,7 @@ import Image from "next/image";
 
 export default function Testimonios() {
   return (
-    <section
-      className="w-full py-16 md:py-24 px-6 md:px-8 overflow-hidden"
-      style={{
-        background:
-          "linear-gradient(90deg, #000118 0%, #100043 50%, #130049 100%)",
-      }}
-    >
+    <section className="w-full py-16 md:py-24 px-6 md:px-8 overflow-hidden bg-transparent">
       <div className="mx-auto max-w-[1200px] flex flex-col md:flex-row items-center justify-between gap-12 lg:gap-16">
         <div className="text-white w-full md:w-1/2 flex flex-col justify-center items-center md:items-start text-center md:text-left order-2 md:order-1">
           <h2 className="text-lg md:text-2xl font-light mb-3 opacity-90 text-gray-200">

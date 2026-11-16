@@ -48,6 +48,54 @@ export default function Header2() {
         pathname.startsWith(`${path}/`)
     );
 
+  const isWebDevActive = isActiveGroup([
+    "/servicios/desing-desarrollo",
+    "/servicios/desarrollo-webs",
+    "/servicios/experiencia-usuario",
+    "/servicios/seo",
+    "/servicios/desarrollo-responsive",
+    "/servicios/landing-page",
+    "/servicios/dominio-hosting",
+  ]);
+
+  const isSocialActive = isActiveGroup([
+    "/servicios/gestion-redes",
+    "/servicios/planificacion-cronograma",
+    "/servicios/diseno-pautas",
+    "/servicios/produccion-pautas",
+    "/servicios/ui",
+  ]);
+
+  const isMarketingActive = isActiveGroup([
+    "/servicios/marketing-gestion",
+    "/servicios/analisis-y-benchmarking",
+    "/servicios/naming-logo-slogan",
+    "/servicios/identidad-visual",
+    "/servicios/manual-marca",
+  ]);
+
+  const isBrandingActive = isActiveGroup([
+    "/servicios/branding-desing",
+    "/servicios/desarrollo-briefs",
+    "/servicios/planificacion-estrategica",
+    "/servicios/publicidad-digital",
+    "/servicios/monitoreo-y-reporting",
+  ]);
+
+  const isServicesActive =
+    isActiveGroup(["/servicios"]) ||
+    isWebDevActive ||
+    isSocialActive ||
+    isMarketingActive ||
+    isBrandingActive;
+
+  const isMoreActive =
+    isActive("/preguntas") ||
+    isActive("/contactanos") ||
+    (!isAuthenticated && isActive("/login"));
+
+  const isPanelActive = Boolean(pathname && pathname.startsWith("/dashboard"));
+
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth <= 768);
     check();
@@ -57,54 +105,52 @@ export default function Header2() {
 
   // Corrige la alineación del dropdown si se sale de la pantalla
   useEffect(() => {
-  if (!openSubmenu || isMobile) return;
+    if (!openSubmenu || isMobile) return;
 
-  const calculateSubmenuAlign = () => {
-    const el = submenuRefs.current[openSubmenu];
-    if (!el) return;
+    const calculateSubmenuAlign = () => {
+      const el = submenuRefs.current[openSubmenu];
+      if (!el) return;
 
-    const li = el.parentElement;
-    if (!li) return;
+      const li = el.parentElement;
+      if (!li) return;
 
-    const margin = 12;
-    const liRect = li.getBoundingClientRect();
+      const margin = 12;
+      const liRect = li.getBoundingClientRect();
 
-    // Usamos el ancho real definido por el dropdown
-    const width = el.getBoundingClientRect().width;
+      // Usamos el ancho real definido por el dropdown
+      const width = el.getBoundingClientRect().width;
 
-    const spaceRight = window.innerWidth - liRect.left;
-    const spaceLeft = liRect.right;
+      const spaceRight = window.innerWidth - liRect.left;
+      const spaceLeft = liRect.right;
 
-    let nextAlign = "left";
+      let nextAlign = "left";
 
-    // si en la derecha no entra , se pasa la izquierda
-    if (spaceRight < width + margin && spaceLeft >= width + margin) {
-      nextAlign = "right";
-    }
-
-    setSubmenuAlign((prev) => {
-      if (prev[openSubmenu] === nextAlign) {
-        return prev;
+      // si en la derecha no entra , se pasa la izquierda
+      if (spaceRight < width + margin && spaceLeft >= width + margin) {
+        nextAlign = "right";
       }
 
-      return {
-        ...prev,
-        [openSubmenu]: nextAlign,
-      };
-    });
-  };
+      setSubmenuAlign((prev) => {
+        if (prev[openSubmenu] === nextAlign) {
+          return prev;
+        }
 
-  // se espera las dimensiones finales del dropdown
-  requestAnimationFrame(calculateSubmenuAlign);
+        return {
+          ...prev,
+          [openSubmenu]: nextAlign,
+        };
+      });
+    };
 
-  window.addEventListener("resize", calculateSubmenuAlign);
+    // se espera las dimensiones finales del dropdown
+    requestAnimationFrame(calculateSubmenuAlign);
 
-  return () => {
-    window.removeEventListener("resize", calculateSubmenuAlign);
-  };
-}, [openSubmenu, isMobile]);
+    window.addEventListener("resize", calculateSubmenuAlign);
 
-
+    return () => {
+      window.removeEventListener("resize", calculateSubmenuAlign);
+    };
+  }, [openSubmenu, isMobile]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -200,17 +246,26 @@ export default function Header2() {
     transition: "background-color 0.15s ease",
   });
 
-const getNavColor = (isActiveCheck, isOpen = false) => {
-  const underline =
-    "after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-0 after:h-[3px] after:bg-[#ffb800] after:rounded-full after:transition-all after:duration-300 hover:after:w-[80%] after:pointer-events-none";
-  if (isActiveCheck) {
-    return "!text-[#ffb800] !font-bold transition-colors rounded-xl px-4 py-2 relative";
-  }
-  if (isOpen) {
-    return `!text-[#ffb800] transition-colors rounded-xl px-4 py-2 relative ${underline}`;
-  }
-  return `!text-white hover:!text-[#ffb800] transition-colors rounded-xl px-4 py-2 relative ${underline}`;
-};
+  const getNavColor = (isActiveCheck, isOpen = false) => {
+    const underlineBase =
+      "after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:h-[3px] after:bg-[#ffb800] after:rounded-full after:transition-all after:duration-300 after:pointer-events-none";
+    if (isActiveCheck) {
+      return `!text-[#ffb800] !font-bold transition-colors rounded-xl px-4 py-2 relative ${underlineBase} after:w-[80%]`;
+    }
+    if (isOpen) {
+      return `!text-[#ffb800] transition-colors rounded-xl px-4 py-2 relative ${underlineBase} after:w-0 hover:after:w-[80%]`;
+    }
+    return `!text-white hover:!text-[#ffb800] transition-colors rounded-xl px-4 py-2 relative ${underlineBase} after:w-0 hover:after:w-[80%]`;
+  };
+
+  const getSubmenuNavColor = (isActiveCheck) => {
+    const underlineBase =
+      "after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:h-[3px] after:bg-[#ffb800] after:rounded-full after:transition-all after:duration-300 after:pointer-events-none";
+    if (isActiveCheck) {
+      return `!inline-block relative !px-4 !py-2 !text-center !font-extrabold !text-[#ffb800] transition-colors text-[15px] cursor-default ${underlineBase} after:w-[80%]`;
+    }
+    return `!inline-block relative !px-4 !py-2 !text-center !font-extrabold !text-white hover:!text-[#ffb800] transition-colors text-[15px] cursor-pointer ${underlineBase} after:w-0 hover:after:w-[80%]`;
+  };
 
   const confirmLogout = async () => {
     const { default: Swal } = await import("sweetalert2");
@@ -382,115 +437,98 @@ const getNavColor = (isActiveCheck, isOpen = false) => {
             >
               <p
                 className={`flex justify-center items-center gap-2 ${getNavColor(
-                  isActiveGroup(["/servicios"]),
+                  isServicesActive,
                   openSubmenu === "services"
-    
-  )}`}
-  style={{ position: "relative" }}
+                )}`}
+                style={{ position: "relative" }}
               >
                 Servicios
                 <ChevronDown
                   className={`w-4 h-4 ${styles.chevron} ${openSubmenu === "services" ? styles.chevronOpen : ""}`}
                 />
               </p>
-                <ul
-  ref={(el) => (submenuRefs.current["services"] = el)}
-  suppressHydrationWarning
-  className={`${styles.menuVertical} !bg-[#130049] shadow-lg md:absolute top-full mt-0 min-w-[280px] py-4 flex flex-col gap-4 z-50`}
-  style={submenuStyle("services")}
->
-  {/* 1. Diseño y Desarrollo Web */}
-  <li
-    onClick={(e) => {
-      e.stopPropagation();
-      if (!isActive("/servicios/desing-desarrollo")) closeMenu();
-    }}
-    className="w-full"
-  >
-    <Link
-      href="/servicios/desing-desarrollo"
-      onClick={(e) => {
-        if (isActive("/servicios/desing-desarrollo")) e.preventDefault();
-      }}
-      className={`!block !w-full !px-4 !py-2 !text-center !font-extrabold transition-colors text-[15px] ${
-        isActive("/servicios/desing-desarrollo")
-          ? "!text-[#ffb800] cursor-default font-black bg-white/10 rounded-md cursor-default"
-          : "!text-white hover:!text-[#ffb800] cursor-pointer"
-      }`}
-    >
-      Diseño y Desarrollo Web
-    </Link>
-  </li>
+              <ul
+                ref={(el) => (submenuRefs.current["services"] = el)}
+                suppressHydrationWarning
+                className={`${styles.menuVertical} !bg-[#130049] shadow-lg md:absolute top-full mt-0 min-w-[280px] py-4 flex flex-col gap-4 z-50`}
+                style={submenuStyle("services")}
+              >
+                {/* 1. Diseño y Desarrollo Web */}
+                <li
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (!isWebDevActive) closeMenu();
+                  }}
+                  className="w-full flex justify-center"
+                >
+                  <Link
+                    href="/servicios/desing-desarrollo"
+                    onClick={(e) => {
+                      if (isWebDevActive) e.preventDefault();
+                    }}
+                    className={getSubmenuNavColor(isWebDevActive)}
+                  >
+                    Diseño y Desarrollo Web
+                  </Link>
+                </li>
 
-  {/* 2. Gestión de Redes Sociales */}
-  <li
-    onClick={(e) => {
-      e.stopPropagation();
-      if (!isActive("/servicios/gestion-redes")) closeMenu();
-    }}
-    className="w-full"
-  >
-    <Link
-      href="/servicios/gestion-redes"
-      onClick={(e) => {
-        if (isActive("/servicios/gestion-redes")) e.preventDefault();
-      }}
-      className={`!block !w-full !px-4 !py-2 !text-center !font-extrabold transition-colors text-[15px] ${
-        isActive("/servicios/gestion-redes")
-          ? "!text-[#ffb800] cursor-default font-black bg-white/10 rounded-md cursor-default"
-          : "!text-white hover:!text-[#ffb800] cursor-pointer"
-      }`}
-    >
-      Gestión de Redes Sociales
-    </Link>
-  </li>
+                {/* 2. Gestión de Redes Sociales */}
+                <li
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (!isSocialActive) closeMenu();
+                  }}
+                  className="w-full flex justify-center"
+                >
+                  <Link
+                    href="/servicios/gestion-redes"
+                    onClick={(e) => {
+                      if (isSocialActive) e.preventDefault();
+                    }}
+                    className={getSubmenuNavColor(isSocialActive)}
+                  >
+                    Gestión de Redes Sociales
+                  </Link>
+                </li>
 
-  {/* 3. Marketing y Gestión Digital */}
-  <li
-    onClick={(e) => {
-      e.stopPropagation();
-      if (!isActive("/servicios/marketing-gestion")) closeMenu();
-    }}
-    className="w-full"
-  >
-    <Link
-      href="/servicios/marketing-gestion"
-      onClick={(e) => {
-        if (isActive("/servicios/marketing-gestion")) e.preventDefault();
-      }}
-      className={`!block !w-full !px-4 !py-2 !text-center !font-extrabold transition-colors text-[15px] ${
-        isActive("/servicios/marketing-gestion")
-          ? "!text-[#ffb800] cursor-default font-black bg-white/10 rounded-md cursor-default"
-          : "!text-white hover:!text-[#ffb800] cursor-pointer"
-      }`}
-    >
-      Marketing y Gestión Digital
-    </Link>
-  </li>
+                {/* 3. Marketing y Gestión Digital */}
+                <li
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (!isMarketingActive) closeMenu();
+                  }}
+                  className="w-full flex justify-center"
+                >
+                  <Link
+                    href="/servicios/marketing-gestion"
+                    onClick={(e) => {
+                      if (isMarketingActive) e.preventDefault();
+                    }}
+                    className={getSubmenuNavColor(isMarketingActive)}
+                  >
+                    Marketing y Gestión Digital
+                  </Link>
+                </li>
 
-  {/* 4. Branding y Diseño */}
-  <li
-    onClick={(e) => {
-      e.stopPropagation();
-      if (!isActive("/servicios/branding-desing")) closeMenu();
-    }}
-    className="w-full"
-  >
-    <Link
-      href="/servicios/branding-desing"
-      onClick={(e) => {
-        if (isActive("/servicios/branding-desing")) e.preventDefault();
-      }}
-      className={`!block !w-full !px-4 !py-2 !text-center !font-extrabold transition-colors text-[15px] ${
-        isActive("/servicios/branding-desing")
-          ? "!text-[#ffb800] cursor-default font-black bg-white/10 rounded-md cursor-default"
-          : "!text-white hover:!text-[#ffb800] cursor-pointer"
-      }`}
-    >
-      Branding y Diseño
-    </Link>
-  </li>
-</ul>
+                {/* 4. Branding y Diseño */}
+                <li
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (!isBrandingActive) closeMenu();
+                  }}
+                  className="w-full flex justify-center"
+                >
+                  <Link
+                    href="/servicios/branding-desing"
+                    onClick={(e) => {
+                      if (isBrandingActive) e.preventDefault();
+                    }}
+                    className={getSubmenuNavColor(isBrandingActive)}
+                  >
+                    Branding y Diseño
+                  </Link>
+                </li>
+              </ul>
             </li>
 
             {/* Blogs */}
@@ -504,7 +542,7 @@ const getNavColor = (isActiveCheck, isOpen = false) => {
               }}
               onClick={closeMenu}
             >
-              <Link href="/blog" className={getNavColor(isActive("/blog"))}>
+              <Link href="/blog" className={getNavColor(isActiveGroup(["/blog"]))}>
                 Blogs
               </Link>
             </li>
@@ -521,93 +559,81 @@ const getNavColor = (isActiveCheck, isOpen = false) => {
             >
               <p
                 className={`flex items-center gap-2 ${getNavColor(
-                  isActive("/preguntas") || isActive("/contactanos") || (!isAuthenticated && isActive("/login")),
+                  isMoreActive,
                   openSubmenu === "more"
                 )}`}
-                  style={{ position: "relative" }}
-                            >
+                style={{ position: "relative" }}
+              >
                 Mas
                 <ChevronDown
                   className={`w-4 h-4 ${styles.chevron} ${openSubmenu === "more" ? styles.chevronOpen : ""}`}
                 />
               </p>
               <ul
-  ref={(el) => (submenuRefs.current["more"] = el)}
-  suppressHydrationWarning
-  className={`${styles.menuVertical} !bg-[#130049] shadow-lg md:absolute top-full mt-0 py-4 flex flex-col gap-4 z-50`}
-  style={submenuStyle("more")}
->
-  {/* 1. Preguntas Frecuentes */}
-  <li
-    onClick={(e) => {
-      e.stopPropagation();
-      if (!isActive("/preguntas")) closeMenu();
-    }}
-    className="w-full"
-  >
-    <Link
-      href="/preguntas"
-      onClick={(e) => {
-        if (isActive("/preguntas")) e.preventDefault();
-      }}
-      className={`!block !w-full !px-2 !py-2 !text-center !font-extrabold transition-colors text-[15px] ${
-        isActive("/preguntas")
-          ? "!text-[#ffb800] cursor-default font-black bg-white/10 rounded-md cursor-default"
-          : "!text-white hover:!text-[#ffb800] cursor-pointer"
-      }`}
-    >
-      Preguntas Frecuentes
-    </Link>
-  </li>
+                ref={(el) => (submenuRefs.current["more"] = el)}
+                suppressHydrationWarning
+                className={`${styles.menuVertical} !bg-[#130049] shadow-lg md:absolute top-full mt-0 min-w-[240px] py-4 flex flex-col gap-4 z-50`}
+                style={submenuStyle("more")}
+              >
+                {/* 1. Preguntas Frecuentes */}
+                <li
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (!isActive("/preguntas")) closeMenu();
+                  }}
+                  className="w-full flex justify-center"
+                >
+                  <Link
+                    href="/preguntas"
+                    onClick={(e) => {
+                      if (isActive("/preguntas")) e.preventDefault();
+                    }}
+                    className={getSubmenuNavColor(isActive("/preguntas"))}
+                  >
+                    Preguntas Frecuentes
+                  </Link>
+                </li>
 
-  {/* 2. Contacto */}
-  <li
-    onClick={(e) => {
-      e.stopPropagation();
-      if (!isActive("/contactanos")) closeMenu();
-    }}
-    className="w-full"
-  >
-    <Link
-      href="/contactanos"
-      onClick={(e) => {
-        if (isActive("/contactanos")) e.preventDefault();
-      }}
-      className={`!block !w-full !px-2 !py-2 !text-center !font-extrabold transition-colors text-[15px] ${
-        isActive("/contactanos")
-          ? "!text-[#ffb800] cursor-default font-black bg-white/10 rounded-md cursor-default"
-          : "!text-white hover:!text-[#ffb800] cursor-pointer"
-      }`}
-    >
-      Contacto
-    </Link>
-  </li>
+                {/* 2. Contacto */}
+                <li
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (!isActive("/contactanos")) closeMenu();
+                  }}
+                  className="w-full flex justify-center"
+                >
+                  <Link
+                    href="/contactanos"
+                    onClick={(e) => {
+                      if (isActive("/contactanos")) e.preventDefault();
+                    }}
+                    className={getSubmenuNavColor(isActive("/contactanos"))}
+                  >
+                    Contacto
+                  </Link>
+                </li>
 
-  {/* 3. Ingresar (solo si no está autenticado) */}
-  {!isAuthenticated && (
-    <li
-      onClick={(e) => {
-        e.stopPropagation();
-        if (!isActive("/login")) closeMenu();
-      }}
-      className="w-full"
-    >
-      <Link
-        href="/login"
-        onClick={(e) => {
-          if (isActive("/login")) e.preventDefault();
-        }}
-        className={`!block !w-full !px-2 !py-2 !text-center !font-extrabold transition-colors text-[15px] ${
-          isActive("/login")
-            ? "!text-[#ffb800] cursor-default font-black bg-white/10 rounded-md cursor-default"
-            : "!text-white hover:!text-[#ffb800] cursor-pointer"
-        }`}
-      >
-        Ingresar
-      </Link>
-    </li>
-  )}
-</ul>
+                {/* 3. Ingresar (solo si no está autenticado) */}
+                {!isAuthenticated && (
+                  <li
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (!isActive("/login")) closeMenu();
+                    }}
+                    className="w-full flex justify-center"
+                  >
+                    <Link
+                      href="/login"
+                      onClick={(e) => {
+                        if (isActive("/login")) e.preventDefault();
+                      }}
+                      className={getSubmenuNavColor(isActive("/login"))}
+                    >
+                      Ingresar
+                    </Link>
+                  </li>
+                )}
+              </ul>
             </li>
 
             {/* Panel (solo autenticado) */}
@@ -622,7 +648,7 @@ const getNavColor = (isActiveCheck, isOpen = false) => {
                 onMouseLeave={handleMouseLeave}
               >
                 <p
-                  className={`flex items-center gap-2 px-4 py-3 h-full ${getNavColor(isActive("/dashboard/main") || openSubmenu === "panel")}`}
+                  className={`flex items-center gap-2 px-4 py-3 h-full ${getNavColor(isPanelActive, openSubmenu === "panel")}`}
                 >
                   Panel
                   <ChevronDown
@@ -632,30 +658,36 @@ const getNavColor = (isActiveCheck, isOpen = false) => {
                 <ul
                   ref={(el) => (submenuRefs.current["panel"] = el)}
                   suppressHydrationWarning
-                  className={`${styles.menuVertical} !bg-[#130049] shadow-lg md:absolute top-full  mt-0 min-w-[240px] py-4 flex flex-col gap-4 z-50`}
+                  className={`${styles.menuVertical} !bg-[#130049] shadow-lg md:absolute top-full mt-0 min-w-[240px] py-4 flex flex-col gap-4 z-50`}
                   style={submenuStyle("panel")}
                 >
-                  {filterLinks.map((link) => (
-                    <li
-                      key={link.href}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        closeMenu();
-                      }}
-                      className="w-full"
-                    >
-                      <Link
-                        href={link.href}
-                        className="!block !w-full !px-4 !py-2 !text-center !text-white !font-extrabold hover:!text-[#ffb800] transition-colors text-[15px]"
+                  {filterLinks.map((link) => {
+                    const isLinkActive =
+                      pathname === link.href ||
+                      pathname === `${link.href}/` ||
+                      (pathname && pathname.startsWith(`${link.href}/`));
+                    return (
+                      <li
+                        key={link.href}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          closeMenu();
+                        }}
+                        className="w-full flex justify-center"
                       >
-                        {link.title}
-                      </Link>
-                    </li>
-                  ))}
-                  <li className="w-full">
+                        <Link
+                          href={link.href}
+                          className={getSubmenuNavColor(isLinkActive)}
+                        >
+                          {link.title}
+                        </Link>
+                      </li>
+                    );
+                  })}
+                  <li className="w-full flex justify-center">
                     <Link
                       href="#"
-                      className="!block !w-full !px-4 !py-2 !text-center !font-extrabold !text-[#f4d534] hover:!text-white transition-colors text-[15px]"
+                      className="!inline-block relative !px-4 !py-2 !text-center !font-extrabold !text-[#f4d534] hover:!text-white transition-colors text-[15px] cursor-pointer"
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();

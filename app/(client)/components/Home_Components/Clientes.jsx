@@ -63,13 +63,7 @@ export default function Clientes() {
   ];
 
   return (
-    <section
-      className="w-full pt-20 pb-32"
-      style={{
-        background:
-          "linear-gradient(135deg, #100043 0%, #130049 40%, #410c89 100%)",
-      }}
-    >
+    <section className="w-full pt-20 pb-32 bg-transparent">
       <div className="max-w-[1200px] mx-auto px-6">
         <h2 className="text-4xl md:text-5xl font-bold text-white text-center md:text-left mb-12">
           NUESTROS CLIENTES
