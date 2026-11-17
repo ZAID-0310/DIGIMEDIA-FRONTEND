@@ -23,6 +23,10 @@ export default function Footer() {
       route: "/servicios/desing-desarrollo/",
       items: [
         {
+          name: "Desarrollo Web",
+          route: "/servicios/desarrollo-webs/",
+        },
+        {
           name: "Experiencia de Usuario y Diseño",
           route: "/servicios/experiencia-usuario/",
         },
