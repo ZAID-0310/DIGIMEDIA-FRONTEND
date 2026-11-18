@@ -9,9 +9,8 @@ export function CampaignProgressMonitor() {
   const [activeCampaign, setActiveCampaign] = useState(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  const fetchActiveCampaign = async () => {
+   const fetchActiveCampaign = async () => {
+    let hasActive = false;
     try {
       const res = await apiRequest("/api/whatsapp/campaigns?limit=10");
 
@@ -20,6 +19,7 @@ export function CampaignProgressMonitor() {
         const activeCampaignInfo = res.active_campaign;
 
         if (activeCampaignInfo?.id_campania) {
+          hasActive = true;
           // Obtener detalles completos (porcentaje, contadores, etc.)
           const statusRes = await apiRequest(
             `/api/whatsapp/campaign/${activeCampaignInfo.id_campania}/status`
@@ -39,17 +39,27 @@ export function CampaignProgressMonitor() {
       setError("Error al cargar el progreso");
       setLoading(false);
     }
+    return hasActive;
   };
 
-  useEffect(() => {
-    fetchActiveCampaign();
+   useEffect(() => {
+    let cancelled = false;
+    let timer;
 
-    // Polling cada 5 segundos
-    const interval = setInterval(fetchActiveCampaign, 5000);
+    const loop = async () => {
+      const hasActive = await fetchActiveCampaign();
+      if (!cancelled) {
+        // 5 s si hay campaña activa, 30 s si no hay ninguna
+        timer = setTimeout(loop, hasActive ? 5000 : 30000);
+      }
+    };
 
-    return () => clearInterval(interval);
+    loop();
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
   }, []);
-
   const handlePause = async () => {
     if (!activeCampaign?.id_campania || actionLoading) return;
 

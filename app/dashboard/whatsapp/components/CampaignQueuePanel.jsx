@@ -10,18 +10,32 @@ export function CampaignQueuePanel() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
 
-  // Fetch campañas cada 5 segundos
+   // Fetch campañas: 5 s si hay campaña activa, 30 s si no hay ninguna
   useEffect(() => {
-    fetchCampaigns();
-    const interval = setInterval(fetchCampaigns, 5000);
-    return () => clearInterval(interval);
+    let cancelled = false;
+    let timer;
+
+    const loop = async () => {
+      const hasActive = await fetchCampaigns();
+      if (!cancelled) {
+        timer = setTimeout(loop, hasActive ? 5000 : 30000);
+      }
+    };
+
+    loop();
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
   }, []);
 
-  const fetchCampaigns = async () => {
+   const fetchCampaigns = async () => {
+    let hasActive = false;
     try {
       const response = await apiRequest('/api/whatsapp/campaigns?limit=10');
 
       if (response.success) {
+        hasActive = !!response.active_campaign?.id_campania;
         setActiveCampaign(response.active_campaign);
         setCampaigns(response.data.campanias || []);
       }
@@ -30,6 +44,7 @@ export function CampaignQueuePanel() {
     } finally {
       setLoading(false);
     }
+    return hasActive;
   };
 
   const handleStartCampaign = async (campaniaId) => {
