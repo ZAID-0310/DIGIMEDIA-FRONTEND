@@ -3,7 +3,7 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import Swal from "sweetalert2";
-import { PlusCircle, Key, Search, RefreshCw } from "lucide-react"; // Cambiado Shield por Key (más intuitivo para permisos)
+import { PlusCircle, Key, Search, RefreshCw } from "lucide-react"; 
 import Pagination from "../../components/Pagination";
 import TablePermisos from "./tabla_permiso"; 
 import ModalPermisos from "./modal_permisos";   
@@ -15,7 +15,7 @@ import auth_service from "../../users/services/auth.service";
 import { useAuth } from "@/app/context/AuthContext";
 
 
-const headers = ["id_permiso", "nombre"];
+const headers = ["id_permiso", "nombre", "descripcion"];
 
 export default function Page() {
   const searchParams = useSearchParams();
