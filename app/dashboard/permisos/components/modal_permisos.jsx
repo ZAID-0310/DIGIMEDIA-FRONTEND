@@ -4,8 +4,6 @@ import { useToast } from "@/hooks/use-toast"
 import { useEffect, useState } from "react"
 import { XMarkIcon, CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/solid"
 import { cn } from "@/lib/utils"
-
-
 import permiso_service from "../services/permiso_service" 
 
 export default function ModalPermisos({ isVisible, onClose, onRefresh, data }) {
@@ -22,42 +20,68 @@ export default function ModalPermisos({ isVisible, onClose, onRefresh, data }) {
         message: "",
     })
 
+    const [charCounts, setCharCounts] = useState({
+        nombre: 0,
+        descripcion: 0
+    })
+
     useEffect(() => {
         if (data) {
-            setFormData({
-                nombre: data.nombre || "",
-                descripcion: data.descripcion || ""
+            const nombre = data.nombre || ""
+            const descripcion = data.descripcion || ""
+            setFormData({ nombre, descripcion })
+            setCharCounts({
+                nombre: nombre.length,
+                descripcion: descripcion.length
             })
         } else {
-            setFormData({
-                nombre: "",
-                descripcion: ""
-            })
+            setFormData({ nombre: "", descripcion: "" })
+            setCharCounts({ nombre: 0, descripcion: 0 })
         }
     }, [data, isVisible])
 
     if (!isVisible) return null
 
     function handleChange(e) {
-        setFormData((prev) => ({
-            ...prev,
-            [e.target.id]: e.target.value,
-        }))
+        const { id, value } = e.target
+        
+        if (id === 'nombre') {
+            const regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\-_]*$/
+            if (!regex.test(value)) return
+        }
+        
+        setFormData((prev) => ({ ...prev, [id]: value }))
+        setCharCounts((prev) => ({ ...prev, [id]: value.length }))
     }
 
     function handleClose() {
         setError({ status: undefined, message: "" })
-       
-        setFormData({ nombre: "", descripcion: "" }) 
+        setFormData({ nombre: "", descripcion: "" })
+        setCharCounts({ nombre: 0, descripcion: 0 })
         if (typeof onClose === "function") onClose()
     }
 
-    
     async function handleSubmit(e) {
         e.preventDefault()
         
         if (!formData.nombre.trim()) {
             setError({ status: true, message: "El nombre del permiso es obligatorio." })
+            return
+        }
+
+        const regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\-_]+$/
+        if (!regex.test(formData.nombre)) {
+            setError({ status: true, message: "El nombre solo puede contener letras, espacios, guiones (-) y guiones bajos (_)." })
+            return
+        }
+
+        if (formData.nombre.length > 25) {
+            setError({ status: true, message: "El nombre no puede exceder los 25 caracteres." })
+            return
+        }
+
+        if (formData.descripcion.length > 100) {
+            setError({ status: true, message: "La descripción no puede exceder los 100 caracteres." })
             return
         }
 
@@ -85,14 +109,38 @@ export default function ModalPermisos({ isVisible, onClose, onRefresh, data }) {
                 })
             }
         } catch (err) {
-            setError({
-                status: true,
-                message: err.message || "Error de conexión con el servidor."
-            })
+            if (err.response?.status === 422) {
+                const validationErrors = err.response.data.errors
+                const firstError = Object.values(validationErrors)[0]?.[0]
+                setError({
+                    status: true,
+                    message: firstError || "Error de validación en los datos."
+                })
+            } else {
+                setError({
+                    status: true,
+                    message: err.message || "Error de conexión con el servidor."
+                })
+            }
         } finally {
             setIsLoading(false)
         }
     }
+
+    const getBarColor = (current, max) => {
+        const pct = (current / max) * 100;
+        if (pct >= 100) return 'bg-red-500';
+        if (pct > 75) return 'bg-yellow-500';
+        return 'bg-[#8c52ff]';
+    };
+
+    const getTextClass = (current, max) => {
+        const pct = (current / max) * 100;
+        return pct >= 100 ? 'text-red-500 font-bold' : 'text-gray-400';
+    };
+
+    const namePct = Math.min((charCounts.nombre / 25) * 100, 100);
+    const descPct = Math.min((charCounts.descripcion / 100) * 100, 100);
 
     return (
         <section className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex justify-center items-center p-4">
@@ -119,7 +167,6 @@ export default function ModalPermisos({ isVisible, onClose, onRefresh, data }) {
                     </button>
                 </div>
 
-                
                 {error.status !== undefined && (
                     <div className={cn(
                         "mx-6 mt-4 border-l-4 p-4 rounded-r-lg flex items-center",
@@ -136,8 +183,9 @@ export default function ModalPermisos({ isVisible, onClose, onRefresh, data }) {
                     </div>
                 )}
 
-             
                 <form onSubmit={handleSubmit} className="p-6 space-y-5">
+                    
+                    {/* CAMPO NOMBRE - AHORA USA LAS FUNCIONES UNIFICADAS */}
                     <div>
                         <label htmlFor="nombre" className="block mb-2 text-sm font-semibold">
                             Nombre del permiso
@@ -148,11 +196,27 @@ export default function ModalPermisos({ isVisible, onClose, onRefresh, data }) {
                             type="text"
                             value={formData.nombre}
                             onChange={handleChange}
-                            placeholder="Ej: crear-campaña"
+                            maxLength={25}
+                            placeholder="Ej: crear_campaña"
                             className="w-full rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-800 px-4 py-3 outline-none focus:ring-2 focus:ring-[#8c52ff]"
                         />
+                        <div className="mt-1 flex items-center justify-end gap-2">
+                            <div className="h-1.5 w-24 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
+                                <div 
+                                    className={`h-full transition-all duration-300 rounded-full ${getBarColor(charCounts.nombre, 25)}`}
+                                    style={{ width: `${namePct}%` }}
+                                />
+                            </div>
+                            <span className={`text-xs font-mono ${getTextClass(charCounts.nombre, 25)}`}>
+                                {charCounts.nombre}/25
+                            </span>
+                        </div>
+                        <p className="mt-1 text-xs text-gray-400">
+                            Solo se permiten letras, espacios, guiones (-) y guiones bajos (_)
+                        </p>
                     </div>
 
+                    {/* CAMPO DESCRIPCIÓN - TAMBIÉN USANDO FUNCIONES UNIFICADAS */}
                     <div>
                         <label htmlFor="descripcion" className="block mb-2 text-sm font-semibold">
                             Descripción
@@ -162,13 +226,24 @@ export default function ModalPermisos({ isVisible, onClose, onRefresh, data }) {
                             name="descripcion"
                             value={formData.descripcion}
                             onChange={handleChange}
+                            maxLength={100}
                             placeholder="Permite a los usuarios añadir campañas publicitarias"
                             rows={4}
                             className="w-full rounded-xl border border-gray-300 dark:border-gray-700 dark:bg-gray-800 px-4 py-3 outline-none resize-none focus:ring-2 focus:ring-[#8c52ff]"
                         />
+                        <div className="mt-1 flex items-center justify-end gap-2">
+                            <div className="h-1.5 w-24 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
+                                <div 
+                                    className={`h-full transition-all duration-300 rounded-full ${getBarColor(charCounts.descripcion, 100)}`}
+                                    style={{ width: `${descPct}%` }}
+                                />
+                            </div>
+                            <span className={`text-xs font-mono ${getTextClass(charCounts.descripcion, 100)}`}>
+                                {charCounts.descripcion}/100
+                            </span>
+                        </div>
                     </div>
 
-                 
                     <div className="flex justify-end gap-4 pt-2">
                         <button
                             type="button"

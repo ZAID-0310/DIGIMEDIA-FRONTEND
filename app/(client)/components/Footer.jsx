@@ -1,27 +1,41 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import logoLegales from "@/public/headerFooter/logoFooter.webp";
 
 export default function Footer() {
-  const [copied, setCopied] = useState(false);
+const [copied, setCopied] = useState(false);
+const pathname = usePathname();
 
-  const handleCopyEmail = (e) => {
-    e.preventDefault();
-    const email = "digi.mediamkt@gmail.com";
-    navigator.clipboard.writeText(email).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  };
+const normalizePath = (path) => {
+  const cleanPath = path.split("?")[0];
+  return cleanPath.endsWith("/")
+    ? cleanPath.slice(0, -1) || "/"
+    : cleanPath;
+};
+const isActive = (route) =>
+  normalizePath(pathname) === normalizePath(route);
 
+const handleCopyEmail = (e) => {
+  e.preventDefault();
+  const email = "digi.mediamkt@gmail.com";
+  navigator.clipboard.writeText(email).then(() => {
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  });
+};
   const serviciosData = [
     {
       title: "DISEÑO Y DESARROLLO WEB",
       route: "/servicios/desing-desarrollo/",
       items: [
+        {
+          name: "Desarrollo Web",
+          route: "/servicios/desarrollo-webs/",
+        },
         {
           name: "Experiencia de Usuario y Diseño",
           route: "/servicios/experiencia-usuario/",
@@ -101,22 +115,35 @@ export default function Footer() {
             <div key={index} className="flex flex-col">
               <h2 className="text-sm font-bold tracking-wide mb-5 uppercase text-white">
                 <Link
-                  href={servicio.route}
-                  className="hover:text-[#ffb800] transition-colors"
-                >
-                  {servicio.title}
-                </Link>
+  href={servicio.route}
+  className={`transition-colors ${
+    isActive(servicio.route)
+      ? "text-[#FFC000]"
+      : "text-white hover:text-[#FFC000]"
+  }`}
+>
+  {servicio.title}
+</Link>
               </h2>
               <ul className="flex flex-col gap-3">
                 {servicio.items.map((item, idx) => (
                   <li key={idx} className="flex items-center gap-2 text-[14px]">
-                    <span className="w-1.5 h-1.5 rounded-full bg-gray-400 flex-shrink-0"></span>
-                    <Link
-                      href={item.route}
-                      className="text-gray-300 hover:text-[#ffb800] transition-colors leading-snug"
-                    >
-                      {item.name}
-                    </Link>
+                    <span
+  className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+    isActive(item.route) ? "bg-[#FFC000]" : "bg-gray-400"
+  }`}
+></span>
+
+<Link
+  href={item.route}
+  className={`transition-colors leading-snug ${
+    isActive(item.route)
+      ? "text-[#FFC000]"
+      : "text-gray-300 hover:text-[#FFC000]"
+  }`}
+>
+  {item.name}
+</Link>
                   </li>
                 ))}
               </ul>
