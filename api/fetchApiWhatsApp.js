@@ -100,38 +100,56 @@ const wsRequest = async (endpoint, options = {}) => {
      delete cleanHeaders.authorization;
    }
 
-   const res = await fetch(url, {
-     ...options,
-     headers: {
-       ...(isFormData ? {} : { "Content-Type": "application/json" }),
-       Accept: "application/json",
-       ...(token
-         ? { Authorization: `Bearer ${token}` }
-         : { "x-api-key": process.env.NEXT_PUBLIC_API_KEY || "dev_local_2026_digimedia" }),
-       ...cleanHeaders,
-     },
-   });
+   let res;
+   try {
+     res = await fetch(url, {
+       ...options,
+       headers: {
+         ...(isFormData ? {} : { "Content-Type": "application/json" }),
+         Accept: "application/json",
+         ...(token
+           ? { Authorization: `Bearer ${token}` }
+           : { "x-api-key": process.env.NEXT_PUBLIC_API_KEY || "dev_local_2026_digimedia" }),
+         ...cleanHeaders,
+       },
+     });
+   } catch (error) {
+     throw new Error(
+       `No se pudo conectar al servicio de WhatsApp en ${url}. Verifica que esté activo y que CORS permita este origen.`,
+       { cause: error },
+     );
+   }
 
    const contentType = res.headers.get("content-type") || "";
    const raw = await res.text();
 
+   let data;
    if (!contentType.includes("application/json")) {
-     console.error(
-       `Respuesta no es JSON de ${url}. Tipo: ${contentType}. Inicio: ${raw.substring(0, 120)}`,
-     );
-     return { success: res.ok, text: raw, status: res.status };
+     data = { success: res.ok, text: raw, status: res.status };
+   } else {
+     try {
+       data = JSON.parse(raw);
+     } catch {
+       throw new Error(`El servicio de WhatsApp devolvió JSON inválido (${res.status}).`);
+     }
    }
 
-   return JSON.parse(raw);
+   if (!res.ok) {
+     throw new Error(
+       data?.message || `El servicio de WhatsApp respondió con HTTP ${res.status}.`,
+     );
+   }
+
+   return data;
  };
 
 export const whatsappApi = {
   restart: async () => {
-    return wsRequest("/api/whatsapp/restart", { method: "POST" });
+    return wsRequest("/api/whatsapp/reset", { method: "POST" });
   },
 
   requestNewQr: async () => {
-    return wsRequest("/api/whatsapp/qr-request", { method: "POST" });
+    return wsRequest("/api/whatsapp/request-qr", { method: "POST" });
   },
 
   getStatus: async () => {
@@ -139,7 +157,7 @@ export const whatsappApi = {
   },
 
   getQrStatus: async () => {
-    return wsRequest("/api/whatsapp/qr-status", { method: "GET" });
+    return wsRequest("/api/whatsapp/status", { method: "GET" });
   },
 };
 

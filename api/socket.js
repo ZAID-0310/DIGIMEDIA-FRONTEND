@@ -25,11 +25,16 @@ export const useWhatsAppSocket = (token) => {
       transports: ["websocket", "polling"],
     });
 
-    socket.on("qr-status-update", (update) => {
+    socket.on("qr-update", (update) => {
       setData({
-        isConnected: update.isConnected,
-        qrData: update.qrData, // Aquí viene la imagen Base64 del QR y timeRemaining
-        connectionState: update.connectionState || {},
+        isConnected:
+          update.isConnected ?? update.connectionStatus === "connected",
+        qrData: update.qrData || null,
+        connectionState:
+          update.connectionState ||
+          (update.connectionStatus
+            ? { status: update.connectionStatus }
+            : {}),
         loading: false,
       });
     });

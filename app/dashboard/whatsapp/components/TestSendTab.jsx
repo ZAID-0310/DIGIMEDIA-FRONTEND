@@ -202,6 +202,16 @@ export function TestSendTab({ services, isConnected, connectedNumber }) {
         `/api/whatsapp/campaign/preview/${service}`,
       );
       const totalDestinatarios = Number(previewRes?.data?.total_destinatarios);
+      if (!Number.isInteger(totalDestinatarios) || totalDestinatarios < 0) {
+        setLastResponse(previewRes);
+        Swal.fire(
+          "Vista previa no disponible",
+          "No se pudo verificar la cantidad de destinatarios. No se creará ni iniciará la campaña.",
+          "error",
+        );
+        return;
+      }
+
       const isSandbox = Boolean(previewRes?.data?.is_sandbox);
       const testNumber = previewRes?.data?.test_number;
 
@@ -245,7 +255,7 @@ export function TestSendTab({ services, isConnected, connectedNumber }) {
       formData.append("paragraph", paragraph);
       formData.append("image", imageFile);
       if (!sendToAll && customRecipients) {
-        formData.append("cantidad_destinatarios", customRecipients);
+        formData.append("cantidad_destinatarios", String(recipientsToSend));
       }
 
       const createRes = await apiRequest("/api/whatsapp/campaign/create", {
@@ -260,6 +270,31 @@ export function TestSendTab({ services, isConnected, connectedNumber }) {
           createRes?.message || "No se pudo crear la campaña en borrador.",
           "error",
         );
+        return;
+      }
+
+      const persistedRecipients = Number(createRes.data?.total_destinatarios);
+      if (!Number.isInteger(persistedRecipients) || persistedRecipients < 0) {
+        setLastResponse(createRes);
+        Swal.fire(
+          "Campaña creada, no iniciada",
+          "El servidor no devolvió un total válido de destinatarios persistidos. La campaña permanece en borrador.",
+          "error",
+        );
+        return;
+      }
+
+      if (persistedRecipients !== recipientsToSend) {
+        setLastResponse({ preview: previewRes, create: createRes });
+        Swal.fire({
+          title: "Campaña creada, no iniciada",
+          html: `
+            <p>La vista previa confirmó ${recipientsToSend} destinatario(s), pero el servidor persistió ${persistedRecipients}.</p>
+            <p class="mt-2">La campaña permanece en borrador para evitar iniciar un envío con una cantidad distinta a la confirmada.</p>
+          `,
+          icon: "warning",
+          confirmButtonColor: "rgba(140,82,255,1)",
+        });
         return;
       }
 
@@ -284,7 +319,7 @@ export function TestSendTab({ services, isConnected, connectedNumber }) {
           title: "Campaña iniciada",
           html: `
             <p>Campaña #${campaniaId}</p>
-            <p>Total destinatarios: ${createRes.data?.total_destinatarios ?? totalDestinatarios ?? "?"}</p>
+            <p>Total destinatarios persistidos: ${persistedRecipients}</p>
             <p class="text-xs text-slate-500 mt-2">✅ Sistema FIFO activo - Solo una campaña a la vez</p>
           `,
           icon: "success",
@@ -297,6 +332,7 @@ export function TestSendTab({ services, isConnected, connectedNumber }) {
             title: "Campaña creada en borrador",
             html: `
               <p>La campaña #${campaniaId} se creó correctamente.</p>
+              <p>Total destinatarios persistidos: ${persistedRecipients}</p>
               <p class="text-sm text-rose-600 mt-2">⚠️ No se pudo iniciar porque hay otra campaña activa:</p>
               <p class="text-xs mt-1">Campaña #${startRes.active_campaign?.id} - ${startRes.active_campaign?.estado} - ${startRes.active_campaign?.progreso}%</p>
             `,
@@ -304,11 +340,16 @@ export function TestSendTab({ services, isConnected, connectedNumber }) {
             confirmButtonColor: "rgba(140,82,255,1)",
           });
         } else {
-          Swal.fire(
-            "Error al iniciar",
-            startRes?.message || "La campaña se creó pero no se pudo iniciar.",
-            "error",
-          );
+          Swal.fire({
+            title: "Campaña creada, no iniciada",
+            html: `
+              <p>Campaña #${campaniaId}</p>
+              <p>Total destinatarios persistidos: ${persistedRecipients}</p>
+              <p class="mt-2">${startRes?.message || "No se pudo iniciar la campaña."}</p>
+            `,
+            icon: "error",
+            confirmButtonColor: "rgba(140,82,255,1)",
+          });
         }
       }
     } catch (error) {
