@@ -63,20 +63,30 @@ export default function WhatsAppPage() {
     if (wsConnected !== undefined) setIsConnected(wsConnected);
   }, [wsConnected]);
 
-  useEffect(() => {
+    useEffect(() => {
+    let cancelled = false;
+    let timer;
+
     const checkActiveCampaigns = async () => {
+      let hasActive = false;
       try {
         const res = await apiRequest("/api/whatsapp/campaigns?limit=10");
-        const hasActive = !!res?.active_campaign?.id_campania;
-        setHasActiveCampaigns(hasActive);
+        hasActive = !!res?.active_campaign?.id_campania;
+        if (!cancelled) setHasActiveCampaigns(hasActive);
       } catch (err) {
         console.error("Error checking active campaigns:", err);
+      }
+      if (!cancelled) {
+        // 5 s si hay campaña activa, 30 s si no hay ninguna
+        timer = setTimeout(checkActiveCampaigns, hasActive ? 5000 : 30000);
       }
     };
 
     checkActiveCampaigns();
-    const interval = setInterval(checkActiveCampaigns, 5000);
-    return () => clearInterval(interval);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
   }, []);
 
   const handleRestartSession = async () => {

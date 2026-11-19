@@ -10,8 +10,8 @@ export function CampaignProgressMonitor() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState(null);
-
   const fetchActiveCampaign = async () => {
+    let hasActive = false;
     try {
       const res = await apiRequest("/api/whatsapp/campaigns?limit=10");
 
@@ -20,9 +20,10 @@ export function CampaignProgressMonitor() {
         const activeCampaignInfo = res.active_campaign;
 
         if (activeCampaignInfo?.id_campania) {
+          hasActive = true;
           // Obtener detalles completos (porcentaje, contadores, etc.)
           const statusRes = await apiRequest(
-            `/api/whatsapp/campaign/${activeCampaignInfo.id_campania}/status`
+            `/api/whatsapp/campaign/${activeCampaignInfo.id_campania}/status`,
           );
 
           if (statusRes?.success) {
@@ -39,17 +40,27 @@ export function CampaignProgressMonitor() {
       setError("Error al cargar el progreso");
       setLoading(false);
     }
+    return hasActive;
   };
 
   useEffect(() => {
-    fetchActiveCampaign();
+    let cancelled = false;
+    let timer;
 
-    // Polling cada 5 segundos
-    const interval = setInterval(fetchActiveCampaign, 5000);
+    const loop = async () => {
+      const hasActive = await fetchActiveCampaign();
+      if (!cancelled) {
+        // 5 s si hay campaña activa, 30 s si no hay ninguna
+        timer = setTimeout(loop, hasActive ? 5000 : 30000);
+      }
+    };
 
-    return () => clearInterval(interval);
+    loop();
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
   }, []);
-
   const handlePause = async () => {
     if (!activeCampaign?.id_campania || actionLoading) return;
 
@@ -79,11 +90,19 @@ export function CampaignProgressMonitor() {
         });
         await fetchActiveCampaign();
       } else {
-        Swal.fire("Error", res?.message || "No se pudo pausar la campaña.", "error");
+        Swal.fire(
+          "Error",
+          res?.message || "No se pudo pausar la campaña.",
+          "error",
+        );
       }
     } catch (err) {
       console.error("Error pausando campaña:", err);
-      Swal.fire("Error", "Ocurrió un error al intentar pausar la campaña.", "error");
+      Swal.fire(
+        "Error",
+        "Ocurrió un error al intentar pausar la campaña.",
+        "error",
+      );
     } finally {
       setActionLoading(false);
     }
@@ -118,11 +137,19 @@ export function CampaignProgressMonitor() {
         });
         await fetchActiveCampaign();
       } else {
-        Swal.fire("Error", res?.message || "No se pudo reanudar la campaña.", "error");
+        Swal.fire(
+          "Error",
+          res?.message || "No se pudo reanudar la campaña.",
+          "error",
+        );
       }
     } catch (err) {
       console.error("Error reanudando campaña:", err);
-      Swal.fire("Error", "Ocurrió un error al intentar reanudar la campaña.", "error");
+      Swal.fire(
+        "Error",
+        "Ocurrió un error al intentar reanudar la campaña.",
+        "error",
+      );
     } finally {
       setActionLoading(false);
     }
@@ -157,11 +184,19 @@ export function CampaignProgressMonitor() {
         });
         await fetchActiveCampaign();
       } else {
-        Swal.fire("Error", res?.message || "No se pudo cancelar la campaña.", "error");
+        Swal.fire(
+          "Error",
+          res?.message || "No se pudo cancelar la campaña.",
+          "error",
+        );
       }
     } catch (err) {
       console.error("Error cancelando campaña:", err);
-      Swal.fire("Error", "Ocurrió un error al intentar cancelar la campaña.", "error");
+      Swal.fire(
+        "Error",
+        "Ocurrió un error al intentar cancelar la campaña.",
+        "error",
+      );
     } finally {
       setActionLoading(false);
     }
@@ -172,7 +207,9 @@ export function CampaignProgressMonitor() {
       <div className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800/60">
         <div className="flex items-center gap-2">
           <div className="h-4 w-4 animate-spin rounded-full border-2 border-purple-500 border-t-transparent"></div>
-          <p className="text-sm text-slate-600 dark:text-slate-400">Cargando campañas...</p>
+          <p className="text-sm text-slate-600 dark:text-slate-400">
+            Cargando campañas...
+          </p>
         </div>
       </div>
     );
@@ -270,7 +307,12 @@ export function CampaignProgressMonitor() {
   };
 
   const config = estadoConfig[estado] || estadoConfig.en_proceso;
-  const isPaused = ["pausada", "pausada_hasta_mañana", "pausada_fuera_horario", "pausada_sin_conexion"].includes(estado);
+  const isPaused = [
+    "pausada",
+    "pausada_hasta_mañana",
+    "pausada_fuera_horario",
+    "pausada_sin_conexion",
+  ].includes(estado);
   const isInProgress = estado === "en_proceso" || estado === "pendiente";
 
   return (
@@ -296,7 +338,9 @@ export function CampaignProgressMonitor() {
           <span
             className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${config.bgColor}`}
           >
-            <span className={`h-2 w-2 rounded-full ${config.color} animate-pulse`}></span>
+            <span
+              className={`h-2 w-2 rounded-full ${config.color} animate-pulse`}
+            ></span>
             {config.text}
           </span>
 
@@ -308,7 +352,11 @@ export function CampaignProgressMonitor() {
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-amber-500 hover:bg-amber-600 text-white shadow-sm transition disabled:opacity-50"
               title="Pausar envíos temporalmente"
             >
-              {actionLoading ? <Loader2 size={13} className="animate-spin" /> : <Pause size={13} />}
+              {actionLoading ? (
+                <Loader2 size={13} className="animate-spin" />
+              ) : (
+                <Pause size={13} />
+              )}
               Pausar
             </button>
           )}
@@ -320,30 +368,44 @@ export function CampaignProgressMonitor() {
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition disabled:opacity-50"
               title="Reanudar envíos pendientes"
             >
-              {actionLoading ? <Loader2 size={13} className="animate-spin" /> : <Play size={13} />}
+              {actionLoading ? (
+                <Loader2 size={13} className="animate-spin" />
+              ) : (
+                <Play size={13} />
+              )}
               Reanudar
             </button>
           )}
 
-          {estado !== "cancelada" && estado !== "completada" && estado !== "eliminada" && (
-            <button
-              onClick={handleCancel}
-              disabled={actionLoading}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-rose-600 hover:bg-rose-700 text-white shadow-sm transition disabled:opacity-50"
-              title="Cancelar campaña definitivamente"
-            >
-              {actionLoading ? <Loader2 size={13} className="animate-spin" /> : <Square size={13} />}
-              Cancelar
-            </button>
-          )}
+          {estado !== "cancelada" &&
+            estado !== "completada" &&
+            estado !== "eliminada" && (
+              <button
+                onClick={handleCancel}
+                disabled={actionLoading}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-rose-600 hover:bg-rose-700 text-white shadow-sm transition disabled:opacity-50"
+                title="Cancelar campaña definitivamente"
+              >
+                {actionLoading ? (
+                  <Loader2 size={13} className="animate-spin" />
+                ) : (
+                  <Square size={13} />
+                )}
+                Cancelar
+              </button>
+            )}
         </div>
       </div>
 
       {/* Barra de progreso */}
       <div className="mb-4">
         <div className="mb-2 flex items-center justify-between text-sm">
-          <span className="font-semibold text-slate-700 dark:text-slate-300">Progreso General</span>
-          <span className="font-bold text-purple-600 dark:text-purple-400">{porcentaje.toFixed(1)}%</span>
+          <span className="font-semibold text-slate-700 dark:text-slate-300">
+            Progreso General
+          </span>
+          <span className="font-bold text-purple-600 dark:text-purple-400">
+            {porcentaje.toFixed(1)}%
+          </span>
         </div>
         <div className="h-3 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
           <div
@@ -357,19 +419,31 @@ export function CampaignProgressMonitor() {
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <div className="rounded-xl bg-white/50 p-3 dark:bg-slate-900/30">
           <p className="text-xs text-slate-500 dark:text-slate-400">Total</p>
-          <p className="text-xl font-bold text-slate-900 dark:text-slate-100">{total}</p>
+          <p className="text-xl font-bold text-slate-900 dark:text-slate-100">
+            {total}
+          </p>
         </div>
         <div className="rounded-xl bg-white/50 p-3 dark:bg-slate-900/30">
-          <p className="text-xs text-emerald-600 dark:text-emerald-400">Exitosos</p>
-          <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">{exitosos}</p>
+          <p className="text-xs text-emerald-600 dark:text-emerald-400">
+            Exitosos
+          </p>
+          <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
+            {exitosos}
+          </p>
         </div>
         <div className="rounded-xl bg-white/50 p-3 dark:bg-slate-900/30">
           <p className="text-xs text-rose-600 dark:text-rose-400">Fallidos</p>
-          <p className="text-xl font-bold text-rose-600 dark:text-rose-400">{fallidos}</p>
+          <p className="text-xl font-bold text-rose-600 dark:text-rose-400">
+            {fallidos}
+          </p>
         </div>
         <div className="rounded-xl bg-white/50 p-3 dark:bg-slate-900/30">
-          <p className="text-xs text-slate-500 dark:text-slate-400">Pendientes</p>
-          <p className="text-xl font-bold text-slate-700 dark:text-slate-300">{pendientes}</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            Pendientes
+          </p>
+          <p className="text-xl font-bold text-slate-700 dark:text-slate-300">
+            {pendientes}
+          </p>
         </div>
       </div>
 
