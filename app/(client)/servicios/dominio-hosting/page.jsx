@@ -39,7 +39,7 @@ export default function DominioHosting() {
           >
             <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded-[24px] border border-white/5 bg-gradient-to-br from-[#18033E] to-[#0A0019] p-12 md:rounded-[32px]">
               <Image
-                src="/servicios/diseno_desarrollo_web/desarrollo_web/creacion-desarrollo-web-digimedial.webp"
+                src="/servicios/diseno_desarrollo_web/dominio_hosting/principal-dominio-y-hosting.webp"
                 alt="Especialista trabajando en una laptop para desarrollar un sitio web"
                 title="Dominio y Hosting | Digimedia"
                 fill
