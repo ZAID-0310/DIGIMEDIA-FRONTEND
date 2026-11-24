@@ -2,11 +2,12 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import Swal from "sweetalert2";
+
 import { PlusCircle, Key, Search, RefreshCw } from "lucide-react"; 
 import Pagination from "../../components/Pagination";
 import TablePermisos from "./tabla_permiso"; 
-import ModalPermisos from "./modal_permisos";   
+import ModalPermisos from "./modal_permisos";  
+import ModalEliminarPermiso from "./modal_eliminar_permiso"; 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,6 +29,8 @@ export default function Page() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [modal, setModal] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [permissionToDelete, setPermissionToDelete] = useState(null);
   
   const [selectedPermissionData, setSelectedPermissionData] = useState(null);
   
@@ -110,45 +113,26 @@ export default function Page() {
     setSearchTerm(e.target.value);
   };
 
- 
-  function onDelete(id) {
-    Swal.fire({
-      title: "¿Estás seguro?",
-      text: "¡No podrás revertir esto! Se quitará este permiso de todos los roles asociados.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#8c52ff",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "Cancelar",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        permiso_service.deletePermisos(id)
-          .then((response) => {
-            const responseStatus = Object.freeze({
-                ok: response.status === 200 || response.success !== false,
-                error: response.success === false
-            });
-              
-            if (responseStatus.error) {
-                Swal.fire({ 
-                  icon: "error", 
-                  title: "Error al eliminar", 
-                  text: response.message || "No se pudo procesar la solicitud",
-                  confirmButtonColor: "#8c52ff" 
-                });
-                fetchPermisos();
-            } 
-            if (responseStatus.ok) {
-              Swal.fire({ icon: "success", title: "Permiso Eliminado", confirmButtonColor: "#8c52ff" });
-              fetchPermisos();
-            }
-          });
-      }
-    });
+  function onDelete(item) {
+    setPermissionToDelete(item); 
+    setIsDeleteModalOpen(true);   
   }
 
-  
+  function refreshListAfterDelete() {
+    const newTotalItems = filteredPermisos.length - 1; 
+    const maxPages = Math.ceil(newTotalItems / itemsPerPage);
+    let nextPage = currentPage;
+    
+    if (nextPage > maxPages && maxPages > 0) {
+        nextPage = maxPages;
+    } else if (maxPages === 0) {
+        nextPage = 1; 
+    }
+    
+    router.push(`?page=${nextPage}`);
+    fetchPermisos(); 
+  }
+
   function onUpdate(permissionRow) {
     setSelectedPermissionData(permissionRow);
     setModal(true);
@@ -222,6 +206,7 @@ export default function Page() {
                     headers={headers}
                     data={currentPageData}
                     onDelete={onDelete}
+                    onRefresh={refreshListAfterDelete}
                     onUpdate={onUpdate} 
                   />
                 )}
@@ -248,6 +233,16 @@ export default function Page() {
         onRefresh={() => {
           fetchPermisos();
         }}
+      />
+
+      <ModalEliminarPermiso
+        isVisible={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setPermissionToDelete(null);
+        }}
+        data={permissionToDelete} 
+        onRefresh={refreshListAfterDelete} 
       />
     </div>
   );
