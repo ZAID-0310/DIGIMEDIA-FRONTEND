@@ -48,6 +48,10 @@ export default function Header2() {
         pathname.startsWith(`${path}/`)
     );
 
+  const isGeneralActive = isActiveGroup([
+     "/servicios/general"
+  ]);
+
   const isWebDevActive = isActiveGroup([
     "/servicios/desing-desarrollo",
     "/servicios/desarrollo-webs",
@@ -84,6 +88,7 @@ export default function Header2() {
 
   const isServicesActive =
     isActiveGroup(["/servicios"]) ||
+    isGeneralActive ||
     isWebDevActive ||
     isSocialActive ||
     isMarketingActive ||
@@ -453,6 +458,25 @@ export default function Header2() {
                 className={`${styles.menuVertical} !bg-[#130049] shadow-lg md:absolute top-full mt-0 min-w-[280px] py-4 flex flex-col gap-4 z-50`}
                 style={submenuStyle("services")}
               >
+                {/* 0. General */}
+                <li
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (!isGeneralActive) closeMenu();
+                    }}
+                    className="w-full flex justify-center"
+                >
+                  <Link
+                      href="/servicios/general"
+                      onClick={(e) => {
+                        if (isGeneralActive) e.preventDefault();
+                      }}
+                      className={getSubmenuNavColor(isGeneralActive)}
+                  >
+                    Nuestros Servicios
+                  </Link>
+                </li>
+
                 {/* 1. Diseño y Desarrollo Web */}
                 <li
                   onClick={(e) => {
