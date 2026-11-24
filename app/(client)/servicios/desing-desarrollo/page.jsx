@@ -138,10 +138,9 @@ export default function DisenoDesarrolloWeb() {
             </div>
           </motion.div>
         </section>
-
-        {/* ¿CÓMO FUNCIONA? SECTION */}
       </div>
 
+      {/* ¿CÓMO FUNCIONA? SECTION */}
       <section className="w-full py-16 relative z-10">
         <div className="w-full max-w-[1280px] mx-auto px-6">
           <motion.div
@@ -165,8 +164,8 @@ export default function DisenoDesarrolloWeb() {
         </div>
       </section>
 
+      {/* NUESTROS SUBSERVICIOS SECTION */}
       <div className="w-full max-w-[1280px] mx-auto px-6 relative z-10">
-        {/* NUESTROS SUBSERVICIOS SECTION */}
         <section className="border-t border-white/5 ">
           <div className="text-center mt-14 mb-14">
             <h2 className="text-[#FFD100] font-extrabold text-3xl sm:text-4xl uppercase tracking-wider mb-4 font-display">
