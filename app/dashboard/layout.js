@@ -188,7 +188,7 @@ export default function RootLayout({ children }) {
             {isSidebarOpen && (
               <div
                 onClick={() => setIsSidebarOpen(false)}
-                className="fixed inset-0 top-16 bg-black/40 z-20 md:hidden transition-opacity"
+                className="fixed inset-0 top-16 bg-black/40 backdrop-blur-sm z-20 md:hidden transition-opacity"
               />
             )}
 

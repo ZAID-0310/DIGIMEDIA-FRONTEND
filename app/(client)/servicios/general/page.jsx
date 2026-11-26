@@ -90,7 +90,6 @@ export default function DisenoDesarrolloWeb() {
             <h2 className="text-white font-extrabold text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl uppercase tracking-wider mb-4 font-display">
               NUESTROS SERVICIOS
             </h2>
-            <div className="w-36 h-1.5 bg-[#FFD100] mx-auto rounded-full" />
           </div>
 
           <motion.div
@@ -98,7 +97,7 @@ export default function DisenoDesarrolloWeb() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-50px" }}
-            className="flex flex-wrap justify-center relative gap-8 md:gap-10 px-2 md:px-14"
+            className="flex flex-wrap justify-center relative gap-8 md:gap-10 px-20 sm:px-28 md:px-14"
           >
             <button
               ref={prevRef}
