@@ -95,18 +95,15 @@ export default function DisenoDesarrolloWeb() {
           className="object-cover object-[60%_center]"
         />
         <div className="absolute inset-0 bg-[#100043]/60" />
-        
+                <h1 className="relative z-10 text-white font-extrabold uppercase text-4xl sm:text-5xl md:text-6xl lg:text-7xl tracking-wider text-center px-4 font-display drop-shadow-lg">
+          NUESTROS SERVICIOS
+        </h1>
       </section>
 
       {/* NUESTROS SERVICIOS SECTION */}
       <div className="w-full max-w-[1280px] mx-auto px-6 relative z-10">
-        <section className="border-t border-white/5 ">
-          <div className="text-center mt-14 mb-14">
-            <h2 className="text-white font-extrabold text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl uppercase tracking-wider mb-4 font-display">
-              NUESTROS SERVICIOS
-            </h2>
-            <div className="w-36 h-1.5 bg-[#FFD100] mx-auto rounded-full" />
-          </div>
+        <section className="pt-14">
+        
 
           <motion.div
             variants={containerVariants}
