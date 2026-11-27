@@ -178,6 +178,7 @@ export default function RootLayout({ children }) {
               <span className="hidden sm:inline">SECCIÓN: </span>
               {pathname
                 .slice(pathname.indexOf("/", 1) + 1)
+                .replace(/\/\d+\/?$/, "") // quita el id final (ej. empleados/5)
                 .replace("/", "")
                 .toUpperCase()}
             </h1>
