@@ -83,8 +83,8 @@ export default function DisenoDesarrolloWeb() {
       <div className="absolute top-[35%] right-[-15%] w-[45vw] h-[45vw] max-w-[700px] bg-[#FF037F]/5 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[15%] left-[10%] w-[35vw] h-[35vw] max-w-[500px] bg-[#b525fe]/8 rounded-full blur-[100px] pointer-events-none" />
 
-      {/* NUESTROS SERVICIOS SECTION */}
       <div className="w-full max-w-[1280px] mx-auto px-6 relative z-10">
+        {/* NUESTROS SERVICIOS SECTION */}
         <section className="border-t border-white/5 ">
           <div className="text-center mt-14 mb-14">
             <h2 className="text-white font-extrabold text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl uppercase tracking-wider mb-4 font-display">
@@ -97,7 +97,7 @@ export default function DisenoDesarrolloWeb() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-50px" }}
-            className="flex flex-wrap justify-center relative gap-8 md:gap-10 px-20 sm:px-28 md:px-14"
+            className="flex flex-wrap justify-center relative gap-8 md:gap-10 px-8 sm:px-28 md:px-14"
           >
             <button
               ref={prevRef}
@@ -228,8 +228,7 @@ export default function DisenoDesarrolloWeb() {
 
             <div className="relative z-10">
               <h2 className="text-white font-black text-2xl sm:text-3xl md:text-4xl uppercase tracking-wider mb-8 leading-tight font-display">
-                CONSOLIDA LA PRESENCIA <br className="hidden sm:inline" />{" "}
-                DE TU MARCA
+                CONSOLIDA LA PRESENCIA <br className="hidden sm:inline" /> DE TU MARCA
               </h2>
               <Link href="/contactanos">
                 <button
