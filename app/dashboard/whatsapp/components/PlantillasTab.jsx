@@ -200,6 +200,8 @@ export function PlantillasTab() {
     }
 
     // Para Email: carga por owner igual que WhatsApp
+    if (!ownerId) return;
+
     setLoading(true);
     try {
       const res = await plantillaApi.getByOwner("email", ownerType, ownerId);
