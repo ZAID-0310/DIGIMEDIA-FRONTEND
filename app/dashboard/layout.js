@@ -11,7 +11,7 @@ import { DisplayNameContext } from "./components/DisplayNameContext";
 import { dashboardLinks } from "./dashboardsLinks/dashboardsLinks";
 import { useAuth } from "../context/AuthContext";
 import Image from "next/image";
-import { LogOut, Menu, X } from "lucide-react";
+import { LogOut, Menu, Moon, Sun, X } from "lucide-react";
 
 export default function RootLayout({ children }) {
   const pathname = usePathname();
@@ -188,7 +188,7 @@ export default function RootLayout({ children }) {
             {isSidebarOpen && (
               <div
                 onClick={() => setIsSidebarOpen(false)}
-                className="fixed inset-0 top-16 bg-black/40 z-20 md:hidden transition-opacity"
+                className="fixed inset-0 top-16 bg-black/40 backdrop-blur-sm z-20 md:hidden transition-opacity"
               />
             )}
 
@@ -291,7 +291,14 @@ export default function RootLayout({ children }) {
                         checked={darkMode}
                         onChange={() => setDarkMode(!darkMode)}
                       />
-                      <span className="absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-gray-300 dark:bg-[#6b3acb] transition-all duration-300 rounded-[24px] before:content-['☀️'] before:absolute before:h-[18px] before:w-[18px] before:left-[3px] before:top-[3px] before:text-[11px] before:flex before:items-center before:justify-center before:transition-all before:duration-300 peer-checked:before:content-['🌑'] peer-checked:before:translate-x-[22px]"></span>
+                      <span className="absolute top-0 left-0 right-0 bottom-0 cursor-pointer rounded-[24px] bg-gray-300 transition-all duration-300 dark:bg-[#6b3acb]"></span>
+                      <span className="absolute left-[3px] top-[3px] flex h-[18px] w-[18px] items-center justify-center text-[#8c52ff] transition-all duration-300 peer-checked:translate-x-[22px] dark:text-white">
+                        {darkMode ? (
+                          <Moon className="h-3 w-3" />
+                        ) : (
+                          <Sun className="h-3 w-3" />
+                        )}
+                      </span>
                     </label>
                   </div>
                 </div>

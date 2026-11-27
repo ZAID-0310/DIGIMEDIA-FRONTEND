@@ -401,9 +401,8 @@ export default function Header2() {
               style={touchStyle("inicio")}
               onTouchStart={() => setTouchedItem("inicio")}
               onTouchEnd={() => {
-                setTouchedItem(null);
-                closeMenu();
-              }}
+  setTouchedItem(null);
+}}
               onClick={closeMenu}
             >
               <Link href="/" className={getNavColor(isActive("/"))}>
@@ -415,20 +414,20 @@ export default function Header2() {
             <li
               className={styles.menuItem}
               style={touchStyle("nosotros")}
-              onTouchStart={() => setTouchedItem("nosotros")}
-              onTouchEnd={() => {
-                setTouchedItem(null);
-                closeMenu();
-              }}
-              onClick={closeMenu}
-            >
-              <Link
-                href="/nosotros"
-                className={getNavColor(isActive("/nosotros"))}
-              >
-                Nosotros
-              </Link>
-            </li>
+             onTouchStart={() => setTouchedItem("nosotros")}
+onTouchEnd={() => {
+  setTouchedItem(null);
+}}
+onClick={closeMenu}
+          
+           >
+  <Link
+    href="/nosotros"
+    className={getNavColor(isActive("/nosotros"))}
+  >
+    Nosotros
+  </Link>
+</li>
 
             {/* Servicios */}
             <li
@@ -561,9 +560,8 @@ export default function Header2() {
               style={touchStyle("blog")}
               onTouchStart={() => setTouchedItem("blog")}
               onTouchEnd={() => {
-                setTouchedItem(null);
-                closeMenu();
-              }}
+  setTouchedItem(null);
+}}
               onClick={closeMenu}
             >
               <Link href="/blog" className={getNavColor(isActiveGroup(["/blog"]))}>

@@ -23,6 +23,7 @@ export default function DataTable({
   onDelete,
   onUpdate,
   onShow,
+  tableBorderClassName = "",
 }) {
   const router = useRouter();
   const [expandedRow, setExpandedRow] = useState(null);
@@ -253,10 +254,10 @@ export default function DataTable({
 
   const renderDesktopView = () => {
     return (
-      <div className="hidden md:block overflow-auto rounded-md border">
+      <div className={`hidden md:block overflow-auto rounded-md border ${tableBorderClassName}`}>
         <Table>
           <TableHeader>
-            <TableRow className="bg-[#8c52ff] hover:bg-[#8c52ff]">
+            <TableRow className={`bg-[#8c52ff] hover:bg-[#8c52ff] ${tableBorderClassName}`}>
               {headers.map((header) => (
                 <TableHead
                   key={`header-${header}`}
@@ -281,11 +282,11 @@ export default function DataTable({
                   key={dataRow.id_empleado || `row-${index}`}
                   className={`${
                     esMismoUsuario
-                      ? "bg-[#caeafe] text-black"
+                      ? "bg-[#caeafe] text-black hover:bg-[#111827] hover:text-white"
                       : index % 2 === 0
-                        ? "bg-white dark:bg-gray-900"
-                        : "bg-gray-50 dark:bg-gray-700"
-                  } hover:bg-neutral-200 transition-colors`}
+                        ? "bg-white dark:bg-gray-900 hover:bg-neutral-200"
+                        : "bg-gray-50 dark:bg-gray-700 hover:bg-neutral-200"
+                  } transition-colors ${tableBorderClassName}`}
                 >
                   {headers.map((header) => (
                     <TableCell
