@@ -50,12 +50,12 @@ export default function Page() {
       <div className="max-w-5xl mx-auto">
         <div className= "mb-3">
           <button
-            className="flex items-center px-3 py-1.5 rounded-xl text-sm shadow-sm transition-all duration-300 bg-white text-gray-700 hover:bg-gray-100 hover:shadow-md hover:-translate-y-0.5 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:text-white dark:border dark:border-gray-700"
-            onClick={() => router.push("/dashboard/modales/")}
-          >
-            <ArrowLeft className="w-3.5 h-3.5 mr-1.5" />
-            Volver a la lista
-          </button>
+  className="group flex w-fit items-center gap-2 rounded-full bg-[#8c52ff] px-5 py-2 text-sm text-white shadow-sm transition-all duration-300 hover:bg-[#7b45e0]"
+  onClick={() => router.push("/dashboard/modales/")}
+>
+  <ArrowLeft className="h-5 w-5 transition-transform group-hover:-translate-x-1" />
+  Volver a la lista
+</button>
         </div>
         <div className="bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden w-full">
           <div className="bg-gradient-to-r from-[#8c52ff] to-[#5e17eb] p-8 text-white relative overflow-hidden">
