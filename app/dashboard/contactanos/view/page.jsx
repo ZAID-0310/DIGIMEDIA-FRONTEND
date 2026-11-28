@@ -56,7 +56,7 @@ export default function Page() {
                 </p>
               </div>
 
-              <div className="mt-auto md:mt-0">
+              <div className="mt-auto md:mt-0 max-md:mt-4">
                 {contacto.estado == 1 ? (
                   <span className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-green-100 text-green-800 border border-green-200">
                     <CheckCircle className="w-4 h-4 mr-1.5" />

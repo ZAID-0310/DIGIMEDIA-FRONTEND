@@ -303,7 +303,7 @@ export default function DataTable({
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 text-[#8c52ff] hover:text-[#6c3dbf] hover:bg-[#f0ebff]"
+                          className="h-8 w-8 text-[#8c52ff] hover:text-[#6c3dbf] hover:bg-[#f0ebff] dark:text-purple-300 dark:hover:text-purple-200 dark:hover:bg-purple-950/40"
                           onClick={() => onShow(dataRow.id_empleado)}
                         >
                           <Eye className="h-4 w-4" />
@@ -317,7 +317,7 @@ export default function DataTable({
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 text-amber-500 hover:text-amber-600 hover:bg-amber-50"
+                            className="h-8 w-8 text-amber-500 hover:text-amber-600 hover:bg-amber-50 dark:text-amber-400 dark:hover:text-amber-300 dark:hover:bg-amber-950/40"
                             onClick={() => onUpdate(dataRow.id_empleado)}
                           >
                             <Pencil className="h-4 w-4" />
@@ -331,7 +331,7 @@ export default function DataTable({
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
+                            className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-950/40"
                             onClick={() => onDelete(dataRow.id_empleado)}
                           >
                             <Trash2 className="h-4 w-4" />
@@ -343,7 +343,7 @@ export default function DataTable({
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 text-[#305dfe] hover:text-[#3e329a] hover:bg-blue-50"
+                          className="h-8 w-8 text-[#305dfe] hover:text-[#3e329a] hover:bg-blue-50 dark:text-blue-400 dark:hover:text-blue-300 dark:hover:bg-blue-950/40"
                           onClick={() => router.push("/dashboard/main")}
                         >
                           <User className="h-4 w-4" />

@@ -550,9 +550,9 @@ function PageContent() {
     <div className="container mx-auto space-y-6 p-4">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <button
-          className="group flex w-fit items-center gap-2 rounded-lg bg-[#8c52ff] px-4 py-2 text-white shadow-sm transition-all duration-300 hover:bg-[#7b45e0]"
-          onClick={() => router.push("/dashboard/modales/")}
-        >
+  className="group flex w-fit items-center gap-2 rounded-full bg-[#8c52ff] px-5 py-2 text-sm text-white shadow-sm transition-all duration-300 hover:bg-[#7b45e0]"
+  onClick={() => router.push("/dashboard/modales/")}
+>
           <ArrowLeft className="h-5 w-5 transition-transform group-hover:-translate-x-1" />
           Volver a la lista
         </button>
