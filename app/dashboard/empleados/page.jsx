@@ -8,6 +8,7 @@ import {
   PlusCircle,
   Users,
   Search,
+  X,
   RefreshCw,
   Filter,
   ShieldAlert,
@@ -378,10 +379,21 @@ export default function Page() {
                 <Input
                   type="text"
                   placeholder="Buscar empleado..."
-                  className="pl-9 w-full"
+                  className="w-full border-[#374151] pl-9 pr-9 focus:border-[#8c52ff] focus:ring-1 focus:ring-[#8c52ff]"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
+                {searchTerm && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchTerm("")}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-gray-400 transition-colors hover:bg-[#f0ebff] hover:text-[#6c3dbf] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8c52ff] dark:hover:bg-gray-700 dark:hover:text-purple-300"
+                    aria-label="Limpiar búsqueda"
+                    title="Limpiar búsqueda"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
               </div>
 
               <Button
@@ -389,7 +401,11 @@ export default function Page() {
                 size="sm"
                 onClick={fetchEmpleados}
                 disabled={isLoading}
-                className="w-full sm:w-auto"
+                className={`w-full sm:w-auto sm:shrink-0 ${
+                  isLoading
+                    ? "border-[#8c52ff] bg-[#8c52ff] text-white hover:bg-[#8c52ff] hover:text-white disabled:opacity-100"
+                    : "border-[#374151]"
+                }`}
               >
                 <RefreshCw
                   className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
@@ -410,7 +426,7 @@ export default function Page() {
 
               {/* Select */}
               <Select value={selectedRole} onValueChange={setSelectedRole}>
-                <SelectTrigger className="w-full sm:w-[220px] bg-white dark:bg-gray-800">
+                <SelectTrigger className="w-full border-[#374151] bg-white dark:border-[#374151] dark:bg-gray-800 sm:w-[220px]">
                   <SelectValue placeholder="Todos los roles" />
                 </SelectTrigger>
 
@@ -462,6 +478,7 @@ export default function Page() {
                       onDelete={onDelete}
                       onUpdate={onUpdate}
                       onShow={handleShow}
+                      tableBorderClassName="border-[#374151]"
                     />
                   )}
                 </div>

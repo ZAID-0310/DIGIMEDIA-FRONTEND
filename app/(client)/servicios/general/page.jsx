@@ -11,7 +11,6 @@ import { useRef } from "react";
 import "swiper/css";
 import "swiper/css/pagination";
 
-
 export default function DisenoDesarrolloWeb() {
   const prevRef = useRef(null);
   const nextRef = useRef(null);
@@ -19,8 +18,7 @@ export default function DisenoDesarrolloWeb() {
     {
       title: "DISEÑO Y DESARROLLO WEB",
       text: "Diseñamos y desarrollamos sitios web modernos, rápidos y seguros, enfocados en convertir visitantes en clientes.",
-      image:
-        "/servicios/desarrollo/diseno-desarrollo-web.webp",
+      image: "/servicios/desarrollo/diseno-desarrollo-web.webp",
       ruta: "/servicios/desing-desarrollo/",
       imageTitle: "Diseño y desarrollo web",
       imageAlt: "Personal de Digimedia colaborando en diseño y desarrollo web",
@@ -38,23 +36,18 @@ export default function DisenoDesarrolloWeb() {
     {
       title: "MARKETING Y GESTIÓN DIGITAL",
       text: "Conecta, impacta y haz crecer tu marca en el entorno digital.",
-      image:
-        "/servicios/marketing/marketing-y-gestion-digital-hero.webp",
+      image: "/servicios/marketing/marketing-y-gestion-digital-hero.webp",
       ruta: "/servicios/marketing-gestion/",
       imageTitle: "Marketing y gestión digital",
-      imageAlt:
-        "Imagen de MARKETING Y GESTIÓN DIGITAL",
+      imageAlt: "Imagen de MARKETING Y GESTIÓN DIGITAL",
     },
     {
       title: "BRANDING Y DISEÑO",
       text: "Desde una identidad visual memorable hasta mensajes que resuenan profundamente, hacemos que tu empresa sea tan única como inolvidable.",
-      image:
-        "/servicios/branding/branding-diseno-hero.webp",
+      image: "/servicios/branding/branding-diseno-hero.webp",
       ruta: "/servicios/branding-desing/",
-      imageTitle:
-        "Branding y diseño",
-      imageAlt:
-        "Imagen oficial del servicio de branding y diseño de una marca",
+      imageTitle: "Branding y diseño",
+      imageAlt: "Imagen oficial del servicio de branding y diseño de una marca",
     },
   ];
 
@@ -83,15 +76,43 @@ export default function DisenoDesarrolloWeb() {
       <div className="absolute top-[35%] right-[-15%] w-[45vw] h-[45vw] max-w-[700px] bg-[#FF037F]/5 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[15%] left-[10%] w-[35vw] h-[35vw] max-w-[500px] bg-[#b525fe]/8 rounded-full blur-[100px] pointer-events-none" />
 
+      {/* HERO CON IMAGEN */}
+      <section className="relative z-10 w-full h-[260px] sm:h-[340px] md:h-[420px] flex items-center justify-center overflow-hidden">
+        <Image
+          src="/servicios/servicios-hero.png"
+          alt="Persona revisando los servicios de marketing digital de Digimedia en una computadora"
+          title="Nuestros servicios"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-[60%_center]"
+        />
+        <div className="absolute inset-0 bg-[#100043]/60" />
+        <h1 className="relative z-10 text-white font-extrabold uppercase text-4xl sm:text-5xl md:text-6xl lg:text-7xl tracking-wider text-center px-4 font-display drop-shadow-lg">
+          NUESTROS SERVICIOS
+        </h1>
+      </section>
+
+      {/* HERO CON IMAGEN */}
+      <section className="relative z-10 w-full h-[260px] sm:h-[340px] md:h-[420px] flex items-center justify-center overflow-hidden">
+        <Image
+          src="/servicios/servicios-hero.png"
+          alt="Persona revisando los servicios de marketing digital de Digimedia en una computadora"
+          title="Nuestros servicios"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-[60%_center]"
+        />
+        <div className="absolute inset-0 bg-[#100043]/60" />
+        <h1 className="relative z-10 text-white font-extrabold uppercase text-4xl sm:text-5xl md:text-6xl lg:text-7xl tracking-wider text-center px-4 font-display drop-shadow-lg">
+          NUESTROS SERVICIOS
+        </h1>
+      </section>
+
       <div className="w-full max-w-[1280px] mx-auto px-6 relative z-10">
         {/* NUESTROS SERVICIOS SECTION */}
-        <section className="border-t border-white/5 ">
-          <div className="text-center mt-14 mb-14">
-            <h2 className="text-white font-extrabold text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl uppercase tracking-wider mb-4 font-display">
-              NUESTROS SERVICIOS
-            </h2>
-          </div>
-
+        <section className="pt-14">
           <motion.div
             variants={containerVariants}
             initial="hidden"
@@ -211,7 +232,6 @@ export default function DisenoDesarrolloWeb() {
               ))}
             </Swiper>
           </motion.div>
-
         </section>
 
         {/* CTA SECTION */}
@@ -267,8 +287,5 @@ export default function DisenoDesarrolloWeb() {
         }
       `}</style>
     </div>
-
   );
-
-
 }
