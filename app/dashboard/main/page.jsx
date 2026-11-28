@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { getCookie, deleteCookie, setCookie } from "cookies-next";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams, useRouter, useParams } from "next/navigation";
 import {
   User,
   Mail,
@@ -38,12 +38,16 @@ export default function Page() {
 
   const searchParams = useSearchParams();
   const router = useRouter();
-  const empleadoId = searchParams.get("id_empleado");
+  const params = useParams();
+  // /dashboard/empleados/[id] (ruta nueva); ?id_empleado= se mantiene por enlaces antiguos
+  const empleadoId = params?.id ?? searchParams.get("id_empleado");
   const api_url = `${url}/api/empleados`;
 
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
+      // Mientras se redirige se mantiene el "cargando" para no mostrar el perfil propio
+      let redirigiendo = false;
 
       try {
         const meData = await auth_service.me();
@@ -66,13 +70,21 @@ export default function Page() {
 
         if (empleadoId) {
           if (!auth_service.hasPermission("ver-empleados")) {
+            redirigiendo = true;
+            router.replace("/dashboard/main");
             return;
           }
 
           const empleadoResponse = await fetchEmpleado(empleadoId);
-          if (empleadoResponse) {
-            setEmpleadoData(empleadoResponse);
+          if (!empleadoResponse) {
+            redirigiendo = true;
+            router.replace("/dashboard/empleados");
+            return;
           }
+
+          setEmpleadoData(empleadoResponse);
+          // El rol y los permisos mostrados son los del empleado visto, no los del usuario logueado
+          setUserRole((empleadoResponse.rol?.nombre || roleName).toString());
         } else {
           if (currentUser) setUserData(currentUser);
           if (currentEmpleado) setEmpleadoData(currentEmpleado);
@@ -80,7 +92,7 @@ export default function Page() {
       } catch (error) {
         console.error("Error loading data:", error);
       } finally {
-        setIsLoading(false);
+        if (!redirigiendo) setIsLoading(false);
       }
     };
 
@@ -174,7 +186,10 @@ export default function Page() {
   }
 
   const currentUser = userData || auth_service.getCurrentUser();
-  const currentEmpleado = empleadoData || auth_service.getCurrentEmpleado();
+  // Al ver a otro empleado nunca se cae al usuario logueado
+  const currentEmpleado = empleadoId
+    ? empleadoData
+    : empleadoData || auth_service.getCurrentEmpleado();
 
   const nombre =
     currentEmpleado?.nombre ||

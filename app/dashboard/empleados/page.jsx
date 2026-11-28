@@ -66,7 +66,7 @@ export default function Page() {
   const [error, setError] = useState(null);
   const handleShow = async (id) => {
     try {
-      router.push(`/dashboard/main?id_empleado=${id}`);
+      router.push(`/dashboard/empleados/${id}`);
     } catch (error) {
       Swal.fire({
         icon: "error",
